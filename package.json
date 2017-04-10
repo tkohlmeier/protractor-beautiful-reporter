@@ -1,11 +1,11 @@
 {
-  "name": "protractor-angular-screenshot-reporter",
-  "version": "0.1.2",
+  "name": "protractor-beautiful-reporter",
+  "version": "0.2.0",
   "description": "An npm module and which generates your Protractor test reports in HTML (angular) with screenshots",
   "main": "index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/bcole/protractor-angular-screenshot-reporter"
+    "url": "https://github.com/Evilweed/protractor-beautiful-reporter"
   },
   "dependencies": {
     "mkdirp": "~0.3.5",
@@ -21,10 +21,10 @@
     "gruntplugin",
     "protractor html report"
   ],
-  "author": "Brandon Cole <333qaz333@gmail.com>",
+  "author": "Marcin Cierpicki <zycienawalizkach@gmail.com>",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/bcole/protractor-angular-screenshot-reporter/issues"
+    "url": "https://github.com/Evilweed/protractor-beautiful-reporter/issues"
   },
-  "homepage": "https://github.com/bcole/protractor-angular-screenshot-reporter"
+  "homepage": "https://github.com/Evilweed/protractor-beautiful-reporter"
 }

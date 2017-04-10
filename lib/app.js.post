@@ -1,2 +1,24 @@
 ;
-    });
+});
+
+app.filter('bySearchSettings', function () {
+    return function (items, searchSettings) {
+        var filtered = [];
+
+        for (var i = 0; i < items.length; i++) {
+            var item = items[i];
+            if (searchSettings.description == '' ||
+                (item.description && item.description.toLowerCase().indexOf(searchSettings.description.toLowerCase()) > -1)) {
+                if (searchSettings.passed && item.passed) {
+                    filtered.push(item);
+                } else if (searchSettings.failed && !item.passed && !item.pending) {
+                    filtered.push(item);
+                } else if (searchSettings.pending && item.pending) {
+                    filtered.push(item);
+                }
+            }
+        }
+
+        return filtered;
+    };
+});

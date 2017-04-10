@@ -6,12 +6,22 @@
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <script src="app.js"></script>
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js" integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A==" crossorigin="anonymous"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A=="
+            crossorigin="anonymous"></script>
     <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" integrity="sha384-1q8mTJOASx8j1Au+a5WDVnPi2lkFfwwEAa8hDDdjZlpLegxhjVME1fgjWPGmkzs7" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://bootswatch.com/paper/bootstrap.css" crossorigin="anonymous">
     <style>
         body {
             padding: 10px;
+        }
+
+        .modal-lg {
+            width: 95%;
+        }
+
+        .highlight {
+            background-color: yellow;
         }
     </style>
 </head>
@@ -27,93 +37,157 @@
 </h2>
 
 <!-- Pass/Fail counts -->
-<table class="table">
-    <tr>
-        <td class="success" ng-if="ctrl.passCount()" data-toggle="tooltip" title="Passed: {{ctrl.passCount()}} {{str = (ctrl.failCount() ? '' : '(no failures!)'); str}}" style="border: 0; width: {{ctrl.passCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"> </td>
-        <td class="warning" ng-if="ctrl.pendingCount()" data-toggle="tooltip" title="Pending: {{ctrl.pendingCount()}}" style="border: 0; width: {{ctrl.pendingCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"> </td>
-        <td class="danger" ng-if="ctrl.failCount()" data-toggle="tooltip" title="Failed: {{ctrl.failCount()}}" style="border: 0"> </td>
-    </tr>
-</table>
+<div class="progress progress-striped" style="height: 30px;">
+    <div class="progress-bar progress-bar-success" ng-if="ctrl.passCount()" data-toggle="tooltip"
+         title="Passed: {{ctrl.passCount()}} {{str = (ctrl.failCount() ? '' : '(no failures!)'); str}}"
+         style="width: {{ctrl.passCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"></div>
+    <div class="progress-bar progress-bar-warning" ng-if="ctrl.pendingCount()" data-toggle="tooltip"
+         title="Pending: {{ctrl.pendingCount()}}"
+         style="width: {{ctrl.pendingCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"></div>
+    <div class="progress-bar progress-bar-danger" ng-if="ctrl.failCount()" data-toggle="tooltip"
+         title="Failed: {{ctrl.failCount()}}"
+         style="width: {{ctrl.failCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"></div>
+</div>
+
+<label>Search: <input ng-model="searchSettings.description"></label>
+<div class="pull-right">
+    <button class="btn btn-default" ng-click="ctrl.chooseAllTypes()">ALL</button>
+    <button class="btn btn-default" ng-class="{active: searchSettings.passed}"
+            ng-click="searchSettings.passed = !searchSettings.passed">PASSED
+    </button>
+    <button class="btn btn-default" ng-class="{active: searchSettings.failed}"
+            ng-click="searchSettings.failed = !searchSettings.failed">FAILED
+    </button>
+    <button class="btn btn-default" ng-class="{active: searchSettings.pending}"
+            ng-click="searchSettings.pending = !searchSettings.pending">PENDING
+    </button>
+    <button class="btn btn-default" ng-class="{active: inlineScreenshots}"
+            ng-click="inlineScreenshots = !inlineScreenshots">INLINE SCREENSHOT
+    </button>
+    <br><br>
+</div>
 
 <!-- Test Results Table -->
 <table class="table">
     <thead>
-        <tr class="active">
-            <th>Description</th>
-            <th>Passed</th>
-            <th ng-show="moreDetails">Browser</th>
-            <th ng-show="moreDetails">Session ID</th>
-            <th ng-show="moreDetails">OS</th>
-            <th>Message</th>
-            <th></th>
-            <th>Screenshot</th>
-        </tr>
+    <tr class="active">
+        <th style="padding-left: 40px;">Description</th>
+        <th>Passed</th>
+        <th ng-show="moreDetails">Browser</th>
+        <th ng-show="moreDetails">Session ID</th>
+        <th ng-show="moreDetails">OS</th>
+        <th>Message</th>
+        <th></th>
+        <th>Screenshot</th>
+    </tr>
     </thead>
-    <tbody ng-repeat="result in ctrl.results">
-        <!-- Test Spec Header -->
-        <tr ng-if="ctrl.currentParent != ctrl.getParent(result.description)">
-            <th class="suiteName" colspan="7">{{ctrl.currentParent = ctrl.getParent(result.description)}}</th>
-        </tr>
+    <tbody ng-repeat="result in ctrl.results | bySearchSettings:searchSettings">
+    <!-- Test Spec Header -->
+    <tr ng-if="ctrl.currentParent != ctrl.getParent(result.description)">
+        <th ng-if="ctrl.currentParent != ctrl.getParent(result.description)" class="suiteName" colspan="7"
+            style="padding-top: 40px;">
+            {{ctrl.currentParent = ctrl.getParent(result.description)}}
+        </th>
+    </tr>
 
-        <tr ng-class="{danger: !result.passed && !result.pending, warning: result.pending}">
-            <td>{{ctrl.getShortDescription(result.description)}}</td>
-            <td>{{result.passed}}</td>
-            <td ng-show="moreDetails">{{result.browser.name}} {{result.browser.version}}</td>
-            <td ng-show="moreDetails">{{result.sessionId}}</td>
-            <td ng-show="moreDetails">{{result.os}}</td>
-            <td>{{result.message}}</td>
-            <td>
-                <!-- Show stacktrace if failure -->
-                <div ng-if="!result.passed && !result.pending">
-                    <button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}">View Stack Trace</button>
-                    <!-- Stacktrace Modal -->
-                    <div class="modal fade" id="modal{{$index}}" tabindex="-1" role="dialog" aria-labelledby="modalLabel{{$index}}">
-                        <div class="modal-dialog modal-lg" role="document">
-                            <div class="modal-content">
-                                <div class="modal-header">
-                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                    <h4 class="modal-title" id="modalLabel{{$index}}">Stack Trace: {{ctrl.getShortDescription(result.description)}}</h4>
-                                </div>
-                                <div class="modal-body">
-                                    <pre>{{result.trace}}</pre>
-                                </div>
-                                <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </td>
-            <td>
-              <div ng-if="!result.pending">
-                <button class="btn btn-default" data-toggle="modal" data-target="#imageModal{{$index}}">View Screenshot</button>
-                <!-- Screenshot Modal -->
-                <div class="modal fade" id="imageModal{{$index}}" tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{$index}}">
+    <tr ng-class="{danger: !result.passed && !result.pending, warning: result.pending}">
+        <td style="padding-left: 40px;">{{ctrl.getShortDescription(result.description)}}</td>
+        <td ng-if="result.passed && !result.pending">
+            <button class="btn btn-success disabled" style="min-width: 100%;">PASSED</button>
+        </td>
+        <td ng-if="!result.passed && !result.pending">
+            <button class="btn btn-danger disabled" style="min-width: 100%;">FAILED</button>
+        </td>
+        <td ng-if="result.pending">
+            <button class="btn btn-warning disabled" style="min-width: 100%;">PENDING</button>
+        </td>
+        <td ng-show="moreDetails">{{result.browser.name}} {{result.browser.version}}</td>
+        <td ng-show="moreDetails">{{result.sessionId}}</td>
+        <td ng-show="moreDetails">{{result.os}}</td>
+        <td>{{result.message}}</td>
+        <td>
+            <!-- Show stacktrace if failure -->
+            <div ng-if="!result.passed && !result.pending">
+                <button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}">Stack Trace</button>
+                <!-- Stacktrace Modal -->
+                <div class="modal" id="modal{{$index}}" tabindex="-1" role="dialog"
+                     aria-labelledby="modalLabel{{$index}}">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                                <h4 class="modal-title" id="imageModalLabel{{$index}}">Screenshot: {{ctrl.getParent(result.description)}} {{ctrl.getShortDescription(result.description)}}</h4>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h6 class="modal-title" id="imageModalLabel{{$index}}">
+                                    {{ctrl.getParent(result.description)}}</h6>
+                                <h5 class="modal-title" id="imageModalLabel{{$index}}">
+                                    {{ctrl.getShortDescription(result.description)}}</h5>
                             </div>
                             <div class="modal-body">
-                                <img style="width: 100%" ng-src="{{ctrl.getFilename(result.screenShotFile)}}">
+                                <pre>
+                                    <div ng-class="{'highlight': (result.suspectedLine && line === result.suspectedLine) }" ng-repeat="line in result.trace.split('\n')">{{line}}</div>
+                                </pre>
                             </div>
                             <div class="modal-footer">
-                                <a class="btn btn-primary" href="{{ctrl.getFilename(result.screenShotFile)}}" target="_blank">Open Image in New Tab <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span></a>
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
                         </div>
                     </div>
                 </div>
-              </div>
-            </td>
-        </tr>
+            </div>
+        </td>
+        <td style="max-width: 300px">
+            <div ng-if="!result.pending">
+                <button ng-if="!inlineScreenshots" class="btn btn-default" data-toggle="modal"
+                        data-target="#imageModal{{$index}}">Screenshot
+                </button>
+                <a href="" ng-if="inlineScreenshots" data-toggle="modal" data-target="#imageModal{{$index}}"><img
+                        src="{{ctrl.getFilename(result.screenShotFile)}}" style="max-width: 100%"/></a>
+                <!-- Screenshot Modal -->
+                <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
+                     aria-labelledby="imageModalLabel{{$index}}">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h6 class="modal-title" id="imageModalLabel{{$index}}">
+                                    {{ctrl.getParent(result.description)}}</h6>
+                                <h5 class="modal-title" id="imageModalLabel{{$index}}">
+                                    {{ctrl.getShortDescription(result.description)}}</h5>
+                            </div>
+                            <div class="modal-body">
+                                <img style="width: 100%" ng-src="{{ctrl.getFilename(result.screenShotFile)}}">
+                            </div>
+                            <div class="modal-footer">
+                                <div class="pull-left">
+                                    <button ng-disabled="!($index > 0)" class="btn btn-default" data-dismiss="modal"
+                                            data-toggle="modal" data-target="#imageModal{{$index - 1}}">
+                                        Prev
+                                    </button>
+                                    <button ng-disabled="!($index < ctrl.results.length - 1)" class="btn btn-default"
+                                            data-dismiss="modal" data-toggle="modal"
+                                            data-target="#imageModal{{$index + 1}}">
+                                        Next
+                                    </button>
+                                </div>
+                                <a class="btn btn-primary" href="{{ctrl.getFilename(result.screenShotFile)}}"
+                                   target="_blank">Open Image in New Tab <span class="glyphicon glyphicon-new-window"
+                                                                               aria-hidden="true"></span></a>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
     </tbody>
 </table>
 {{ctrl.currentParent = "";""}}
 <script>
-    $(document).ready(function(){
+    $(document).ready(function () {
         $('[data-toggle="tooltip"]').tooltip();
     });
 </script>

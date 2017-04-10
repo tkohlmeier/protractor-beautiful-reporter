@@ -59,6 +59,7 @@ function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
 			if(failedItem){
 				metaData.message = failedItem.message || 'Failed';
 				metaData.trace = failedItem.trace? (failedItem.trace.stack || 'No Stack trace information') : 'No Stack trace information';
+				metaData.suspectedLine = getSuspectedLine(metaData.trace);
 			}
 
 		}else{
@@ -69,6 +70,16 @@ function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
 	}
 
 	return metaData;
+}
+
+function getSuspectedLine(stackTrace) {
+    var stackTraceArray = stackTrace.split('\n');
+	for (var lineNumber = 0; lineNumber < stackTraceArray.length; lineNumber++) {
+		var currentLine = stackTraceArray[lineNumber];
+		if (currentLine.indexOf('Error:') === -1 && currentLine.indexOf('node_modules') === -1) {
+			return currentLine;
+		}
+	}
 }
 
 function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
