@@ -59,7 +59,6 @@ function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
 			if(failedItem){
 				metaData.message = failedItem.message || 'Failed';
 				metaData.trace = failedItem.trace? (failedItem.trace.stack || 'No Stack trace information') : 'No Stack trace information';
-				metaData.suspectedLine = getSuspectedLine(metaData.trace);
 			}
 
 		}else{
@@ -72,15 +71,6 @@ function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
 	return metaData;
 }
 
-function getSuspectedLine(stackTrace) {
-    var stackTraceArray = stackTrace.split('\n');
-	for (var lineNumber = 0; lineNumber < stackTraceArray.length; lineNumber++) {
-		var currentLine = stackTraceArray[lineNumber];
-		if (currentLine.indexOf('Error:') === -1 && currentLine.indexOf('node_modules') === -1) {
-			return currentLine;
-		}
-	}
-}
 
 function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
 	var metaData = {
@@ -98,13 +88,11 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
 	if(results.status == 'passed') {
 		metaData.message = (results.passedExpectations[0] || {}).message || 'Passed';
 		metaData.trace = (results.passedExpectations[0] || {}).stack;
-        metaData.suspectedLine = getSuspectedLine(metaData.trace);
 	} else if(results.status == 'pending') {
 		metaData.message = results.pendingReason || 'Pending';
 	} else {
 		metaData.message = (results.failedExpectations[0] || {}).message || 'Failed';
 		metaData.trace = (results.failedExpectations[0] || {}).stack || 'No Stack trace information';
-        metaData.suspectedLine = getSuspectedLine(metaData.trace);
 	}
 
 	return metaData;

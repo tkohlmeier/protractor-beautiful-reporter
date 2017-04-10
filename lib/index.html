@@ -125,7 +125,7 @@
                             </div>
                             <div class="modal-body">
                                 <pre>
-                                    <div ng-class="{'highlight': (result.suspectedLine && line === result.suspectedLine) }" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div>
+                                    <div ng-class="{'highlight': (ctrl.checkIfSuspectedLine(line)) }" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div>
                                 </pre>
                             </div>
                             <div class="modal-footer">

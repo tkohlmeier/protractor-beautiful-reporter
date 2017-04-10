@@ -1,4 +1,7 @@
 # Changelog
+## Version 0.2.2
+* Moved suspectedLine logic to Frontend
+
 ## Version 0.2.1
 * Added missing suspectedLine to Jasmine2
 
