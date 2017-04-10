@@ -4,6 +4,14 @@ This is built on top of [protractor-angular-screenshot-reporter](https://github.
 
 `protractor-beautiful-reporter` still generates a HTML report, but it is Angular-based and improves on the original formatting.
 
+## Features
+* Stack Trace (with suspected line highlight)
+* Screenshot
+* Screenshot only on failed spec
+* Fuzzy Search
+* Filters (can display only Passed/Failed/Pending)
+* Inline Screenshots
+* Details (Browser/Session ID/OS)
 
 ## Usage
 The `protractor-beautiful-reporter` module is available via npm:
@@ -176,20 +184,27 @@ Upon running Protractor tests with the above config, the screenshot reporter wil
 
 In addition, a small HTML/Angular app is copied to the output directory, which cleanly lists the test results, any errors (with stacktraces), and screenshots.
 
-
-![HTML / Angular Test Report](https://raw.githubusercontent.com/bcole/protractor-angular-screenshot-reporter/master/images/testreporter.png "test report")
+![HTML / Angular Test Report](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/html-report.png "test report")
 
 Click More Details to see more information about the test runs.
 
-![Click More Details](https://raw.githubusercontent.com/bcole/protractor-angular-screenshot-reporter/master/images/moredetail.png "more detail")
+![Click More Details](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/more-details.png "more detail")
 
-Click View Stacktrace to see details of the error (if the test failed).
+Use Search Input Field to narrow down test list.
 
-![View Stacktrace](https://raw.githubusercontent.com/bcole/protractor-angular-screenshot-reporter/master/images/stacktrace.png "view stacktrace")
+![View Search](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/search.png "view search")
+
+Click View Stacktrace to see details of the error (if the test failed). Suspected line is highlighted.
+
+![View Stacktrace](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/stack-highlight.png "view stacktrace")
 
 Click View Screenshot to see an image of the webpage at the end of the test.
 
-![View Screenshot](https://raw.githubusercontent.com/bcole/protractor-angular-screenshot-reporter/master/images/screenshot.png "view screenshot")
+![View Inline Screenshot](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/screenshot.png "view inline screenshot")
+
+Click Inline Screenshots to see an inline screenshots in HTML report.
+
+![View Inline Screenshot](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/inline-screenshot.png "view inline screenshot")
 
 Please see the `examples` folder for sample usage. 
 
