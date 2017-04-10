@@ -1,4 +1,7 @@
 # Changelog
+## Version 0.2.1
+* Added missing suspectedLine to Jasmine2
+
 ## Version 0.2.0
 * Stack Trace (added suspected line highlight)
 * Added Prev/Next buttons for Screenshots
