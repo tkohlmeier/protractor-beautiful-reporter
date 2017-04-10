@@ -1,23 +1,23 @@
 # Angularized HTML Reporter with Screenshots for Protractor
 
-This is built on top of [protractor-html-screenshot-reporter](https://github.com/jintoppy/protractor-html-screenshot-reporter), which is built on top of [protractor-screenshot-reporter](https://github.com/swissmanu/protractor-screenshot-reporter).
+This is built on top of [protractor-angular-screenshot-reporter](https://github.com/bcole/protractor-angular-screenshot-reporter), which is built on top of [protractor-html-screenshot-reporter](https://github.com/jintoppy/protractor-html-screenshot-reporter), which is built on top of [protractor-screenshot-reporter](https://github.com/swissmanu/protractor-screenshot-reporter).
 
-`protractor-angular-screenshot-reporter` still generates a HTML report, but it is Angular-based and improves on the original formatting.
+`protractor-beautiful-reporter` still generates a HTML report, but it is Angular-based and improves on the original formatting.
 
 
 ## Usage
-The `protractor-angular-screenshot-reporter` module is available via npm:
+The `protractor-beautiful-reporter` module is available via npm:
 
 ```bash
-$ npm install protractor-angular-screenshot-reporter --save-dev
+$ npm install protractor-beautiful-reporter --save-dev
 ```
 
-In your Protractor configuration file, register `protractor-angular-screenshot-reporter` in Jasmine.
+In your Protractor configuration file, register `protractor-beautiful-reporter` in Jasmine.
 
 #### Jasmine 1.x:
 
 ```javascript
-var HtmlReporter = require('protractor-angular-screenshot-reporter');
+var HtmlReporter = require('protractor-beautiful-reporter');
 
 exports.config = {
    // your config here ...
@@ -32,10 +32,10 @@ exports.config = {
 ```
 
 #### Jasmine 2.x:
-Jasmine 2.x introduced changes to reporting that are not backwards compatible.  To use `protractor-angular-screenshot-reporter` with Jasmine 2, please make sure to use the **`getJasmine2Reporter()`** compatibility method introduced in `protractor-angular-screenshot-reporter@0.1.0`.
+Jasmine 2.x introduced changes to reporting that are not backwards compatible.  To use `protractor-beautiful-reporter` with Jasmine 2, please make sure to use the **`getJasmine2Reporter()`** compatibility method introduced in `protractor-beautiful-reporter@0.1.0`.
 
 ```javascript
-var HtmlReporter = require('protractor-angular-screenshot-reporter');
+var HtmlReporter = require('protractor-beautiful-reporter');
 
 exports.config = {
    // your config here ...
@@ -203,17 +203,9 @@ $ protractor protractor.conf.js
 
 After the test run, you can see that, a screenshots folder will be created with all the reports generated. 
 
-## Changelog
-### v0.1.0
-Support for Jasmine 2.x.
-Updating `protractor-angular-screenshot-reporter` to conform to the new custom_reporter.js format introduced by Jasmine 2.x, via compatibility method `getJasmine2Reporter`.  More details on this format can be found at: http://jasmine.github.io/2.1/custom_reporter.html
-
-### v0.0.x
-Support for Jasmine 1.x.
-
 
 ## License
-Copyright (c) 2015 Brandon Cole <333qaz333@gmail.com>
+Copyright (c) 2015 Marcin Cierpicki <zycienawalizkach@gmail.com>
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
