@@ -138,10 +138,10 @@
         </td>
         <td style="max-width: 300px">
             <div ng-if="!result.pending">
-                <button ng-if="!inlineScreenshots" class="btn btn-default" data-toggle="modal"
+                <button ng-if="!inlineScreenshots && result.screenShotFile" class="btn btn-default" data-toggle="modal"
                         data-target="#imageModal{{$index}}">Screenshot
                 </button>
-                <a href="" ng-if="inlineScreenshots" data-toggle="modal" data-target="#imageModal{{$index}}">
+                <a href="" ng-if="inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
                     <img src="{{result.screenShotFile}}" style="max-width: 100%"/></a>
                 <!-- Screenshot Modal -->
                 <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"

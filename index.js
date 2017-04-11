@@ -240,7 +240,10 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
 						directory = path.dirname(screenShotPath),
 						jsonsDirectory = path.dirname(jsonPartsPath);
 
-                    metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
+                    if(!(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
+                        metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
+                    }
+
                     mkdirp(directory, function(err) {
                         if(err) {
                             throw new Error('Could not create directory ' + directory);
@@ -315,7 +318,10 @@ ScreenshotReporter.prototype.reportSpecResults =
                     directory = path.dirname(screenShotPath),
                 	jsonsDirectory = path.dirname(jsonPartsPath);
 
-                metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
+                if(!(self.takeScreenShotsOnlyForFailedSpecs && results.passed())) {
+                    metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
+                }
+
                 mkdirp(directory, function(err) {
                     if(err) {
                         throw new Error('Could not create directory ' + directory);
