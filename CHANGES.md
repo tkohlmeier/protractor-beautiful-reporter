@@ -1,4 +1,7 @@
 # Changelog
+## Version 0.2.3
+* Added optional screenshotsSubfolder and jsonsSubfolder
+
 ## Version 0.2.2
 * Moved suspectedLine logic to Frontend
 
