@@ -1,7 +1,7 @@
-var util = require('./lib/util')
-	, mkdirp = require('mkdirp')
-	, _ = require('underscore')
-	, path = require('path');
+var util = require('./lib/util'),
+    mkdirp = require('mkdirp'),
+    _ = require('underscore'),
+    path = require('path');
 
 /** Function: defaultPathBuilder
  * This function builds paths for a screenshot file. It is appended to the
@@ -20,7 +20,7 @@ var util = require('./lib/util')
  *     (String) containing the built path
  */
 function defaultPathBuilder(spec, descriptions, results, capabilities) {
-	return util.generateGuid();
+    return util.generateGuid();
 }
 
 /** Function: defaultMetaDataBuilder
@@ -41,61 +41,61 @@ function defaultPathBuilder(spec, descriptions, results, capabilities) {
  *     (Object) containing meta data to store along with a screenshot
  */
 function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
-	var metaData = {
-		description: descriptions.join(' ')
-		, passed: results.passed()
-		, os: capabilities.caps_.platform
-		, sessionId: capabilities.caps_['webdriver.remote.sessionid']
-		, browser: {
-			name: capabilities.caps_.browserName
-			, version: capabilities.caps_.version
-		}
-	};
+    var metaData = {
+        description: descriptions.join(' '),
+        passed: results.passed(),
+        os: capabilities.caps_.platform,
+        sessionId: capabilities.caps_['webdriver.remote.sessionid'],
+        browser: {
+            name: capabilities.caps_.browserName,
+            version: capabilities.caps_.version
+        }
+    };
 
-	if(results.items_.length > 0) {
-		var result = results.items_[0];
-		if(!results.passed()){
-			var failedItem = _.where(results.items_,{passed_: false})[0];
-			if(failedItem){
-				metaData.message = failedItem.message || 'Failed';
-				metaData.trace = failedItem.trace? (failedItem.trace.stack || 'No Stack trace information') : 'No Stack trace information';
-			}
+    if(results.items_.length > 0) {
+        var result = results.items_[0];
+        if(!results.passed()){
+            var failedItem = _.where(results.items_,{passed_: false})[0];
+            if(failedItem){
+                metaData.message = failedItem.message || 'Failed';
+                metaData.trace = failedItem.trace? (failedItem.trace.stack || 'No Stack trace information') : 'No Stack trace information';
+            }
 
-		}else{
-			metaData.message = result.message || 'Passed';
-			metaData.trace = result.trace.stack;
-		}
+        }else{
+            metaData.message = result.message || 'Passed';
+            metaData.trace = result.trace.stack;
+        }
 
-	}
+    }
 
-	return metaData;
+    return metaData;
 }
 
 
 function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
-	var metaData = {
-		description: descriptions.join(' ')
-		, passed: results.status == 'passed'
-		, pending: results.status == 'pending'
-		, os: capabilities.get('platform')
-		, sessionId: capabilities.get('webdriver.remote.sessionid')
-		, browser: {
-			name: capabilities.get('browserName')
-			, version: capabilities.get('version')
-		}
-	};
+    var metaData = {
+        description: descriptions.join(' '),
+        passed: results.status === 'passed',
+        pending: results.status === 'pending',
+        os: capabilities.get('platform'),
+        sessionId: capabilities.get('webdriver.remote.sessionid'),
+        browser: {
+            name: capabilities.get('browserName'),
+            version: capabilities.get('version')
+        }
+    };
 
-	if(results.status == 'passed') {
-		metaData.message = (results.passedExpectations[0] || {}).message || 'Passed';
-		metaData.trace = (results.passedExpectations[0] || {}).stack;
-	} else if(results.status == 'pending') {
-		metaData.message = results.pendingReason || 'Pending';
-	} else {
-		metaData.message = (results.failedExpectations[0] || {}).message || 'Failed';
-		metaData.trace = (results.failedExpectations[0] || {}).stack || 'No Stack trace information';
-	}
+    if(results.status === 'passed') {
+        metaData.message = (results.passedExpectations[0] || {}).message || 'Passed';
+        metaData.trace = (results.passedExpectations[0] || {}).stack;
+    } else if(results.status === 'pending') {
+        metaData.message = results.pendingReason || 'Pending';
+    } else {
+        metaData.message = (results.failedExpectations[0] || {}).message || 'Failed';
+        metaData.trace = (results.failedExpectations[0] || {}).stack || 'No Stack trace information';
+    }
 
-	return metaData;
+    return metaData;
 }
 
 
@@ -122,44 +122,57 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
  *                                                Optional (default: false).
  */
 function ScreenshotReporter(options) {
-	options = options || {};
-	if(!options.baseDirectory || options.baseDirectory.length === 0) {
-		throw new Error('Please pass a valid base directory to store the ' +
-			'screenshots into.');
-	} else {
-		this.baseDirectory = options.baseDirectory;
-	}
+    options = options || {};
+    if(!options.baseDirectory || options.baseDirectory.length === 0) {
+        throw new Error('Please pass a valid base directory to store the ' +
+            'screenshots into.');
+    } else {
+        this.baseDirectory = options.baseDirectory;
+    }
 
-	if(typeof (options.cssOverrideFile) !== 'undefined' && _.isString(options.cssOverrideFile) ){
-		this.cssOverrideFile = options.cssOverrideFile;
-	} else {
-		this.cssOverrideFile = null;
-	}
+    if(typeof (options.cssOverrideFile) !== 'undefined' && _.isString(options.cssOverrideFile) ){
+        this.cssOverrideFile = options.cssOverrideFile;
+    } else {
+        this.cssOverrideFile = null;
+    }
 
-	this.pathBuilder = options.pathBuilder || defaultPathBuilder;
-	this.docTitle = options.docTitle || 'Generated test report';
-	this.docName = options.docName || 'report.html';
-	this.metaDataBuilder = options.metaDataBuilder || defaultMetaDataBuilder;
-	this.jasmine2MetaDataBuilder = options.jasmine2MetaDataBuilder || jasmine2MetaDataBuilder;
-	this.preserveDirectory = typeof options.preserveDirectory !== 'undefined' ? options.preserveDirectory : true;
-	this.takeScreenShotsForSkippedSpecs =
-		options.takeScreenShotsForSkippedSpecs || false;
-		this.takeScreenShotsOnlyForFailedSpecs =
- 		options.takeScreenShotsOnlyForFailedSpecs || false;
- 	this.finalOptions = {
- 		takeScreenShotsOnlyForFailedSpecs: this.takeScreenShotsOnlyForFailedSpecs,
- 		takeScreenShotsForSkippedSpecs: this.takeScreenShotsForSkippedSpecs,
- 		metaDataBuilder: this.metaDataBuilder,
- 		pathBuilder: this.pathBuilder,
- 		baseDirectory: this.baseDirectory,
- 		docTitle: this.docTitle,
- 		docName: this.docName,
- 		cssOverrideFile: this.cssOverrideFile
- 	};
+    if(typeof (options.screenshotsSubfolder) !== 'undefined' &&  _.isString(options.screenshotsSubfolder) ){
+        this.screenshotsSubfolder = options.screenshotsSubfolder;
+    } else {
+        this.screenshotsSubfolder = '';
+    }
 
- 	if(!this.preserveDirectory){
- 		util.removeDirectory(this.finalOptions.baseDirectory);
- 	}
+    if(typeof (options.jsonsSubfolder) !== 'undefined' &&  _.isString(options.jsonsSubfolder) ){
+        this.jsonsSubfolder = options.jsonsSubfolder;
+    } else {
+        this.jsonsSubfolder = '';
+    }
+
+    this.pathBuilder = options.pathBuilder || defaultPathBuilder;
+    this.docTitle = options.docTitle || 'Generated test report';
+    this.docName = options.docName || 'report.html';
+    this.metaDataBuilder = options.metaDataBuilder || defaultMetaDataBuilder;
+    this.jasmine2MetaDataBuilder = options.jasmine2MetaDataBuilder || jasmine2MetaDataBuilder;
+    this.preserveDirectory = typeof options.preserveDirectory !== 'undefined' ? options.preserveDirectory : true;
+    this.takeScreenShotsForSkippedSpecs =
+        options.takeScreenShotsForSkippedSpecs || false;
+    this.takeScreenShotsOnlyForFailedSpecs =
+        options.takeScreenShotsOnlyForFailedSpecs || false;
+    this.finalOptions = {
+        takeScreenShotsOnlyForFailedSpecs: this.takeScreenShotsOnlyForFailedSpecs,
+        takeScreenShotsForSkippedSpecs: this.takeScreenShotsForSkippedSpecs,
+        metaDataBuilder: this.metaDataBuilder,
+        pathBuilder: this.pathBuilder,
+        baseDirectory: this.baseDirectory,
+        screenshotsSubfolder: this.screenshotsSubfolder,
+        docTitle: this.docTitle,
+        docName: this.docName,
+        cssOverrideFile: this.cssOverrideFile
+    };
+
+    if(!this.preserveDirectory){
+        util.removeDirectory(this.finalOptions.baseDirectory);
+    }
 }
 
 /**
@@ -167,78 +180,90 @@ function ScreenshotReporter(options) {
  * http://jasmine.github.io/2.1/custom_reporter.html
  */
 ScreenshotReporter.prototype.getJasmine2Reporter = function() {
-	var self = this;
+    var self = this;
 
-	return {
-		suiteNames: [],
-		suiteStarted: function(result){
-			this.suiteNames.push(result.description);
-		},
-		suiteDone: function(result){
-			this.suiteNames.pop();
-		},
-		specDone: function(result) {
-			if(!self.takeScreenShotsForSkippedSpecs && result.status == 'disabled') {
-				return;
-			}
+    return {
+        suiteNames: [],
+        suiteStarted: function(result){
+            this.suiteNames.push(result.description);
+        },
+        suiteDone: function(result){
+            this.suiteNames.pop();
+        },
+        specDone: function(result) {
+            if(!self.takeScreenShotsForSkippedSpecs && result.status == 'disabled') {
+                return;
+            }
 
-			// Enabling backwards-compat.  Construct Jasmine v1 style spec.suite.
-			function buildSuite(suiteNames, i) {
-				if(i<0) return null;
-				return {
-					description: suiteNames[i],
-					parentSuite: buildSuite(suiteNames, i-1)
-				}
-			}
+            // Enabling backwards-compat.  Construct Jasmine v1 style spec.suite.
+            function buildSuite(suiteNames, i) {
+                if(i<0) {return null;}
+                return {
+                    description: suiteNames[i],
+                    parentSuite: buildSuite(suiteNames, i-1)
+                };
+            }
 
-			var suite = buildSuite(this.suiteNames, this.suiteNames.length-1);
+            var suite = buildSuite(this.suiteNames, this.suiteNames.length-1);
 
-			browser.takeScreenshot().then(function (png) {
-				browser.getCapabilities().then(function (capabilities) {
-					var descriptions = util.gatherDescriptions(
-							suite
-							, [result.description]
-						)
+            browser.takeScreenshot().then(function (png) {
+                browser.getCapabilities().then(function (capabilities) {
+                    var descriptions = util.gatherDescriptions(
+							suite,
+							[result.description]
+                        ),
 
-						, baseName = self.pathBuilder(
-							null
-							, descriptions
-							, result
-							, capabilities
-						)
-						, metaData = self.jasmine2MetaDataBuilder(
-							null
-							, descriptions
-							, result
-							, capabilities
-						)
+                        baseName = self.pathBuilder(
+                            null,
+                            descriptions,
+                            result,
+                            capabilities
+                        ),
 
-						, screenShotFile = baseName + '.png'
-						, metaFile = baseName + '.json'
-						, screenShotPath = path.join(self.baseDirectory, screenShotFile)
-						, metaDataPath = path.join(self.baseDirectory, metaFile)
+                        metaData = self.jasmine2MetaDataBuilder(
+                            null,
+                            descriptions,
+                            result,
+                            capabilities
+                        ),
 
-					// pathBuilder can return a subfoldered path too. So extract the
-					// directory path without the baseName
-						, directory = path.dirname(screenShotPath);
+                        screenShotFileName = path.basename(baseName + '.png'),
+                        screenShotFilePath = path.join(path.dirname(baseName + '.png'), self.screenshotsSubfolder),
 
-					metaData.screenShotFile = screenShotFile;
-					mkdirp(directory, function(err) {
-						if(err) {
-							throw new Error('Could not create directory ' + directory);
-						} else {
-							util.addMetaData(metaData, metaDataPath, descriptions, self.finalOptions);
-							if(!(self.takeScreenShotsOnlyForFailedSpecs && result.status == 'passed')) {
-								util.storeScreenShot(png, screenShotPath);
-							}
-							util.storeMetaData(metaData, metaDataPath);
-						}
-					});
-					require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
-				});
-			});
-		}
-	};
+                        metaFile = baseName + '.json',
+                        screenShotPath = path.join(self.baseDirectory, screenShotFilePath, screenShotFileName),
+                        metaDataPath = path.join(self.baseDirectory, metaFile),
+                        jsonPartsPath = path.join(self.baseDirectory, path.dirname(metaFile), self.jsonsSubfolder, path.basename(metaFile)),
+
+                        // pathBuilder can return a subfoldered path too. So extract the
+                        // directory path without the baseName
+						directory = path.dirname(screenShotPath),
+						jsonsDirectory = path.dirname(jsonPartsPath);
+
+                    metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
+                    mkdirp(directory, function(err) {
+                        if(err) {
+                            throw new Error('Could not create directory ' + directory);
+                        } else {
+                            util.addMetaData(metaData, metaDataPath, descriptions, self.finalOptions);
+                            if(!(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
+                                util.storeScreenShot(png, screenShotPath);
+                            }
+                        }
+                    });
+
+                    mkdirp(jsonsDirectory, function(err) {
+                        if(err) {
+                            throw new Error('Could not create directory ' + jsonsDirectory);
+                        } else {
+                            util.storeMetaData(metaData, jsonPartsPath);
+                        }
+                    });
+                    require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
+                });
+            });
+        }
+    };
 };
 
 /** Function: reportSpecResults
@@ -249,60 +274,70 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
  *     (Object) spec - The test spec to report.
  */
 ScreenshotReporter.prototype.reportSpecResults =
-function reportSpecResults(spec) {
-	/* global browser */
-	var self = this
-		, results = spec.results();
+    function reportSpecResults(spec) {
+		/* global browser */
+        var self = this,
+            results = spec.results();
 
-	if(!self.takeScreenShotsForSkippedSpecs && results.skipped) {
-		return;
-	}
+        if(!self.takeScreenShotsForSkippedSpecs && results.skipped) {
+            return;
+        }
 
-	browser.takeScreenshot().then(function (png) {
-		browser.getCapabilities().then(function (capabilities) {
-			var descriptions = util.gatherDescriptions(
-					spec.suite
-					, [spec.description]
-				)
+        browser.takeScreenshot().then(function (png) {
+            browser.getCapabilities().then(function (capabilities) {
+                var descriptions = util.gatherDescriptions (
+						spec.suite,
+						[spec.description]
+                    ),
+                    baseName = self.pathBuilder (
+                        spec,
+                        descriptions,
+                        results,
+                        capabilities
+                    ),
 
-				, baseName = self.pathBuilder(
-					spec
-					, descriptions
-					, results
-					, capabilities
-				)
-				, metaData = self.metaDataBuilder(
-					spec
-					, descriptions
-					, results
-					, capabilities
-				)
+					metaData = self.metaDataBuilder (
+						spec,
+						descriptions,
+						results,
+						capabilities
+                    ),
+                    screenShotFileName = path.basename(baseName + '.png'),
+                    screenShotFilePath = path.join(path.dirname(baseName + '.png'), self.screenshotsSubfolder),
 
-				, screenShotFile = baseName + '.png'
-				, metaFile = baseName + '.json'
-				, screenShotPath = path.join(self.baseDirectory, screenShotFile)
-				, metaDataPath = path.join(self.baseDirectory, metaFile)
+                    metaFile = baseName + '.json',
+                    screenShotPath = path.join(self.baseDirectory, screenShotFilePath, screenShotFileName),
+                    metaDataPath = path.join(self.baseDirectory, metaFile),
+                    jsonPartsPath = path.join(self.baseDirectory, path.dirname(metaFile), self.jsonsSubfolder, path.basename(metaFile)),
 
-				// pathBuilder can return a subfoldered path too. So extract the
-				// directory path without the baseName
-				, directory = path.dirname(screenShotPath);
+                    // pathBuilder can return a subfoldered path too. So extract the
+                    // directory path without the baseName
+                    directory = path.dirname(screenShotPath),
+                	jsonsDirectory = path.dirname(jsonPartsPath);
 
-			metaData.screenShotFile = screenShotFile;
-			mkdirp(directory, function(err) {
-				if(err) {
-					throw new Error('Could not create directory ' + directory);
-				} else {
-					util.addMetaData(metaData, metaDataPath, descriptions, self.finalOptions);
-					if(!(self.takeScreenShotsOnlyForFailedSpecs && results.passed())) {
-						util.storeScreenShot(png, screenShotPath);
-					}
-					util.storeMetaData(metaData, metaDataPath);
-				}
-			});
-			require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
-		});
-	});
+                metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
+                mkdirp(directory, function(err) {
+                    if(err) {
+                        throw new Error('Could not create directory ' + directory);
+                    } else {
+                        util.addMetaData(metaData, metaDataPath, descriptions, self.finalOptions);
+                        if(!(self.takeScreenShotsOnlyForFailedSpecs && results.passed())) {
+                            util.storeScreenShot(png, screenShotPath);
+                        }
+                    }
+                });
 
-};
+                mkdirp(jsonsDirectory, function(err) {
+                    if(err) {
+                        throw new Error('Could not create directory ' + jsonsDirectory);
+                    } else {
+                        util.storeMetaData(metaData, jsonPartsPath);
+                    }
+                });
+                require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
+            });
+        });
+
+    };
 
 module.exports = ScreenshotReporter;

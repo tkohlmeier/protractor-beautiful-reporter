@@ -1,8 +1,6 @@
 # Angularized HTML Reporter with Screenshots for Protractor
 
-This is built on top of [protractor-angular-screenshot-reporter](https://github.com/bcole/protractor-angular-screenshot-reporter), which is built on top of [protractor-html-screenshot-reporter](https://github.com/jintoppy/protractor-html-screenshot-reporter), which is built on top of [protractor-screenshot-reporter](https://github.com/swissmanu/protractor-screenshot-reporter).
-
-`protractor-beautiful-reporter` still generates a HTML report, but it is Angular-based and improves on the original formatting.
+![HTML / Angular Test Report](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/html-report.png "test report")
 
 ## Features
 * Stack Trace (with suspected line highlight)
@@ -12,6 +10,13 @@ This is built on top of [protractor-angular-screenshot-reporter](https://github.
 * Filters (can display only Passed/Failed/Pending)
 * Inline Screenshots
 * Details (Browser/Session ID/OS)
+
+## Props
+
+This is built on top of [protractor-angular-screenshot-reporter](https://github.com/bcole/protractor-angular-screenshot-reporter), which is built on top of [protractor-html-screenshot-reporter](https://github.com/jintoppy/protractor-html-screenshot-reporter), which is built on top of [protractor-screenshot-reporter](https://github.com/swissmanu/protractor-screenshot-reporter).
+
+`protractor-beautiful-reporter` still generates a HTML report, but it is Angular-based and improves on the original formatting.
+
 
 ## Usage
 The `protractor-beautiful-reporter` module is available via npm:
@@ -106,7 +111,30 @@ new HtmlReporter({
 });
 ```
 
-If you omit the meta data builder, the default implementation is used
+### Screenshots Subfolder (optional)
+You can store all images in subfolder by using `screenshotsSubfolder` option:
+
+```javascript
+new HtmlReporter({
+   baseDirectory: '/tmp/screenshots'
+   , screenshotsSubfolder: 'images'
+});
+```
+
+If you omit this, all images will be stored in main folder.
+
+
+### JSONs Subfolder (optional)
+You can store all JSONs in subfolder by using `jsonsSubfolder` option:
+
+```javascript
+new HtmlReporter({
+   baseDirectory: '/tmp/screenshots'
+   , jsonsSubfolder: 'jsons'
+});
+```
+
+If you omit this, all images will be stored in main folder.
 
 
 ### Report for skipped test cases (optional)
