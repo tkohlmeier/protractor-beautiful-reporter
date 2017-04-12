@@ -241,11 +241,13 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
                             directory = path.dirname(screenShotPath),
                             jsonsDirectory = path.dirname(jsonPartsPath);
 
+                        metaData.browserLogs = [];
+
                         if (!(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
                             metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
                         }
 
-                        metaData.browserLogs.push(browserLogs);
+                        metaData.browserLogs = browserLogs;
 
 
                         mkdirp(directory, function (err) {
@@ -283,7 +285,7 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
  */
 ScreenshotReporter.prototype.reportSpecResults =
     function reportSpecResults(spec) {
-		/* global browser */
+        /* global browser */
         var self = this,
             results = spec.results();
 
@@ -324,11 +326,13 @@ ScreenshotReporter.prototype.reportSpecResults =
                         directory = path.dirname(screenShotPath),
                         jsonsDirectory = path.dirname(jsonPartsPath);
 
+                    metaData.browserLogs = [];
+
                     if (!(self.takeScreenShotsOnlyForFailedSpecs && results.passed())) {
                         metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
                     }
 
-                    metaData.browserLogs.push(browserLogs);
+                    metaData.browserLogs = browserLogs;
 
                     mkdirp(directory, function (err) {
                         if (err) {

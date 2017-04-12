@@ -1,4 +1,7 @@
 # Changelog
+## Version 0.3.1
+* Fixed critical bug with storing Browser's Log
+
 ## Version 0.3.0
 * Added storing Browser's Logs
 * Added filter for displaying Test Cases that contain Browser Logs
