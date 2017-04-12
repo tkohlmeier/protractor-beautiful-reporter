@@ -1,6 +1,7 @@
 # Changelog
 ## Version 0.3.3
 * Improved Suspected Line Highlight in Stack Trace
+* Replaced old Examples with new ones
 
 ## Version 0.3.2
 * Added support for multiline Browser Logs

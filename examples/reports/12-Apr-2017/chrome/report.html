@@ -1,0 +1,231 @@
+<!DOCTYPE html>
+<html lang="en" ng-app="reportingApp">
+<head>
+    <meta charset="UTF-8">
+    <title>Protractor Screenshot Report</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
+    <script src="app.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"
+            integrity="sha256-KXn5puMvxCw+dAYznun+drMdG1IFl3agK0p/pqT9KAo= sha512-2e8qq0ETcfWRI4HJBzQiA3UoyFk6tbNyG+qSaIBZLyW9Xf3sWZHN/lxe9fTh1U45DpPf07yj94KsUHHWe4Yk1A=="
+            crossorigin="anonymous"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://bootswatch.com/paper/bootstrap.css" crossorigin="anonymous">
+    <style>
+        body {
+            padding: 10px;
+        }
+
+        .modal-lg {
+            width: 95%;
+        }
+
+        .highlight {
+            background-color: #ffd600;
+        }
+
+        .browserLogLabel {
+            margin-right: 10px;
+        }
+
+        .browserLogItem {
+            margin-bottom: 20px;
+        }
+
+        .logContainer {
+            max-height: 488px;
+        }
+
+        .smallColumn {
+            width: 60px;
+        }
+
+        .mediumColumn {
+            width: 30%;
+        }
+    </style>
+</head>
+<body ng-controller="ScreenshotReportController as ctrl" class="ng-cloak">
+
+<!-- Header -->
+<h2>
+    Test Results
+    <button class="btn btn-sm pull-right" ng-click="moreDetails = !moreDetails">
+        <span ng-show="moreDetails">Less Detail</span>
+        <span ng-hide="moreDetails">More Detail</span>
+    </button>
+</h2>
+
+<!-- Pass/Fail counts -->
+<div class="progress progress-striped" style="height: 30px;">
+    <div class="progress-bar progress-bar-success" ng-if="ctrl.passCount()" data-toggle="tooltip"
+         title="Passed: {{ctrl.passCount()}} {{str = (ctrl.failCount() ? '' : '(no failures!)'); str}}"
+         style="width: {{ctrl.passCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"></div>
+    <div class="progress-bar progress-bar-warning" ng-if="ctrl.pendingCount()" data-toggle="tooltip"
+         title="Pending: {{ctrl.pendingCount()}}"
+         style="width: {{ctrl.pendingCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"></div>
+    <div class="progress-bar progress-bar-danger" ng-if="ctrl.failCount()" data-toggle="tooltip"
+         title="Failed: {{ctrl.failCount()}}"
+         style="width: {{ctrl.failCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"></div>
+</div>
+
+<label>Search: <input ng-model="searchSettings.description"></label>
+<div class="pull-right">
+    <button class="btn btn-default" ng-click="ctrl.chooseAllTypes()">ALL</button>
+    <button class="btn btn-default" ng-class="{active: searchSettings.passed}"
+            ng-click="searchSettings.passed = !searchSettings.passed">PASSED
+    </button>
+    <button class="btn btn-default" ng-class="{active: searchSettings.failed}"
+            ng-click="searchSettings.failed = !searchSettings.failed">FAILED
+    </button>
+    <button class="btn btn-default" ng-class="{active: searchSettings.pending}"
+            ng-click="searchSettings.pending = !searchSettings.pending">PENDING
+    </button>
+    <button class="btn btn-default" ng-class="{active: searchSettings.withLog}"
+            ng-click="searchSettings.withLog = !searchSettings.withLog">OR WITH LOG
+    </button>
+    <button class="btn btn-default" ng-class="{active: inlineScreenshots}"
+            ng-click="inlineScreenshots = !inlineScreenshots">INLINE SCREENSHOT
+    </button>
+    <br><br>
+</div>
+
+<!-- Test Results Table -->
+<table class="table">
+    <thead>
+    <tr class="active">
+        <th>Passed</th>
+        <th>Description</th>
+        <th ng-show="moreDetails">Browser</th>
+        <th ng-show="moreDetails">Session ID</th>
+        <th ng-show="moreDetails">OS</th>
+        <th>Message</th>
+        <th>Log</th>
+        <th>Stack</th>
+        <th>Screen</th>
+    </tr>
+    </thead>
+    <tbody ng-repeat="result in ctrl.results | bySearchSettings:searchSettings">
+    <!-- Test Spec Header -->
+    <tr ng-if="ctrl.currentParent != ctrl.getParent(result.description)">
+        <th ng-if="ctrl.currentParent != ctrl.getParent(result.description)" class="suiteName" colspan="8"
+            style="padding-top: 40px;">
+            {{ctrl.currentParent = ctrl.getParent(result.description)}}
+        </th>
+    </tr>
+
+    <tr ng-class="{danger: !result.passed && !result.pending, warning: result.pending}">
+        <td class="smallColumn" ng-if="result.passed && !result.pending">
+            <button class="btn btn-success disabled"><span class="glyphicon glyphicon-ok"></span></button>
+        </td>
+        <td class="smallColumn" ng-if="!result.passed && !result.pending">
+            <button class="btn btn-danger disabled"><span class="glyphicon glyphicon-remove"></span></button>
+        </td>
+        <td class="smallColumn" ng-if="result.pending">
+            <button class="btn btn-warning disabled"><span class="glyphicon glyphicon-option-horizontal"></span></button>
+        </td>
+        <td class="mediumColumn">{{ctrl.getShortDescription(result.description)}}</td>
+        <td ng-show="moreDetails">{{result.browser.name}} {{result.browser.version}}</td>
+        <td ng-show="moreDetails">{{result.sessionId}}</td>
+        <td ng-show="moreDetails">{{result.os}}</td>
+        <td>{{result.message}}</td>
+        <td class="smallColumn">
+            <button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.browserLogs.length > 0"><span class="glyphicon glyphicon-globe"></span></button>
+        </td>
+        <td class="smallColumn">
+            <!-- Show stacktrace if failure -->
+            <div ng-if="(!result.passed && !result.pending) || result.browserLogs.length > 0">
+                <button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></button>
+                <!-- Stacktrace Modal -->
+                <div class="modal" id="modal{{$index}}" tabindex="-1" role="dialog"
+                     aria-labelledby="modalLabel{{$index}}">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h6 class="modal-title" id="imageModalLabel{{$index}}">
+                                    {{ctrl.getParent(result.description)}}</h6>
+                                <h5 class="modal-title" id="imageModalLabel{{$index}}">
+                                    {{ctrl.getShortDescription(result.description)}}</h5>
+                            </div>
+                            <div class="modal-body">
+                                <pre ng-if="result.trace.length > 0" class="logContainer"><div ng-class="{'highlight': (ctrl.checkIfSuspectedLine(line)) }" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div></pre>
+
+                                <div ng-if="result.browserLogs.length > 0">
+                                    <h5 class="modal-title" id="imageModalLabel{{$index}}">
+                                        Browser logs:
+                                    </h5>
+
+                                    <pre class="logContainer"><div class="browserLogItem" ng-repeat="logError in result.browserLogs track by $index"><div><span class="label browserLogLabel label-default" ng-class="{'label-danger': logError.level==='SEVERE', 'label-warning': logError.level==='WARNING'}">{{logError.level}}</span><span class="label label-default">{{ctrl.convertTimestamp(logError.timestamp)}}</span><div ng-repeat="messageLine in logError.message.split('\\n') track by $index">{{ messageLine }}</div></div></div></pre>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+        <td ng-class="{'mediumColumn': inlineScreenshots && result.screenShotFile}">
+            <div ng-if="!result.pending">
+                <button ng-if="!inlineScreenshots && result.screenShotFile"
+                        class="btn btn-default"
+                        data-toggle="modal"
+                        data-target="#imageModal{{$index}}">
+                    <span class="glyphicon glyphicon-picture"></span>
+                </button>
+                <a href="" ng-if="inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
+                    <img src="{{result.screenShotFile}}" style="max-width: 100%"/></a>
+                <!-- Screenshot Modal -->
+                <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
+                     aria-labelledby="imageModalLabel{{$index}}">
+                    <div class="modal-dialog modal-lg" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                                <h6 class="modal-title" id="imageModalLabel{{$index}}">
+                                    {{ctrl.getParent(result.description)}}</h6>
+                                <h5 class="modal-title" id="imageModalLabel{{$index}}">
+                                    {{ctrl.getShortDescription(result.description)}}</h5>
+                            </div>
+                            <div class="modal-body">
+                                <img style="width: 100%" ng-src="{{result.screenShotFile}}">
+                            </div>
+                            <div class="modal-footer">
+                                <div class="pull-left">
+                                    <button ng-disabled="!($index > 0)" class="btn btn-default" data-dismiss="modal"
+                                            data-toggle="modal" data-target="#imageModal{{$index - 1}}">
+                                        Prev
+                                    </button>
+                                    <button ng-disabled="!($index < ctrl.results.length - 1)" class="btn btn-default"
+                                            data-dismiss="modal" data-toggle="modal"
+                                            data-target="#imageModal{{$index + 1}}">
+                                        Next
+                                    </button>
+                                </div>
+                                <a class="btn btn-primary" href="{{result.screenShotFile}}"
+                                   target="_blank">Open Image in New Tab <span class="glyphicon glyphicon-new-window"
+                                                                               aria-hidden="true"></span></a>
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </td>
+    </tr>
+    </tbody>
+</table>
+{{ctrl.currentParent = "";""}}
+<script>
+    $(document).ready(function () {
+        $('[data-toggle="tooltip"]').tooltip();
+    });
+</script>
+</body>
+</html>
