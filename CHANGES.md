@@ -1,4 +1,9 @@
 # Changelog
+## Version 0.3.2
+* Added support for multiline Browser Logs
+* Fixed label formatting for Warning Log
+* Fixed label formatting for Default Log
+
 ## Version 0.3.1
 * Fixed critical bug with storing Browser's Log
 
