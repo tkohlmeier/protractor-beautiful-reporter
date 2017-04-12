@@ -3,11 +3,12 @@
 ![HTML / Angular Test Report](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/html-report.png "test report")
 
 ## Features
+* Browser's Logs
 * Stack Trace (with suspected line highlight)
 * Screenshot
 * Screenshot only on failed spec
 * Fuzzy Search
-* Filters (can display only Passed/Failed/Pending)
+* Filters (can display only Passed/Failed/Pending/Has Browser Logs)
 * Inline Screenshots
 * Details (Browser/Session ID/OS)
 
