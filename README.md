@@ -225,6 +225,8 @@ Use Search Input Field to narrow down test list.
 
 Click View Stacktrace to see details of the error (if the test failed). Suspected line is highlighted.
 
+Click View Browser Log to see Browser Log (collects browser logs also from passed tests)
+
 ![View Stacktrace](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/stack-highlight.png "view stacktrace")
 
 Click View Screenshot to see an image of the webpage at the end of the test.

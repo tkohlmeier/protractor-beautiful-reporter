@@ -157,7 +157,7 @@ app.controller('ScreenshotReportController', function ($scope) {
             },
             {
                 "level": "SEVERE",
-                "message": "console-api 357:40 \"This is some kind of warning!\"",
+                "message": "console-api 357:40 \"This is some kind of error!\"",
                 "timestamp": 1492030847262,
                 "type": ""
             }
