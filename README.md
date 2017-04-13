@@ -12,6 +12,16 @@
 * Inline Screenshots
 * Details (Browser/Session ID/OS)
 
+## Wish list
+* HTML Dump
+
+Need some feature? Motivate me by donating gold coins (button below) or code it and propose Pull Request :)
+
+## Donate
+You like it? You can buy me a cup of coffee/glass of beer :) 
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WYR7N9FQL94J6)
+
 ## Props
 
 This is built on top of [protractor-angular-screenshot-reporter](https://github.com/bcole/protractor-angular-screenshot-reporter), which is built on top of [protractor-html-screenshot-reporter](https://github.com/jintoppy/protractor-html-screenshot-reporter), which is built on top of [protractor-screenshot-reporter](https://github.com/swissmanu/protractor-screenshot-reporter).
