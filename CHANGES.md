@@ -1,4 +1,8 @@
 # Changelog
+## Version 0.3.4
+* Added Toggle Button to for Suspected Line Highlight
+* Improved Suspected Line Highlight in Stack Trace
+
 ## Version 0.3.3
 * Improved Suspected Line Highlight in Stack Trace
 * Replaced old Examples with new ones

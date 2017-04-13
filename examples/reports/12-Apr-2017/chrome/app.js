@@ -10,6 +10,7 @@ app.controller('ScreenshotReportController', function ($scope) {
     };
 
     $scope.inlineScreenshots = false;
+    this.showSmartStackTraceHighlight = true;
 
     this.chooseAllTypes = function () {
         $scope.searchSettings.passed = true;
@@ -95,13 +96,17 @@ app.controller('ScreenshotReportController', function ($scope) {
         return failCount;
     };
 
-    this.checkIfSuspectedLine = function (line) {
-        if ((line.indexOf('node_modules') > -1) ||
-            (line.indexOf('  at ') === -1)
-        ) {
-            return false;
+    this.applySmartHighlight = function (line) {
+        if (this.showSmartStackTraceHighlight) {
+            if (line.indexOf('node_modules') > -1) {
+                return 'greyout';
+            }
+            if (line.indexOf('  at ') === -1) {
+                return '';
+            }
+
+            return 'highlight';
         }
-        return true;
     };
 
 

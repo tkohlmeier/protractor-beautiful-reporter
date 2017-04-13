@@ -24,6 +24,10 @@
             background-color: #ffd600;
         }
 
+        .greyout {
+            color: grey;
+        }
+
         .browserLogLabel {
             margin-right: 10px;
         }
@@ -151,8 +155,7 @@
                                     {{ctrl.getShortDescription(result.description)}}</h5>
                             </div>
                             <div class="modal-body">
-                                <pre ng-if="result.trace.length > 0" class="logContainer"><div ng-class="{'highlight': (ctrl.checkIfSuspectedLine(line)) }" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div></pre>
-
+                                <pre ng-if="result.trace.length > 0" class="logContainer"><div ng-class="ctrl.applySmartHighlight(line)" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div></pre>
                                 <div ng-if="result.browserLogs.length > 0">
                                     <h5 class="modal-title" id="imageModalLabel{{$index}}">
                                         Browser logs:
@@ -162,6 +165,11 @@
                                 </div>
                             </div>
                             <div class="modal-footer">
+                                <button class="btn btn-default"
+                                        ng-class="{active: showSmartStackTraceHighlight}"
+                                        ng-click="ctrl.showSmartStackTraceHighlight = !ctrl.showSmartStackTraceHighlight">
+                                    <span class="glyphicon glyphicon-education"></span> Smart Stack Trace
+                                </button>
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
                         </div>
@@ -208,9 +216,10 @@
                                         Next
                                     </button>
                                 </div>
-                                <a class="btn btn-primary" href="{{result.screenShotFile}}"
-                                   target="_blank">Open Image in New Tab <span class="glyphicon glyphicon-new-window"
-                                                                               aria-hidden="true"></span></a>
+                                <a class="btn btn-primary" href="{{result.screenShotFile}}" target="_blank">
+                                    Open Image in New Tab
+                                    <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>
+                                </a>
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
                         </div>
