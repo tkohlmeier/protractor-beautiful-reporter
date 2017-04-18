@@ -11,6 +11,7 @@
 * Filters (can display only Passed/Failed/Pending/Has Browser Logs)
 * Inline Screenshots
 * Details (Browser/Session ID/OS)
+* Duration time for test cases (only Jasmine2)
 
 ## Wish list
 * HTML Dump

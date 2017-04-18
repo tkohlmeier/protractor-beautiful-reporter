@@ -1,4 +1,10 @@
 # Changelog
+## Version 0.4.0
+* Added Duration column for test cases (Jasmine2 only)
+* Replaced MORE OPTIONS button with separate button for each column
+* Improved readability of test cases
+* Added numbers of passed/failed/pending test cases to chart
+
 ## Version 0.3.4
 * Added Toggle Button to for Suspected Line Highlight
 * Improved Suspected Line Highlight in Stack Trace
