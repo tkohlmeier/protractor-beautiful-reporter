@@ -375,4 +375,8 @@ ScreenshotReporter.prototype.reportSpecResults =
 
     };
 
+function nowString() {
+    return (new Date()).toISOString();
+}
+
 module.exports = ScreenshotReporter;
