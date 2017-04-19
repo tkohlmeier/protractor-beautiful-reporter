@@ -284,7 +284,7 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
                                 util.storeMetaData(metaData, jsonPartsPath);
                             }
                         });
-                        require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
+                        // require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
                     });
                 });
             });
@@ -368,7 +368,7 @@ ScreenshotReporter.prototype.reportSpecResults =
                             util.storeMetaData(metaData, jsonPartsPath);
                         }
                     });
-                    require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
+                    // require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
                 });
             });
         });

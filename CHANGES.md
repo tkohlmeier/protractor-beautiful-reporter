@@ -1,4 +1,7 @@
 # Changelog
+## Version 0.4.3
+* Disabled sym-link for enterprise users
+
 ## Version 0.4.2
 * Added counting browser log entries
 * Added displaying separate counts for SEVERE and WARNING log per each test case
