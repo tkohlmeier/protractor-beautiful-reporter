@@ -84,6 +84,27 @@
             margin: 4px;
         }
 
+        .logColumn {
+            font-weight: 900;
+            width: 100px;
+        }
+
+        .consoleLogLabel {
+            font-size: 100%;
+            font-weight: 900;
+            margin: 3px;
+            cursor:pointer;
+        }
+
+        .label-white {
+            background-color: #ffffff;
+            color: #444444;
+            font-size: 92%;
+            margin: 3px;
+            cursor:pointer;
+        }
+
+
     </style>
 </head>
 <body ng-controller="ScreenshotReportController as ctrl" class="ng-cloak">
@@ -188,13 +209,17 @@
         <td ng-show="ctrl.displaySessionId">{{result.sessionId}}</td>
         <td ng-show="ctrl.displayOS">{{result.os}}</td>
         <td>{{result.message}}</td>
-        <td class="smallColumn">
-            <button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.browserLogs.length > 0"><span class="glyphicon glyphicon-globe"></span></button>
+        <td class="logColumn">
+            <!--<button class="btn btn-warning pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.logWarnings > 0">{{result.logWarnings}}</button>-->
+            <!--<button class="btn btn-danger pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.logErrors > 0">{{result.logErrors}}</button>-->
+            <span class="label label-default ng-binding label-warning pull-right consoleLogLabel" ng-if="result.logWarnings > 0" data-toggle="modal" data-target="#modal{{$index}}">{{result.logWarnings}}</span>
+            <span class="label label-default ng-binding label-danger pull-right consoleLogLabel" ng-if="result.logErrors > 0" data-toggle="modal" data-target="#modal{{$index}}">{{result.logErrors}}</span>
         </td>
         <td class="smallColumn">
             <!-- Show stacktrace if failure -->
             <div ng-if="(!result.passed && !result.pending) || result.browserLogs.length > 0">
-                <button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></button>
+                <span class="label label-white ng-binding pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></span>
+                <!--<button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></button>-->
                 <!-- Stacktrace Modal -->
                 <div class="modal" id="modal{{$index}}" tabindex="-1" role="dialog"
                      aria-labelledby="modalLabel{{$index}}">
@@ -234,12 +259,12 @@
         </td>
         <td ng-class="{'mediumColumn': ctrl.inlineScreenshots && result.screenShotFile}">
             <div ng-if="!result.pending">
-                <button ng-if="!ctrl.inlineScreenshots && result.screenShotFile"
-                        class="btn btn-default"
-                        data-toggle="modal"
-                        data-target="#imageModal{{$index}}">
-                    <span class="glyphicon glyphicon-picture"></span>
-                </button>
+                <span ng-if="!ctrl.inlineScreenshots && result.screenShotFile"
+                      class="label label-white ng-binding pull-right"
+                      data-toggle="modal"
+                      data-target="#imageModal{{$index}}">
+                            <span class="glyphicon glyphicon-picture"></span>
+                </span>
                 <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
                     <img src="{{result.screenShotFile}}" style="max-width: 100%"/></a>
                 <!-- Screenshot Modal -->
