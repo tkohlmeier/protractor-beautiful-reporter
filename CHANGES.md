@@ -1,4 +1,7 @@
 # Changelog
+## Version 0.4.4
+* Added missing function call for counting log entries
+
 ## Version 0.4.3
 * Disabled sym-link for enterprise users
 
