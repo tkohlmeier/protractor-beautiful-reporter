@@ -15,7 +15,7 @@
     "protractor": "~0.14.0",
     "grunt-protractor-runner": "~0.1.6",
     "grunt-shell-spawn": "~0.3.0",
-    "protractor-beautiful-reporter": "^0.3.2",
+    "protractor-beautiful-reporter": "^0.4.4",
     "grunt-concurrent": "^0.5.0"
   }
 }

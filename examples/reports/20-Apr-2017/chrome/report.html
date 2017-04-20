@@ -24,16 +24,12 @@
             background-color: #ffd600;
         }
 
-        .greyout {
-            color: grey;
-        }
-
         .browserLogLabel {
             margin-right: 10px;
         }
 
         .browserLogItem {
-            margin-bottom: 20px;
+            margin-bottom: 10px;
         }
 
         .logContainer {
@@ -41,12 +37,74 @@
         }
 
         .smallColumn {
-            width: 60px;
+            width: 50px;
         }
 
         .mediumColumn {
             width: 30%;
         }
+
+        .status {
+            width: 70px;
+            text-align: right;
+        }
+
+        .duration {
+            width: 100%;
+        }
+
+        .testCase {
+            padding-left: 40px !important;
+            padding-top: 20px !important;
+        }
+
+        .spec {
+            /*background-color: grey;*/
+            /*color: white;*/
+            font-size: 200%;
+            padding-top: 80px !important;
+        }
+
+        .btn {
+            padding: 1px 10px;
+        }
+
+        table {
+            border-collapse: separate;
+        }
+
+        .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
+            /*border-top: 0px;*/
+            padding: 4px;
+        }
+
+        .statusNumber {
+            font-size: 22px;
+            font-weight: 900;
+            margin: 4px;
+        }
+
+        .logColumn {
+            font-weight: 900;
+            width: 100px;
+        }
+
+        .consoleLogLabel {
+            font-size: 100%;
+            font-weight: 900;
+            margin: 3px;
+            cursor:pointer;
+        }
+
+        .label-white {
+            background-color: #ffffff;
+            color: #444444;
+            font-size: 92%;
+            margin: 3px;
+            cursor:pointer;
+        }
+
+
     </style>
 </head>
 <body ng-controller="ScreenshotReportController as ctrl" class="ng-cloak">
@@ -54,23 +112,36 @@
 <!-- Header -->
 <h2>
     Test Results
-    <button class="btn btn-sm pull-right" ng-click="moreDetails = !moreDetails">
-        <span ng-show="moreDetails">Less Detail</span>
-        <span ng-hide="moreDetails">More Detail</span>
-    </button>
+    <div class="pull-right">
+        <button class="btn btn-default" ng-class="{active: ctrl.displayTime}"
+                ng-click="ctrl.displayTime = !ctrl.displayTime">TIME
+        </button>
+        <button class="btn btn-default" ng-class="{active: ctrl.displayBrowser}"
+                ng-click="ctrl.displayBrowser = !ctrl.displayBrowser">BROWSER
+        </button>
+        <button class="btn btn-default" ng-class="{active: ctrl.displaySessionId}"
+                ng-click="ctrl.displaySessionId = !ctrl.displaySessionId">SESSION ID
+        </button>
+        <button class="btn btn-default" ng-class="{active: ctrl.displayOS}"
+                ng-click="ctrl.displayOS = !ctrl.displayOS">OS
+        </button>
+        <button class="btn btn-default" ng-class="{active: ctrl.inlineScreenshots}"
+                ng-click="ctrl.inlineScreenshots = !ctrl.inlineScreenshots">INLINE SCREENSHOTS
+        </button>
+    </div>
 </h2>
 
 <!-- Pass/Fail counts -->
 <div class="progress progress-striped" style="height: 30px;">
     <div class="progress-bar progress-bar-success" ng-if="ctrl.passCount()" data-toggle="tooltip"
          title="Passed: {{ctrl.passCount()}} {{str = (ctrl.failCount() ? '' : '(no failures!)'); str}}"
-         style="width: {{ctrl.passCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"></div>
+         style="width: {{ctrl.passCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"><div class="statusNumber">{{ctrl.passCount()}}</div></div>
     <div class="progress-bar progress-bar-warning" ng-if="ctrl.pendingCount()" data-toggle="tooltip"
          title="Pending: {{ctrl.pendingCount()}}"
-         style="width: {{ctrl.pendingCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"></div>
+         style="width: {{ctrl.pendingCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"><div class="statusNumber">{{ctrl.pendingCount()}}</div></div>
     <div class="progress-bar progress-bar-danger" ng-if="ctrl.failCount()" data-toggle="tooltip"
          title="Failed: {{ctrl.failCount()}}"
-         style="width: {{ctrl.failCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"></div>
+         style="width: {{ctrl.failCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100}}%"><div class="statusNumber">{{ctrl.failCount()}}</div></div>
 </div>
 
 <label>Search: <input ng-model="searchSettings.description"></label>
@@ -88,9 +159,6 @@
     <button class="btn btn-default" ng-class="{active: searchSettings.withLog}"
             ng-click="searchSettings.withLog = !searchSettings.withLog">OR WITH LOG
     </button>
-    <button class="btn btn-default" ng-class="{active: inlineScreenshots}"
-            ng-click="inlineScreenshots = !inlineScreenshots">INLINE SCREENSHOT
-    </button>
     <br><br>
 </div>
 
@@ -98,11 +166,12 @@
 <table class="table">
     <thead>
     <tr class="active">
-        <th>Passed</th>
+        <th>Status</th>
+        <th ng-show="ctrl.displayTime">Time</th>
         <th>Description</th>
-        <th ng-show="moreDetails">Browser</th>
-        <th ng-show="moreDetails">Session ID</th>
-        <th ng-show="moreDetails">OS</th>
+        <th ng-show="ctrl.displayBrowser">Browser</th>
+        <th ng-show="ctrl.displaySessionId">Session ID</th>
+        <th ng-show="ctrl.displayOS">OS</th>
         <th>Message</th>
         <th>Log</th>
         <th>Stack</th>
@@ -111,35 +180,46 @@
     </thead>
     <tbody ng-repeat="result in ctrl.results | bySearchSettings:searchSettings">
     <!-- Test Spec Header -->
+    <tr ng-if="result.displaySpecName">
+        <th class="spec" colspan="10">
+            {{ctrl.currentSpec = ctrl.getSpec(result.description)}}
+        </th>
+    </tr>
     <tr ng-if="ctrl.currentParent != ctrl.getParent(result.description)">
-        <th ng-if="ctrl.currentParent != ctrl.getParent(result.description)" class="suiteName" colspan="8"
-            style="padding-top: 40px;">
+        <th class="testCase" colspan="10">
             {{ctrl.currentParent = ctrl.getParent(result.description)}}
         </th>
     </tr>
 
     <tr ng-class="{danger: !result.passed && !result.pending, warning: result.pending}">
-        <td class="smallColumn" ng-if="result.passed && !result.pending">
-            <button class="btn btn-success disabled"><span class="glyphicon glyphicon-ok"></span></button>
+        <td class="smallColumn status" ng-if="result.passed && !result.pending">
+            <span class="label label-success"><span class="glyphicon glyphicon-ok"></span></span>
         </td>
-        <td class="smallColumn" ng-if="!result.passed && !result.pending">
-            <button class="btn btn-danger disabled"><span class="glyphicon glyphicon-remove"></span></button>
+        <td class="smallColumn status" ng-if="!result.passed && !result.pending">
+            <span class="label label-danger"><span class="glyphicon glyphicon-remove"></span></span>
         </td>
-        <td class="smallColumn" ng-if="result.pending">
-            <button class="btn btn-warning disabled"><span class="glyphicon glyphicon-option-horizontal"></span></button>
+        <td class="smallColumn status" ng-if="result.pending">
+            <span class="label label-warning"><span class="glyphicon glyphicon-option-horizontal"></span></span>
+        </td>
+        <td class="smallColumn" ng-show="ctrl.displayTime">
+            <span class="label label-default">{{result.duration}}</span>
         </td>
         <td class="mediumColumn">{{ctrl.getShortDescription(result.description)}}</td>
-        <td ng-show="moreDetails">{{result.browser.name}} {{result.browser.version}}</td>
-        <td ng-show="moreDetails">{{result.sessionId}}</td>
-        <td ng-show="moreDetails">{{result.os}}</td>
+        <td ng-show="ctrl.displayBrowser">{{result.browser.name}} {{result.browser.version}}</td>
+        <td ng-show="ctrl.displaySessionId">{{result.sessionId}}</td>
+        <td ng-show="ctrl.displayOS">{{result.os}}</td>
         <td>{{result.message}}</td>
-        <td class="smallColumn">
-            <button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.browserLogs.length > 0"><span class="glyphicon glyphicon-globe"></span></button>
+        <td class="logColumn">
+            <!--<button class="btn btn-warning pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.logWarnings > 0">{{result.logWarnings}}</button>-->
+            <!--<button class="btn btn-danger pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.logErrors > 0">{{result.logErrors}}</button>-->
+            <span class="label label-default ng-binding label-warning pull-right consoleLogLabel" ng-if="result.logWarnings > 0" data-toggle="modal" data-target="#modal{{$index}}">{{result.logWarnings}}</span>
+            <span class="label label-default ng-binding label-danger pull-right consoleLogLabel" ng-if="result.logErrors > 0" data-toggle="modal" data-target="#modal{{$index}}">{{result.logErrors}}</span>
         </td>
         <td class="smallColumn">
             <!-- Show stacktrace if failure -->
             <div ng-if="(!result.passed && !result.pending) || result.browserLogs.length > 0">
-                <button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></button>
+                <span class="label label-white ng-binding pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></span>
+                <!--<button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></button>-->
                 <!-- Stacktrace Modal -->
                 <div class="modal" id="modal{{$index}}" tabindex="-1" role="dialog"
                      aria-labelledby="modalLabel{{$index}}">
@@ -177,15 +257,15 @@
                 </div>
             </div>
         </td>
-        <td ng-class="{'mediumColumn': inlineScreenshots && result.screenShotFile}">
+        <td ng-class="{'mediumColumn': ctrl.inlineScreenshots && result.screenShotFile}">
             <div ng-if="!result.pending">
-                <button ng-if="!inlineScreenshots && result.screenShotFile"
-                        class="btn btn-default"
-                        data-toggle="modal"
-                        data-target="#imageModal{{$index}}">
-                    <span class="glyphicon glyphicon-picture"></span>
-                </button>
-                <a href="" ng-if="inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
+                <span ng-if="!ctrl.inlineScreenshots && result.screenShotFile"
+                      class="label label-white ng-binding pull-right"
+                      data-toggle="modal"
+                      data-target="#imageModal{{$index}}">
+                            <span class="glyphicon glyphicon-picture"></span>
+                </span>
+                <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
                     <img src="{{result.screenShotFile}}" style="max-width: 100%"/></a>
                 <!-- Screenshot Modal -->
                 <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
