@@ -202,7 +202,7 @@
             <span class="label label-warning"><span class="glyphicon glyphicon-option-horizontal"></span></span>
         </td>
         <td class="smallColumn" ng-show="ctrl.displayTime">
-            <span class="label label-default">{{result.duration}}</span>
+            <span class="label label-default" ng-class="{'label-warning': result.duration > 14, 'label-danger': result.duration > 19}">{{ctrl.round(result.duration, 1)}} s</span>
         </td>
         <td class="mediumColumn">{{ctrl.getShortDescription(result.description)}}</td>
         <td ng-show="ctrl.displayBrowser">{{result.browser.name}} {{result.browser.version}}</td>

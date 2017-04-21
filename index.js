@@ -184,28 +184,18 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
 
     return {
         suiteNames: [],
-        currentSpec: {},
-        jasmineStarted: function(suiteInfo) {
-
-            // this.timer.started = nowString();
-            var currentSpec = this.currentSpec;
-
-            afterEach(function() {
-                currentSpec.stoped = nowString();
-                currentSpec.duration = new Date(currentSpec.stoped) - new Date(currentSpec.started);
-            });
-        },
         suiteStarted: function(result){
             this.suiteNames.push(result.description);
         },
         specStarted: function (result) {
-            this.currentSpec = result;
-            this.currentSpec.started = nowString();
+            result.started = nowString();
         },
         suiteDone: function(result){
             this.suiteNames.pop();
         },
         specDone: function(result) {
+            result.stopped = nowString();
+
             if(!self.takeScreenShotsForSkippedSpecs && result.status == 'disabled') {
                 return;
             }
@@ -263,8 +253,7 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
                         }
 
                         metaData.browserLogs = browserLogs;
-                        metaData.duration = result.duration;
-
+                        metaData.duration = new Date(result.stopped) - new Date(result.started);
 
                         mkdirp(directory, function (err) {
                             if (err) {

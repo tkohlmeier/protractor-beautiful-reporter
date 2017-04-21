@@ -1,4 +1,7 @@
 # Changelog
+## Version 0.4.5
+* Fixed gathering duration for Typescript users
+
 ## Version 0.4.4
 * Added missing function call for counting log entries
 
