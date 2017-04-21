@@ -7,7 +7,7 @@
 * Stack Trace (with suspected line highlight)
 * Screenshot
 * Screenshot only on failed spec
-* Fuzzy Search
+* Search
 * Filters (can display only Passed/Failed/Pending/Has Browser Logs)
 * Inline Screenshots
 * Details (Browser/Session ID/OS)
