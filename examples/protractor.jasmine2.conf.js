@@ -1,6 +1,8 @@
 var HtmlReporter = require('protractor-beautiful-reporter');
 var path = require('path');
-// A reference configuration file.
+
+// ----- Config example for Jasmine 2 -----
+
 exports.config = {
     // ----- How to setup Selenium -----
     //
@@ -52,12 +54,20 @@ exports.config = {
     // and
     // https://code.google.com/p/selenium/source/browse/javascript/webdriver/capabilities.js
     capabilities: {
-        'browserName': 'chrome'
+        browserName: 'chrome',
+        logName: 'Chrome - English',
+        version: '',
+        platform: 'ANY',
+        shardTestFiles: false,
+        maxInstances: 4
     },
 
     // A base URL for your application under test. Calls to protractor.get()
     // with relative paths will be prepended with this.
     baseUrl: 'http://localhost:9999',
+
+    // Set the framework
+    framework: 'jasmine',
 
     // Selector for the element housing the angular app - this defaults to
     // body, but is necessary if ng-app is on a descendant of <body>
@@ -66,47 +76,36 @@ exports.config = {
     onPrepare: function () {
         // Add a screenshot reporter:
         jasmine.getEnv().addReporter(new HtmlReporter({
-            baseDirectory: 'reports',
+            preserveDirectory: false,
+            takeScreenShotsOnlyForFailedSpecs: true,
             screenshotsSubfolder: 'images',
             jsonsSubfolder: 'jsons',
-            takeScreenShotsOnlyForFailedSpecs: true,
+            baseDirectory: 'reports',
             pathBuilder: function pathBuilder(spec, descriptions, results, capabilities) {
-
-                var monthMap = {
-                    "1": "Jan",
-                    "2": "Feb",
-                    "3": "Mar",
-                    "4": "Apr",
-                    "5": "May",
-                    "6": "Jun",
-                    "7": "Jul",
-                    "8": "Aug",
-                    "9": "Sep",
-                    "10": "Oct",
-                    "11": "Nov",
-                    "12": "Dec"
-                };
-
+                // Return '<30-12-2016>/<browser>/<specname>' as path for screenshots:
+                // Example: '30-12-2016/firefox/list-should work'.
                 var currentDate = new Date(),
-                    totalDateString = currentDate.getDate() + '-' + monthMap[currentDate.getMonth() + 1] + '-' + (currentDate.getYear() + 1900);
+                    day = currentDate.getDate(),
+                    month = currentDate.getMonth() + 1,
+                    year = currentDate.getFullYear();
 
-                return path.join(totalDateString, capabilities.caps_.browserName, descriptions.join('-'));
+                var validDescriptions = descriptions.map(function (description) {
+                    return description.replace('/', '@');
+                });
+
+                return path.join(
+                    day + "-" + month + "-" + year,
+                    // capabilities.get('browserName'),
+                    validDescriptions.join('-'));
             }
-        }));
+        }).getJasmine2Reporter());
     },
 
-
-    // ----- Options to be passed to minijasminenode -----
     jasmineNodeOpts: {
-        // onComplete will be called just before the driver quits.
-        onComplete: null,
-        // If true, display spec names.
-        isVerbose: false,
         // If true, print colors to the terminal.
         showColors: true,
-        // If true, include stack traces in failures.
-        includeStackTrace: true,
         // Default time to wait in ms before a test fails.
-        defaultTimeoutInterval: 10000
+        defaultTimeoutInterval: 30000,
     }
 };
+
