@@ -1,6 +1,6 @@
 # Changelog
 ## Version 0.4.5
-* Fixed gathering duration for Typescript users
+* Fixed gathering of duration for Non-Typescript users
 * Added coloring for duration that is longer than 14 and 29 seconds
 
 ## Version 0.4.4
