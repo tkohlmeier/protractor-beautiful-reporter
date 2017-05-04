@@ -16,12 +16,7 @@
 ## Wish list
 * HTML Dump
 
-Need some feature? Motivate me by donating gold coins (button below) or code it and propose Pull Request :)
-
-## Donate
-You like it? You can buy me a cup of coffee/glass of beer :) 
-
-[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WYR7N9FQL94J6)
+Need some feature? Let me know or code it and propose Pull Request :)
 
 ## Props
 
@@ -260,6 +255,10 @@ $ protractor protractor.conf.js
 
 After the test run, you can see that, a screenshots folder will be created with all the reports generated. 
 
+## Donate
+You like it? You can buy me a cup of coffee/glass of beer :) 
+
+[![paypal](https://www.paypalobjects.com/en_US/i/btn/btn_donateCC_LG.gif)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=WYR7N9FQL94J6)
 
 ## License
 Copyright (c) 2017 Marcin Cierpicki <zycienawalizkach@gmail.com>
