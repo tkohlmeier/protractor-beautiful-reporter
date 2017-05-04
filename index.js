@@ -189,6 +189,13 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
         },
         specStarted: function (result) {
             result.started = nowString();
+
+            afterEach(function() {
+                browser.manage().logs().get('browser').then(function (browserLogs) {
+                    result.browserLogs = browserLogs;
+                    result.browserLogs.concat(browserLogs);
+                })
+            })
         },
         suiteDone: function(result){
             this.suiteNames.pop();
@@ -212,69 +219,67 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
             var suite = buildSuite(this.suiteNames, this.suiteNames.length-1);
 
             browser.takeScreenshot().then(function (png) {
-                browser.manage().logs().get('browser').then(function (browserLogs) {
-                    browser.getCapabilities().then(function (capabilities) {
-                        var descriptions = util.gatherDescriptions(
-                            suite,
-                            [result.description]
-                            ),
+                browser.getCapabilities().then(function (capabilities) {
+                    var descriptions = util.gatherDescriptions(
+                        suite,
+                        [result.description]
+                        ),
 
-                            baseName = self.pathBuilder(
-                                null,
-                                descriptions,
-                                result,
-                                capabilities
-                            ),
+                        baseName = self.pathBuilder(
+                            null,
+                            descriptions,
+                            result,
+                            capabilities
+                        ),
 
-                            metaData = self.jasmine2MetaDataBuilder(
-                                null,
-                                descriptions,
-                                result,
-                                capabilities
-                            ),
+                        metaData = self.jasmine2MetaDataBuilder(
+                            null,
+                            descriptions,
+                            result,
+                            capabilities
+                        ),
 
-                            screenShotFileName = path.basename(baseName + '.png'),
-                            screenShotFilePath = path.join(path.dirname(baseName + '.png'), self.screenshotsSubfolder),
+                        screenShotFileName = path.basename(baseName + '.png'),
+                        screenShotFilePath = path.join(path.dirname(baseName + '.png'), self.screenshotsSubfolder),
 
-                            metaFile = baseName + '.json',
-                            screenShotPath = path.join(self.baseDirectory, screenShotFilePath, screenShotFileName),
-                            metaDataPath = path.join(self.baseDirectory, metaFile),
-                            jsonPartsPath = path.join(self.baseDirectory, path.dirname(metaFile), self.jsonsSubfolder, path.basename(metaFile)),
+                        metaFile = baseName + '.json',
+                        screenShotPath = path.join(self.baseDirectory, screenShotFilePath, screenShotFileName),
+                        metaDataPath = path.join(self.baseDirectory, metaFile),
+                        jsonPartsPath = path.join(self.baseDirectory, path.dirname(metaFile), self.jsonsSubfolder, path.basename(metaFile)),
 
-                            // pathBuilder can return a subfoldered path too. So extract the
-                            // directory path without the baseName
-                            directory = path.dirname(screenShotPath),
-                            jsonsDirectory = path.dirname(jsonPartsPath);
+                        // pathBuilder can return a subfoldered path too. So extract the
+                        // directory path without the baseName
+                        directory = path.dirname(screenShotPath),
+                        jsonsDirectory = path.dirname(jsonPartsPath);
 
-                        metaData.browserLogs = [];
+                    metaData.browserLogs = [];
 
-                        if (!(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
-                            metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
+                    if (!(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
+                        metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
+                    }
+
+                    metaData.browserLogs = result.browserLogs;
+                    metaData.duration = new Date(result.stopped) - new Date(result.started);
+
+                    mkdirp(directory, function (err) {
+                        if (err) {
+                            throw new Error('Could not create directory ' + directory);
+                        } else {
+                            util.addMetaData(metaData, metaDataPath, descriptions, self.finalOptions);
+                            if (!(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
+                                util.storeScreenShot(png, screenShotPath);
+                            }
                         }
-
-                        metaData.browserLogs = browserLogs;
-                        metaData.duration = new Date(result.stopped) - new Date(result.started);
-
-                        mkdirp(directory, function (err) {
-                            if (err) {
-                                throw new Error('Could not create directory ' + directory);
-                            } else {
-                                util.addMetaData(metaData, metaDataPath, descriptions, self.finalOptions);
-                                if (!(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
-                                    util.storeScreenShot(png, screenShotPath);
-                                }
-                            }
-                        });
-
-                        mkdirp(jsonsDirectory, function (err) {
-                            if (err) {
-                                throw new Error('Could not create directory ' + jsonsDirectory);
-                            } else {
-                                util.storeMetaData(metaData, jsonPartsPath);
-                            }
-                        });
-                        // require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
                     });
+
+                    mkdirp(jsonsDirectory, function (err) {
+                        if (err) {
+                            throw new Error('Could not create directory ' + jsonsDirectory);
+                        } else {
+                            util.storeMetaData(metaData, jsonPartsPath);
+                        }
+                    });
+                    // require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
                 });
             });
         }

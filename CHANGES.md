@@ -1,4 +1,7 @@
 # Changelog
+## Version 0.4.6
+* Fixed issue where last test case was not added to report due error in browser's log gathering (fix for Jasmine 2, in Jasmine 1 issue still exists)
+
 ## Version 0.4.5
 * Fixed gathering of duration for Non-Typescript users
 * Added coloring for duration that is longer than 14 and 29 seconds
