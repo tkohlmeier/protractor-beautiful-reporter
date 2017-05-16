@@ -45,7 +45,7 @@ exports.config = {
    onPrepare: function() {
       // Add a screenshot reporter and store screenshots to `/tmp/screenshots`:
       jasmine.getEnv().addReporter(new HtmlReporter({
-         baseDirectory: '/tmp/screenshots'
+         baseDirectory: 'tmp/screenshots'
       }));
    }
 }
@@ -63,7 +63,7 @@ exports.config = {
    onPrepare: function() {
       // Add a screenshot reporter and store screenshots to `/tmp/screenshots`:
       jasmine.getEnv().addReporter(new HtmlReporter({
-         baseDirectory: '/tmp/screenshots'
+         baseDirectory: 'tmp/screenshots'
       }).getJasmine2Reporter());
    }
 }
@@ -76,7 +76,7 @@ the screenshot reporter:
 
 ```javascript
 var reporter = new HtmlReporter({
-   baseDirectory: '/tmp/screenshots'
+   baseDirectory: 'tmp/screenshots'
 });
 ```
 
@@ -89,7 +89,7 @@ The function passed as second argument to the constructor is used to build up pa
 var path = require('path');
 
 new HtmlReporter({
-   baseDirectory: '/tmp/screenshots'
+   baseDirectory: 'tmp/screenshots'
    , pathBuilder: function pathBuilder(spec, descriptions, results, capabilities) {
       // Return '<browser>/<specname>' as path for screenshots:
       // Example: 'firefox/list-should work'.
@@ -107,7 +107,7 @@ You can modify the contents of the JSON meta data file by passing a function `me
 
 ```javascript
 new HtmlReporter({
-   baseDirectory: '/tmp/screenshots'
+   baseDirectory: 'tmp/screenshots'
    , metaDataBuilder: function metaDataBuilder(spec, descriptions, results, capabilities) {
       // Return the description of the spec and if it has passed or not:
       return {
@@ -123,7 +123,7 @@ You can store all images in subfolder by using `screenshotsSubfolder` option:
 
 ```javascript
 new HtmlReporter({
-   baseDirectory: '/tmp/screenshots'
+   baseDirectory: 'tmp/screenshots'
    , screenshotsSubfolder: 'images'
 });
 ```
@@ -136,7 +136,7 @@ You can store all JSONs in subfolder by using `jsonsSubfolder` option:
 
 ```javascript
 new HtmlReporter({
-   baseDirectory: '/tmp/screenshots'
+   baseDirectory: 'tmp/screenshots'
    , jsonsSubfolder: 'jsons'
 });
 ```
@@ -149,7 +149,7 @@ You can define if you want report from skipped test cases using the `takeScreenS
 
 ```javascript
 new HtmlReporter({
-   baseDirectory: '/tmp/screenshots'
+   baseDirectory: 'tmp/screenshots'
    , takeScreenShotsForSkippedSpecs: true
 });
 ```
@@ -160,7 +160,7 @@ Default is `false`.
  
  ```javascript
  new HtmlReporter({
-    baseDirectory: '/tmp/screenshots'
+    baseDirectory: 'tmp/screenshots'
     , takeScreenShotsOnlyForFailedSpecs: true
  });
  ```
@@ -174,7 +174,7 @@ Default is `false`.
  
  ```javascript
  new HtmlReporter({
-    baseDirectory: '/tmp/screenshots'
+    baseDirectory: 'tmp/screenshots'
     , docTitle: 'my reporter'
  });
  ```
@@ -186,7 +186,7 @@ Default is `Generated test report`.
  
  ```javascript
  new HtmlReporter({
-    baseDirectory: '/tmp/screenshots'
+    baseDirectory: 'tmp/screenshots'
     , docName: 'index.html'
  });
  ```
@@ -197,7 +197,7 @@ Default is `report.html`.
  
  ```javascript
  new HtmlReporter({
-    baseDirectory: '/tmp/screenshots'
+    baseDirectory: 'tmp/screenshots'
     , cssOverrideFile: 'css/style.css'
  });
  ```
@@ -207,7 +207,7 @@ Default is `report.html`.
  
  ```javascript
  new HtmlReporter({
-    baseDirectory: '/tmp/screenshots'
+    baseDirectory: 'tmp/screenshots'
     , preserveDirectory: false
  });
  ```
@@ -219,7 +219,7 @@ Default is `true`.
  
  ```javascript
  new HtmlReporter({
-    baseDirectory: '/tmp/screenshots'
+    baseDirectory: 'tmp/screenshots'
     , gatherBrowserLogs: false
  });
  ```
