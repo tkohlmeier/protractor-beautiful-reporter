@@ -1,4 +1,13 @@
 # Changelog
+
+## Version 0.4.7
+* Fixed issue where last pending test case was not added to report
+* Fixed crash on gathering Logs from Browsers other than Chrome
+* Added optional parameter gatherBrowserLogs
+* Improved speed of tests (tries to take screenshot only when needed)
+* Fixed displaying of Duration time
+* Made all disabled test cases to be included in report as Pending
+
 ## Version 0.4.6
 * Fixed issue where last test case was not added to report due error in browser's log gathering (fix for Jasmine 2, in Jasmine 1 issue still exists)
 

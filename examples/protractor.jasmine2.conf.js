@@ -59,7 +59,7 @@ exports.config = {
         version: '',
         platform: 'ANY',
         shardTestFiles: false,
-        maxInstances: 4
+        maxInstances: 2,
     },
 
     // A base URL for your application under test. Calls to protractor.get()

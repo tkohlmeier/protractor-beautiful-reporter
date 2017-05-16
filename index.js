@@ -1,7 +1,9 @@
 var util = require('./lib/util'),
     mkdirp = require('mkdirp'),
     _ = require('underscore'),
-    path = require('path');
+    path = require('path'),
+    CircularJSON = require('circular-json'),
+    fse = require('fs-extra');
 
 /** Function: defaultPathBuilder
  * This function builds paths for a screenshot file. It is appended to the
@@ -76,7 +78,7 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
     var metaData = {
         description: descriptions.join(' '),
         passed: results.status === 'passed',
-        pending: results.status === 'pending',
+        pending: results.status === 'pending' || results.status === 'disabled',
         os: capabilities.get('platform'),
         sessionId: capabilities.get('webdriver.remote.sessionid'),
         browser: {
@@ -88,7 +90,7 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
     if(results.status === 'passed') {
         metaData.message = (results.passedExpectations[0] || {}).message || 'Passed';
         metaData.trace = (results.passedExpectations[0] || {}).stack;
-    } else if(results.status === 'pending') {
+    } else if(results.status === 'pending' || results.status === 'disabled') {
         metaData.message = results.pendingReason || 'Pending';
     } else {
         metaData.message = (results.failedExpectations[0] || {}).message || 'Failed';
@@ -156,6 +158,8 @@ function ScreenshotReporter(options) {
     this.preserveDirectory = typeof options.preserveDirectory !== 'undefined' ? options.preserveDirectory : true;
     this.takeScreenShotsForSkippedSpecs =
         options.takeScreenShotsForSkippedSpecs || false;
+    this.gatherBrowserLogs =
+        options.gatherBrowserLogs || true;
     this.takeScreenShotsOnlyForFailedSpecs =
         options.takeScreenShotsOnlyForFailedSpecs || false;
     this.finalOptions = {
@@ -191,21 +195,25 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
             result.started = nowString();
 
             afterEach(function() {
-                browser.manage().logs().get('browser').then(function (browserLogs) {
-                    result.browserLogs = browserLogs;
-                    result.browserLogs.concat(browserLogs);
-                })
+                if (self.gatherBrowserLogs) {
+                    browser.driver.getCapabilities().then(function(caps){
+                        browserName = caps.get('browserName');
+                        if (browserName && browserName.toLowerCase().indexOf('chrome') > -1) {
+                            browser.manage().logs().get('browser').then(function (browserLogs) {
+                                result.browserLogs = [];
+                                result.browserLogs = browserLogs;
+                            })
+                        }
+                    });
+                }
             })
         },
-        suiteDone: function(result){
+        suiteDone: function(){
             this.suiteNames.pop();
         },
+
         specDone: function(result) {
             result.stopped = nowString();
-
-            if(!self.takeScreenShotsForSkippedSpecs && result.status == 'disabled') {
-                return;
-            }
 
             // Enabling backwards-compat.  Construct Jasmine v1 style spec.suite.
             function buildSuite(suiteNames, i) {
@@ -218,73 +226,68 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
 
             var suite = buildSuite(this.suiteNames, this.suiteNames.length-1);
 
-            browser.takeScreenshot().then(function (png) {
-                browser.getCapabilities().then(function (capabilities) {
-                    var descriptions = util.gatherDescriptions(
-                        suite,
-                        [result.description]
-                        ),
+            browser.getCapabilities().then(function (capabilities) {
+                var descriptions = util.gatherDescriptions(
+                    suite,
+                    [result.description]
+                    ),
 
-                        baseName = self.pathBuilder(
-                            null,
-                            descriptions,
-                            result,
-                            capabilities
-                        ),
+                    baseName = self.pathBuilder(
+                        null,
+                        descriptions,
+                        result,
+                        capabilities
+                    ),
 
-                        metaData = self.jasmine2MetaDataBuilder(
-                            null,
-                            descriptions,
-                            result,
-                            capabilities
-                        ),
+                    metaData = self.jasmine2MetaDataBuilder(
+                        null,
+                        descriptions,
+                        result,
+                        capabilities
+                    ),
 
-                        screenShotFileName = path.basename(baseName + '.png'),
-                        screenShotFilePath = path.join(path.dirname(baseName + '.png'), self.screenshotsSubfolder),
+                    screenShotFileName = path.basename(baseName + '.png'),
+                    screenShotFilePath = path.join(path.dirname(baseName + '.png'), self.screenshotsSubfolder),
 
-                        metaFile = baseName + '.json',
-                        screenShotPath = path.join(self.baseDirectory, screenShotFilePath, screenShotFileName),
-                        metaDataPath = path.join(self.baseDirectory, metaFile),
-                        jsonPartsPath = path.join(self.baseDirectory, path.dirname(metaFile), self.jsonsSubfolder, path.basename(metaFile)),
+                    metaFile = baseName + '.json',
+                    screenShotPath = path.join(self.baseDirectory, screenShotFilePath, screenShotFileName),
+                    metaDataPath = path.join(self.baseDirectory, metaFile),
+                    jsonPartsPath = path.join(self.baseDirectory, path.dirname(metaFile), self.jsonsSubfolder, path.basename(metaFile)),
 
-                        // pathBuilder can return a subfoldered path too. So extract the
-                        // directory path without the baseName
-                        directory = path.dirname(screenShotPath),
-                        jsonsDirectory = path.dirname(jsonPartsPath);
+                    // pathBuilder can return a subfoldered path too. So extract the
+                    // directory path without the baseName
+                    directory = path.dirname(screenShotPath),
+                    jsonsDirectory = path.dirname(jsonPartsPath);
 
-                    metaData.browserLogs = [];
+                metaData.browserLogs = [];
 
-                    if (!(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
-                        metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
-                    }
+                if (!(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
+                    metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
+                }
 
-                    metaData.browserLogs = result.browserLogs;
-                    metaData.duration = new Date(result.stopped) - new Date(result.started);
+                if (result.browserLogs) { metaData.browserLogs = result.browserLogs };
+                metaData.duration = new Date(result.stopped) - new Date(result.started);
 
-                    mkdirp(directory, function (err) {
-                        if (err) {
-                            throw new Error('Could not create directory ' + directory);
-                        } else {
-                            util.addMetaData(metaData, metaDataPath, descriptions, self.finalOptions);
-                            if (!(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
-                                util.storeScreenShot(png, screenShotPath);
-                            }
-                        }
+                if ((result.status != 'pending' && result.status != 'disabled') && !(self.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
+                    browser.takeScreenshot().then(function (png) {
+                        util.storeScreenShot(png, screenShotPath);
+                        util.storeMetaData(metaData, jsonPartsPath, descriptions);
+                        util.addMetaData(metaData, metaDataPath, self.finalOptions);
+                    }).catch(function(e) {
+                        console.warn('Could not store Meta Data or add Meta Data to combined.js and generate report');
+                        console.warn(e);
                     });
-
-                    mkdirp(jsonsDirectory, function (err) {
-                        if (err) {
-                            throw new Error('Could not create directory ' + jsonsDirectory);
-                        } else {
-                            util.storeMetaData(metaData, jsonPartsPath);
-                        }
-                    });
-                    // require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
-                });
+                } else {
+                    util.storeMetaData(metaData, jsonPartsPath, descriptions);
+                    util.addMetaData(metaData, metaDataPath, self.finalOptions);
+                }
             });
         }
     };
 };
+
+
+
 
 /** Function: reportSpecResults
  * Called by Jasmine when reporting results for a test spec. It triggers the
@@ -299,74 +302,58 @@ ScreenshotReporter.prototype.reportSpecResults =
         var self = this,
             results = spec.results();
 
-        if(!self.takeScreenShotsForSkippedSpecs && results.skipped) {
-            return;
-        }
+        browser.getCapabilities().then(function (capabilities) {
+            var descriptions = util.gatherDescriptions(
+                spec.suite,
+                [spec.description]
+                ),
+                baseName = self.pathBuilder(
+                    spec,
+                    descriptions,
+                    results,
+                    capabilities
+                ),
 
-        browser.takeScreenshot().then(function (png) {
-            browser.manage().logs().get('browser').then(function (browserLogs) {
-                browser.getCapabilities().then(function (capabilities) {
-                    var descriptions = util.gatherDescriptions(
-                        spec.suite,
-                        [spec.description]
-                        ),
-                        baseName = self.pathBuilder(
-                            spec,
-                            descriptions,
-                            results,
-                            capabilities
-                        ),
+                metaData = self.metaDataBuilder(
+                    spec,
+                    descriptions,
+                    results,
+                    capabilities
+                ),
+                screenShotFileName = path.basename(baseName + '.png'),
+                screenShotFilePath = path.join(path.dirname(baseName + '.png'), self.screenshotsSubfolder),
 
-                        metaData = self.metaDataBuilder(
-                            spec,
-                            descriptions,
-                            results,
-                            capabilities
-                        ),
-                        screenShotFileName = path.basename(baseName + '.png'),
-                        screenShotFilePath = path.join(path.dirname(baseName + '.png'), self.screenshotsSubfolder),
+                metaFile = baseName + '.json',
+                screenShotPath = path.join(self.baseDirectory, screenShotFilePath, screenShotFileName),
+                metaDataPath = path.join(self.baseDirectory, metaFile),
+                jsonPartsPath = path.join(self.baseDirectory, path.dirname(metaFile), self.jsonsSubfolder, path.basename(metaFile)),
 
-                        metaFile = baseName + '.json',
-                        screenShotPath = path.join(self.baseDirectory, screenShotFilePath, screenShotFileName),
-                        metaDataPath = path.join(self.baseDirectory, metaFile),
-                        jsonPartsPath = path.join(self.baseDirectory, path.dirname(metaFile), self.jsonsSubfolder, path.basename(metaFile)),
+                // pathBuilder can return a subfoldered path too. So extract the
+                // directory path without the baseName
+                directory = path.dirname(screenShotPath),
+                jsonsDirectory = path.dirname(jsonPartsPath);
 
-                        // pathBuilder can return a subfoldered path too. So extract the
-                        // directory path without the baseName
-                        directory = path.dirname(screenShotPath),
-                        jsonsDirectory = path.dirname(jsonPartsPath);
+            metaData.browserLogs = [];
 
-                    metaData.browserLogs = [];
+            if (!(self.takeScreenShotsOnlyForFailedSpecs && results.passed())) {
+                metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
+            }
 
-                    if (!(self.takeScreenShotsOnlyForFailedSpecs && results.passed())) {
-                        metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
-                    }
+            if (results.browserLogs) { metaData.browserLogs = results.browserLogs };
 
-                    metaData.browserLogs = browserLogs;
-
-                    mkdirp(directory, function (err) {
-                        if (err) {
-                            throw new Error('Could not create directory ' + directory);
-                        } else {
-                            util.addMetaData(metaData, metaDataPath, descriptions, self.finalOptions);
-                            if (!(self.takeScreenShotsOnlyForFailedSpecs && results.passed())) {
-                                util.storeScreenShot(png, screenShotPath);
-                            }
-                        }
-                    });
-
-                    mkdirp(jsonsDirectory, function (err) {
-                        if (err) {
-                            throw new Error('Could not create directory ' + jsonsDirectory);
-                        } else {
-                            util.storeMetaData(metaData, jsonPartsPath);
-                        }
-                    });
-                    // require('fs-symlink')(directory, path.resolve(directory, '..', '_latest'));
+            if ((!results.skipped) && !(self.takeScreenShotsOnlyForFailedSpecs && results.passed())) {
+                browser.takeScreenshot().then(function (png) {
+                    util.storeMetaData(metaData, jsonPartsPath, descriptions);
+                    util.addMetaData(metaData, metaDataPath, self.finalOptions);
+                }).catch(function(e) {
+                    console.warn('Could not store Meta Data or add Meta Data to combined.js and generate report');
+                    console.warn(e);
                 });
-            });
+            } else {
+                util.storeMetaData(metaData, jsonPartsPath, descriptions);
+                util.addMetaData(metaData, metaDataPath, self.finalOptions);
+            }
         });
-
     };
 
 function nowString() {

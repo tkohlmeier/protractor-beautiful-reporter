@@ -72,6 +72,7 @@ exports.config = {
     onPrepare: function () {
         // Add a screenshot reporter:
         jasmine.getEnv().addReporter(new HtmlReporter({
+            preserveDirectory: false,
             baseDirectory: 'reports',
             screenshotsSubfolder: 'images',
             jsonsSubfolder: 'jsons',
