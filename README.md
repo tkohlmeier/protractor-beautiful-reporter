@@ -3,7 +3,7 @@
 ![HTML / Angular Test Report](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/html-report.png "test report")
 
 ## Features
-* Browser's Logs
+* Browser's Logs (only for Chrome)
 * Stack Trace (with suspected line highlight)
 * Screenshot
 * Screenshot only on failed spec
@@ -209,6 +209,18 @@ Default is `report.html`.
  new HtmlReporter({
     baseDirectory: '/tmp/screenshots'
     , preserveDirectory: false
+ });
+ ```
+Default is `true`.
+
+
+### Store Browser logs (optional)
+ You can preserve (or clear) the base directory using `preserveDirectory:` option:
+ 
+ ```javascript
+ new HtmlReporter({
+    baseDirectory: '/tmp/screenshots'
+    , gatherBrowserLogs: false
  });
  ```
 Default is `true`.
