@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.4.8
+* Improved displaying of spec names
+
 ## Version 0.4.7
 * Fixed issue where last pending test case was not added to report
 * Fixed crash on gathering Logs from Browsers other than Chrome

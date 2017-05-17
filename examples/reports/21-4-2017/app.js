@@ -22,7 +22,7 @@ app.controller('ScreenshotReportController', function ($scope) {
     this.getParent = function (str) {
         var arr = str.split('|');
         str = "";
-        for (var i = arr.length - 1; i > 0; i--) {
+        for (var i = arr.length - 2; i > 0; i--) {
             str += arr[i] + " > ";
         }
         return str.slice(0, -3);

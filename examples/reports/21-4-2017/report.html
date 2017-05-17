@@ -185,7 +185,7 @@
             {{ctrl.currentSpec = ctrl.getSpec(result.description)}}
         </th>
     </tr>
-    <tr ng-if="ctrl.currentParent != ctrl.getParent(result.description)">
+    <tr ng-if="ctrl.currentParent != ctrl.getParent(result.description) && ctrl.getParent(result.description)">
         <th class="testCase" colspan="10">
             {{ctrl.currentParent = ctrl.getParent(result.description)}}
         </th>
