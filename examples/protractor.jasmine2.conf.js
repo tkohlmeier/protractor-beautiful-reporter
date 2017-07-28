@@ -80,7 +80,7 @@ exports.config = {
             takeScreenShotsOnlyForFailedSpecs: true,
             screenshotsSubfolder: 'images',
             jsonsSubfolder: 'jsons',
-            baseDirectory: 'reports',
+            baseDirectory: 'reports-tmp',
             pathBuilder: function pathBuilder(spec, descriptions, results, capabilities) {
                 // Return '<30-12-2016>/<browser>/<specname>' as path for screenshots:
                 // Example: '30-12-2016/firefox/list-should work'.

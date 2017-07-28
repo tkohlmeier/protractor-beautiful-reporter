@@ -1,4 +1,6 @@
 # Changelog
+## Version 0.4.9
+* Better error handling for Jasmine 2
 
 ## Version 0.4.8
 * Improved displaying of spec names
