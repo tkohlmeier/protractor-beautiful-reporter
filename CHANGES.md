@@ -1,5 +1,5 @@
 # Changelog
-## Version 0.4.9
+## Version 0.5.0
 * Better error handling for Jasmine 2
 
 ## Version 0.4.8
