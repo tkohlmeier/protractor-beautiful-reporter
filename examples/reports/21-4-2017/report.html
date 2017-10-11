@@ -266,7 +266,7 @@
                             <span class="glyphicon glyphicon-picture"></span>
                 </span>
                 <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
-                    <img src="{{result.screenShotFile}}" style="max-width: 100%"/></a>
+                    <img ng-src="{{result.screenShotFile}}" style="max-width: 100%"/></a>
                 <!-- Screenshot Modal -->
                 <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
                      aria-labelledby="imageModalLabel{{$index}}">
