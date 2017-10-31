@@ -215,7 +215,7 @@ Default is `true`.
 
 
 ### Store Browser logs (optional)
- You can preserve (or clear) the base directory using `preserveDirectory:` option:
+ You can gather browser logs using `gatherBrowserLogs:` option:
  
  ```javascript
  new HtmlReporter({
