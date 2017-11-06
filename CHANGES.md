@@ -1,4 +1,11 @@
 # Changelog
+
+## Version 0.5.1
+* Updated CSS link
+* Added CSS file to the repo for later use
+* Fixed issue with errors in logs because of missing images
+* Fixed gatherBrowserLogs option definition
+
 ## Version 0.5.0
 * Better error handling for Jasmine 2
 
