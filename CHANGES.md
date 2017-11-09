@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.5.2
+* Fixed performance issue and stability. PR by yjaaidi
+* Added test sorting for sharded runs
+
 ## Version 0.5.1
 * Updated CSS link
 * Added CSS file to the repo for later use
