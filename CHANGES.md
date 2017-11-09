@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.5.3
+* Fixed issue with undefined describe
+
 ## Version 0.5.2
 * Fixed performance issue and stability. PR by yjaaidi
 * Added test sorting for sharded runs
