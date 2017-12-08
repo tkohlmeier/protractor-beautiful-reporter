@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.5.4
+* Fixed cssOverrideFile option
+
 ## Version 0.5.3
 * Fixed issue with undefined describe
 
