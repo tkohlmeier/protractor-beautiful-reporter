@@ -307,6 +307,7 @@ class Jasmine2Reporter {
         }
 
         if (result.browserLogs) { metaData.browserLogs = result.browserLogs };
+        metaData.timestamp = new Date(result.started).getTime();
         metaData.duration = new Date(result.stopped) - new Date(result.started);
 
         if ((result.status != 'pending' && result.status != 'disabled') && !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {

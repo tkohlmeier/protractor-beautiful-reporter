@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.5.6
+* Saving timestamp of test cases
+
 ## Version 0.5.5
 * Fixed docTitle option
 
