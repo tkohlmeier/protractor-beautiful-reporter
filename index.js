@@ -151,7 +151,7 @@ function ScreenshotReporter(options) {
     }
 
     this.pathBuilder = options.pathBuilder || defaultPathBuilder;
-    this.docTitle = options.docTitle || 'Generated test report';
+    this.docTitle = options.docTitle || 'Test Results';
     this.docName = options.docName || 'report.html';
     this.metaDataBuilder = options.metaDataBuilder || defaultMetaDataBuilder;
     this.jasmine2MetaDataBuilder = options.jasmine2MetaDataBuilder || jasmine2MetaDataBuilder;

@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.5.5
+* Fixed docTitle option
+
 ## Version 0.5.4
 * Fixed cssOverrideFile option
 
