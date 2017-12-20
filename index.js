@@ -185,7 +185,7 @@ class Jasmine2Reporter {
 
         /* `_asyncFlow` is a promise.
          * It is a "flow" that we create in `specDone`.
-         * `suiteDone`, `suiteStarted` and `specStarted` will then add their steps to the flow and the `beforeEach`
+         * `suiteDone`, `suiteStarted` and `specStarted` will then add their steps to the flow and the `_awaitAsyncFlow`
          * function will wait for the flow to finish before running the next spec. */
         this._asyncFlow = null;
 
@@ -197,7 +197,8 @@ class Jasmine2Reporter {
     jasmineStarted() {
 
         /* Register `beforeEach` that will wait for all tasks in flow to be finished. */
-        beforeEach(() => this._beforeEach());
+        beforeEach(() => this._awaitAsyncFlow());
+        afterAll(() => this._awaitAsyncFlow());
 
     }
 
@@ -230,8 +231,8 @@ class Jasmine2Reporter {
 
     }
 
-    /* @hack: `beforeEach` waits for `specDone` task to finish before running the next spec.*/
-    async _beforeEach() {
+    /* @hack: `_awaitAsyncFlow` waits for `specDone` task to finish before running the next spec.*/
+    async _awaitAsyncFlow() {
         await this._asyncFlow;
         this._asyncFlow = null;
     }

@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 0.5.7
+* Fixed last spec not being saved
+* Fixed pending specs not being saved
+
 ## Version 0.5.6
 * Saving timestamp of test cases
 
