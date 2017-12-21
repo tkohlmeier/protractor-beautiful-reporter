@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.0.1
+* Bundled assets into report
+
 ## Version 0.5.8
 * Added option to change sort function
 
