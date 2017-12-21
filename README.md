@@ -41,18 +41,7 @@ In your Protractor configuration file, register `protractor-beautiful-reporter` 
 #### Jasmine 1.x:
 
 ```javascript
-var HtmlReporter = require('protractor-beautiful-reporter');
-
-exports.config = {
-   // your config here ...
-
-   onPrepare: function() {
-      // Add a screenshot reporter and store screenshots to `/tmp/screenshots`:
-      jasmine.getEnv().addReporter(new HtmlReporter({
-         baseDirectory: 'tmp/screenshots'
-      }));
-   }
-}
+No longer supported
 ```
 
 #### Jasmine 2.x:
@@ -146,6 +135,47 @@ new HtmlReporter({
 ```
 
 If you omit this, all images will be stored in main folder.
+
+
+### Sort function (optional)
+You can change default `sortFunction` option:
+
+```javascript
+new HtmlReporter({
+   baseDirectory: 'tmp/screenshots'
+   , sortFunction: function sortFunction(a, b) {
+         if (a.cachedBase === undefined) {
+             var aTemp = a.description.split('|').reverse();
+             a.cachedBase = aTemp.slice(0).slice(0,-1);
+             a.cachedName = aTemp.slice(0).join('');
+         };
+         if (b.cachedBase === undefined) {
+             var bTemp = b.description.split('|').reverse();
+             b.cachedBase = bTemp.slice(0).slice(0,-1);
+             b.cachedName = bTemp.slice(0).join('');
+         };
+    
+         var firstBase = a.cachedBase;
+         var secondBase = b.cachedBase;
+    
+         for (var i = 0; i < firstBase.length || i < secondBase.length; i++) {
+    
+             if (firstBase[i] === undefined) { return -1; }
+             if (secondBase[i] === undefined) { return 1; }
+             if (firstBase[i].localeCompare(secondBase[i]) === 0) { continue; }
+             return firstBase[i].localeCompare(secondBase[i]);
+         }
+    
+         var firstTimestamp = a.timestamp;
+         var secondTimestamp = b.timestamp;
+    
+         if(firstTimestamp < secondTimestamp) return -1;
+         else return 1;
+     }
+});
+```
+
+If you omit this, all specs will be sorted by timestamp (please be aware that sharded runs look ugly when sorted by default sort).
 
 
 ### Report for skipped test cases (optional)

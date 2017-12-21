@@ -101,6 +101,15 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
 }
 
 
+function sortFunction(a, b) {
+    var firstTimestamp = a.timestamp;
+    var secondTimestamp = b.timestamp;
+
+    if(firstTimestamp < secondTimestamp) return -1;
+    else return 1;
+}
+
+
 
 /** Class: ScreenshotReporter
  * Creates a new screenshot reporter using the given `options` object.
@@ -155,6 +164,7 @@ function ScreenshotReporter(options) {
     this.docName = options.docName || 'report.html';
     this.metaDataBuilder = options.metaDataBuilder || defaultMetaDataBuilder;
     this.jasmine2MetaDataBuilder = options.jasmine2MetaDataBuilder || jasmine2MetaDataBuilder;
+    this.sortFunction = options.sortFunction || sortFunction;
     this.preserveDirectory = typeof options.preserveDirectory !== 'undefined' ? options.preserveDirectory : true;
     this.takeScreenShotsForSkippedSpecs =
         options.takeScreenShotsForSkippedSpecs || false;
@@ -167,6 +177,7 @@ function ScreenshotReporter(options) {
         takeScreenShotsForSkippedSpecs: this.takeScreenShotsForSkippedSpecs,
         metaDataBuilder: this.metaDataBuilder,
         pathBuilder: this.pathBuilder,
+        sortFunction: this.sortFunction,
         baseDirectory: this.baseDirectory,
         screenshotsSubfolder: this.screenshotsSubfolder,
         docTitle: this.docTitle,

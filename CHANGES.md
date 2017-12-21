@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 0.5.8
+* Added option to change sort function
+
 ## Version 0.5.7
 * Fixed last spec not being saved
 * Fixed pending specs not being saved
