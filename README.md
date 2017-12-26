@@ -178,7 +178,7 @@ new HtmlReporter({
 If you omit this, all specs will be sorted by timestamp (please be aware that sharded runs look ugly when sorted by default sort).
 
 
-### Report for skipped test cases (optional)
+### Exclude report for skipped test cases (optional)
 You can set `excludeSkipped` to `true` to exclude reporting skipped test cases entirely.
 
 ```javascript
