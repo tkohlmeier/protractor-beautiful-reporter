@@ -166,7 +166,7 @@ function ScreenshotReporter(options) {
     this.jasmine2MetaDataBuilder = options.jasmine2MetaDataBuilder || jasmine2MetaDataBuilder;
     this.sortFunction = options.sortFunction || sortFunction;
     this.preserveDirectory = typeof options.preserveDirectory !== 'undefined' ? options.preserveDirectory : true;
-    this.excludeSkipped = options.excludeSkipped || false;
+    this.excludeSkippedSpecs = options.excludeSkippedSpecs || false;
     this.takeScreenShotsForSkippedSpecs =
         options.takeScreenShotsForSkippedSpecs || false;
     this.gatherBrowserLogs =
@@ -174,7 +174,7 @@ function ScreenshotReporter(options) {
     this.takeScreenShotsOnlyForFailedSpecs =
         options.takeScreenShotsOnlyForFailedSpecs || false;
     this.finalOptions = {
-        excludeSkipped: this.excludeSkipped,
+        excludeSkippedSpecs: this.excludeSkippedSpecs,
         takeScreenShotsOnlyForFailedSpecs: this.takeScreenShotsOnlyForFailedSpecs,
         takeScreenShotsForSkippedSpecs: this.takeScreenShotsForSkippedSpecs,
         metaDataBuilder: this.metaDataBuilder,
@@ -252,7 +252,7 @@ class Jasmine2Reporter {
 
     async _asyncSpecDone(result) {
         // Don't report if it's skipped and we don't need it
-        if ((result.status === 'pending' || result.status === 'disabled') && this._screenshotReporter.excludeSkipped) {
+        if ((result.status === 'pending' || result.status === 'disabled') && this._screenshotReporter.excludeSkippedSpecs) {
             return;
         }
 

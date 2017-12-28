@@ -179,12 +179,12 @@ If you omit this, all specs will be sorted by timestamp (please be aware that sh
 
 
 ### Exclude report for skipped test cases (optional)
-You can set `excludeSkipped` to `true` to exclude reporting skipped test cases entirely.
+You can set `excludeSkippedSpecs` to `true` to exclude reporting skipped test cases entirely.
 
 ```javascript
 new HtmlReporter({
   baseDirectory: `tmp/screenshots`
-  , excludeSkipped: true
+  , excludeSkippedSpecs: true
 });
 ```
 Default is `false`.
