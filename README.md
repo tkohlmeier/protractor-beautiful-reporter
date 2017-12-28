@@ -178,8 +178,20 @@ new HtmlReporter({
 If you omit this, all specs will be sorted by timestamp (please be aware that sharded runs look ugly when sorted by default sort).
 
 
-### Report for skipped test cases (optional)
-You can define if you want report from skipped test cases using the `takeScreenShotsForSkippedSpecs` option:
+### Exclude report for skipped test cases (optional)
+You can set `excludeSkippedSpecs` to `true` to exclude reporting skipped test cases entirely.
+
+```javascript
+new HtmlReporter({
+  baseDirectory: `tmp/screenshots`
+  , excludeSkippedSpecs: true
+});
+```
+Default is `false`.
+
+### Screenshots for skipped test cases (optional)
+
+You can define if you want report screenshots from skipped test cases using the `takeScreenShotsForSkippedSpecs` option:
 
 ```javascript
 new HtmlReporter({
