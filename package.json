@@ -1,6 +1,6 @@
 {
   "name": "protractor-beautiful-reporter",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "description": "An npm module and which generates your Protractor test reports in HTML (angular) with screenshots",
   "main": "index.js",
   "repository": {
@@ -21,7 +21,7 @@
     "jasmine",
     "reporter",
     "gruntplugin",
-    "protractor html report"
+    "protractor html reporter"
   ],
   "author": "Marcin Cierpicki <zycienawalizkach@gmail.com>",
   "license": "MIT",

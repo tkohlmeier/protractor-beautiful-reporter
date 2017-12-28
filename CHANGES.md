@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.0.3
+* Added option to skip disabled specs
+
 ## Version 1.0.1
 * Bundled assets into report
 
