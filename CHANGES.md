@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.1.0
+* Compiled app to ES5
+
 ## Version 1.0.3
 * Added option to skip disabled specs
 
