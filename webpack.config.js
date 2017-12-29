@@ -2,7 +2,7 @@
 let libraryName = 'ScreenshotReporter';
 
 module.exports = {
-    entry: ['babel-polyfill', './reporter.js'],
+    entry: ['babel-polyfill', './app/reporter.js'],
     target: 'node',
     node: {
         __dirname: false,
@@ -19,7 +19,7 @@ module.exports = {
     module: {
         loaders: [
             {
-                test: /index\.js?$/,
+                test: /reporter\.js?$/,
                 loader: 'babel-loader',
                 query: {
                     presets: ['es2015', "stage-0"],
