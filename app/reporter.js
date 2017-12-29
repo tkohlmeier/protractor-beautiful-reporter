@@ -1,4 +1,4 @@
-var util = require('./lib/util'),
+var util = require('./util'),
     _ = require('underscore'),
     path = require('path');
 
@@ -129,7 +129,7 @@ function sortFunction(a, b) {
  *                                                screenshot for a skipped spec?
  *                                                Optional (default: false).
  */
-export function ScreenshotReporter(options) {
+function ScreenshotReporter(options) {
     options = options || {};
     if(!options.baseDirectory || options.baseDirectory.length === 0) {
         throw new Error('Please pass a valid base directory to store the ' +
