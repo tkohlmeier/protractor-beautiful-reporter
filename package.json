@@ -7,6 +7,9 @@
     "type": "git",
     "url": "https://github.com/Evilweed/protractor-beautiful-reporter"
   },
+  "scripts": {
+    "app:compile": "node --max_old_space_size=5760 ./node_modules/webpack/bin/webpack.js --config ./webpack.config.js",
+  },
   "dependencies": {
     "mkdirp": "~0.3.5",
     "fs-extra": "^3.0.1",
@@ -28,5 +31,16 @@
   "bugs": {
     "url": "https://github.com/Evilweed/protractor-beautiful-reporter/issues"
   },
-  "homepage": "https://github.com/Evilweed/protractor-beautiful-reporter"
+  "homepage": "https://github.com/Evilweed/protractor-beautiful-reporter",
+  "devDependencies": {
+    "babel-core": "6.14.0",
+    "babel-loader": "^6.1.0",
+    "babel-plugin-transform-runtime": "6.15.0",
+    "babel-plugin-add-module-exports": "^0.2.1",
+    "babel-polyfill": "6.13.0",
+    "babel-preset-es2015": "6.14.0",
+    "babel-runtime": "6.11.6",
+    "babel-preset-stage-0": "^6.24.1",
+    "webpack": "^2.2.1"
+  }
 }
