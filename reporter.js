@@ -1,9 +1,6 @@
 var util = require('./lib/util'),
-    mkdirp = require('mkdirp'),
     _ = require('underscore'),
-    path = require('path'),
-    CircularJSON = require('circular-json'),
-    fse = require('fs-extra');
+    path = require('path');
 
 /** Function: defaultPathBuilder
  * This function builds paths for a screenshot file. It is appended to the
@@ -132,7 +129,7 @@ function sortFunction(a, b) {
  *                                                screenshot for a skipped spec?
  *                                                Optional (default: false).
  */
-function ScreenshotReporter(options) {
+export function ScreenshotReporter(options) {
     options = options || {};
     if(!options.baseDirectory || options.baseDirectory.length === 0) {
         throw new Error('Please pass a valid base directory to store the ' +
@@ -311,12 +308,9 @@ class Jasmine2Reporter {
             metaFile = baseName + '.json',
             screenShotPath = path.join(this._screenshotReporter.baseDirectory, screenShotFilePath, screenShotFileName),
             metaDataPath = path.join(this._screenshotReporter.baseDirectory, metaFile),
-            jsonPartsPath = path.join(this._screenshotReporter.baseDirectory, path.dirname(metaFile), this._screenshotReporter.jsonsSubfolder, path.basename(metaFile)),
+            jsonPartsPath = path.join(this._screenshotReporter.baseDirectory, path.dirname(metaFile), this._screenshotReporter.jsonsSubfolder, path.basename(metaFile));
 
-            // pathBuilder can return a subfoldered path too. So extract the
-            // directory path without the baseName
-            directory = path.dirname(screenShotPath),
-            jsonsDirectory = path.dirname(jsonPartsPath);
+
 
         metaData.browserLogs = [];
 
@@ -328,7 +322,7 @@ class Jasmine2Reporter {
         metaData.timestamp = new Date(result.started).getTime();
         metaData.duration = new Date(result.stopped) - new Date(result.started);
 
-        if ((result.status != 'pending' && result.status != 'disabled') && !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
+        if ((result.status !== 'pending' && result.status !== 'disabled') && !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
             const png = await browser.takeScreenshot();
             util.storeScreenShot(png, screenShotPath);
         }
@@ -368,70 +362,12 @@ ScreenshotReporter.prototype.getJasmine2Reporter = function() {
 
 
 /** Function: reportSpecResults
- * Called by Jasmine when reporting results for a test spec. It triggers the
- * whole screenshot capture process and stores any relevant information.
- *
- * Parameters:
- *     (Object) spec - The test spec to report.
+ * Backward compatibility
+ * Jasmine 1 is no longer supported
  */
 ScreenshotReporter.prototype.reportSpecResults =
     function reportSpecResults(spec) {
-        /* global browser */
-        var self = this,
-            results = spec.results();
-
-        browser.getCapabilities().then(function (capabilities) {
-            var descriptions = util.gatherDescriptions(
-                spec.suite,
-                [spec.description]
-                ),
-                baseName = self.pathBuilder(
-                    spec,
-                    descriptions,
-                    results,
-                    capabilities
-                ),
-
-                metaData = self.metaDataBuilder(
-                    spec,
-                    descriptions,
-                    results,
-                    capabilities
-                ),
-                screenShotFileName = path.basename(baseName + '.png'),
-                screenShotFilePath = path.join(path.dirname(baseName + '.png'), self.screenshotsSubfolder),
-
-                metaFile = baseName + '.json',
-                screenShotPath = path.join(self.baseDirectory, screenShotFilePath, screenShotFileName),
-                metaDataPath = path.join(self.baseDirectory, metaFile),
-                jsonPartsPath = path.join(self.baseDirectory, path.dirname(metaFile), self.jsonsSubfolder, path.basename(metaFile)),
-
-                // pathBuilder can return a subfoldered path too. So extract the
-                // directory path without the baseName
-                directory = path.dirname(screenShotPath),
-                jsonsDirectory = path.dirname(jsonPartsPath);
-
-            metaData.browserLogs = [];
-
-            if (!(self.takeScreenShotsOnlyForFailedSpecs && results.passed())) {
-                metaData.screenShotFile = path.join(self.screenshotsSubfolder, screenShotFileName);
-            }
-
-            if (results.browserLogs) { metaData.browserLogs = results.browserLogs };
-
-            if ((!results.skipped) && !(self.takeScreenShotsOnlyForFailedSpecs && results.passed())) {
-                browser.takeScreenshot().then(function (png) {
-                    util.storeMetaData(metaData, jsonPartsPath, descriptions);
-                    util.addMetaData(metaData, metaDataPath, self.finalOptions);
-                }).catch(function(e) {
-                    console.warn('Could not store Meta Data or add Meta Data to combined.js and generate report');
-                    console.warn(e);
-                });
-            } else {
-                util.storeMetaData(metaData, jsonPartsPath, descriptions);
-                util.addMetaData(metaData, metaDataPath, self.finalOptions);
-            }
-        });
+        throw new Error('Jasmine 1 is no longer supported. Please upgrade to Jasmine2.')
     };
 
 function nowString() {
