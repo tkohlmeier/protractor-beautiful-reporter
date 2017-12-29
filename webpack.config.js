@@ -2,7 +2,7 @@
 let libraryName = 'ScreenshotReporter';
 
 module.exports = {
-    entry: ['babel-polyfill', './index.js'],
+    entry: ['babel-polyfill', './reporter.js'],
     target: 'node',
     node: {
         __dirname: false,
