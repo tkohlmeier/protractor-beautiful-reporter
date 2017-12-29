@@ -3,7 +3,6 @@
 ![HTML / Angular Test Report](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/html-report.png "test report")
 
 ## IMPORTANT !
-* This reporter works with Node version 7.6 or later
 * Jasmine 1 is no longer supported
 
 ## Features

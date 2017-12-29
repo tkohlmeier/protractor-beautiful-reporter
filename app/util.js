@@ -34,8 +34,8 @@ function addHTMLReport(jsonData, baseName, options){
         htmlFile = path.join(basePath, options.docName),
         jsFile = path.join(basePath, 'app.js'),
         // Input files
-        htmlInFile = path.join(__dirname, 'index.html'),
-        jsTemplate = path.join(__dirname, 'app.js'),
+        htmlInFile = path.join(__dirname, 'lib', 'index.html'),
+        jsTemplate = path.join(__dirname, 'lib', 'app.js'),
         streamJs,
         streamHtml,
         cssLink = 'bootstrap.css';
@@ -52,7 +52,7 @@ function addHTMLReport(jsonData, baseName, options){
             'bootstrap.min.js'
         ];
         for (var i = 0; i < libs.length; i++) {
-            fs.createReadStream(path.join(__dirname, 'assets', libs[i]))
+            fs.createReadStream(path.join(__dirname, 'lib', 'assets', libs[i]))
                 .pipe(fs.createWriteStream(path.join(basePath, libs[i])));
         }
 
