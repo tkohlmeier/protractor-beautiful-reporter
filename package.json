@@ -8,7 +8,7 @@
     "url": "https://github.com/Evilweed/protractor-beautiful-reporter"
   },
   "scripts": {
-    "app:compile": "node --max_old_space_size=5760 ./node_modules/webpack/bin/webpack.js --config ./webpack.config.js",
+    "app:compile": "node --max_old_space_size=5760 ./node_modules/webpack/bin/webpack.js --config ./webpack.config.js"
   },
   "dependencies": {
     "mkdirp": "~0.3.5",
