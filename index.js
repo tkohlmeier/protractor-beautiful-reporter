@@ -64,7 +64,7 @@ module.exports =
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 377);
+/******/ 	return __webpack_require__(__webpack_require__.s = 376);
 /******/ })
 /************************************************************************/
 /******/ ([
@@ -237,7 +237,7 @@ var polyfills = __webpack_require__(368)
 var legacy = __webpack_require__(367)
 var queue = []
 
-var util = __webpack_require__(376)
+var util = __webpack_require__(375)
 
 function noop () {}
 
@@ -4476,44 +4476,12 @@ module.exports = require("assert");
 "use strict";
 
 
-__webpack_require__(343);
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-__webpack_require__(142);
+function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
-__webpack_require__(144);
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-/* eslint max-len: 0 */
-
-if (global._babelPolyfill) {
-  throw new Error("only one instance of babel-polyfill is allowed");
-}
-global._babelPolyfill = true;
-
-// Should be removed in the next major release:
-
-var DEFINE_PROPERTY = "defineProperty";
-function define(O, key, value) {
-  O[key] || Object[DEFINE_PROPERTY](O, key, {
-    writable: true,
-    configurable: true,
-    value: value
-  });
-}
-
-define(String.prototype, "padLeft", "".padStart);
-define(String.prototype, "padRight", "".padEnd);
-
-"pop,reverse,shift,keys,values,entries,indexOf,every,some,forEach,map,filter,find,findIndex,includes,join,slice,concat,push,splice,unshift,sort,lastIndexOf,reduce,reduceRight,copyWithin,fill".split(",").forEach(function (key) {
-  [][key] && define(Array, key, Function.call.bind([][key]));
-});
-
-/***/ }),
-/* 140 */
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-Object.defineProperty(__webpack_exports__, "__esModule", { value: true });
-/* WEBPACK VAR INJECTION */(function(module) {/* harmony export (immutable) */ __webpack_exports__["ScreenshotReporter"] = ScreenshotReporter;
 var util = __webpack_require__(141),
     _ = __webpack_require__(370),
     path = __webpack_require__(9);
@@ -4567,25 +4535,22 @@ function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
         }
     };
 
-    if(results.items_.length > 0) {
+    if (results.items_.length > 0) {
         var result = results.items_[0];
-        if(!results.passed()){
-            var failedItem = _.where(results.items_,{passed_: false})[0];
-            if(failedItem){
+        if (!results.passed()) {
+            var failedItem = _.where(results.items_, { passed_: false })[0];
+            if (failedItem) {
                 metaData.message = failedItem.message || 'Failed';
-                metaData.trace = failedItem.trace? (failedItem.trace.stack || 'No Stack trace information') : 'No Stack trace information';
+                metaData.trace = failedItem.trace ? failedItem.trace.stack || 'No Stack trace information' : 'No Stack trace information';
             }
-
-        }else{
+        } else {
             metaData.message = result.message || 'Passed';
             metaData.trace = result.trace.stack;
         }
-
     }
 
     return metaData;
 }
-
 
 function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
     var metaData = {
@@ -4600,10 +4565,10 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
         }
     };
 
-    if(results.status === 'passed') {
+    if (results.status === 'passed') {
         metaData.message = (results.passedExpectations[0] || {}).message || 'Passed';
         metaData.trace = (results.passedExpectations[0] || {}).stack;
-    } else if(results.status === 'pending' || results.status === 'disabled') {
+    } else if (results.status === 'pending' || results.status === 'disabled') {
         metaData.message = results.pendingReason || 'Pending';
     } else {
         metaData.message = (results.failedExpectations[0] || {}).message || 'Failed';
@@ -4613,16 +4578,12 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
     return metaData;
 }
 
-
 function sortFunction(a, b) {
     var firstTimestamp = a.timestamp;
     var secondTimestamp = b.timestamp;
 
-    if(firstTimestamp < secondTimestamp) return -1;
-    else return 1;
+    if (firstTimestamp < secondTimestamp) return -1;else return 1;
 }
-
-
 
 /** Class: ScreenshotReporter
  * Creates a new screenshot reporter using the given `options` object.
@@ -4647,26 +4608,25 @@ function sortFunction(a, b) {
  */
 function ScreenshotReporter(options) {
     options = options || {};
-    if(!options.baseDirectory || options.baseDirectory.length === 0) {
-        throw new Error('Please pass a valid base directory to store the ' +
-            'screenshots into.');
+    if (!options.baseDirectory || options.baseDirectory.length === 0) {
+        throw new Error('Please pass a valid base directory to store the ' + 'screenshots into.');
     } else {
         this.baseDirectory = options.baseDirectory;
     }
 
-    if(typeof (options.cssOverrideFile) !== 'undefined' && _.isString(options.cssOverrideFile) ){
+    if (typeof options.cssOverrideFile !== 'undefined' && _.isString(options.cssOverrideFile)) {
         this.cssOverrideFile = options.cssOverrideFile;
     } else {
         this.cssOverrideFile = null;
     }
 
-    if(typeof (options.screenshotsSubfolder) !== 'undefined' &&  _.isString(options.screenshotsSubfolder) ){
+    if (typeof options.screenshotsSubfolder !== 'undefined' && _.isString(options.screenshotsSubfolder)) {
         this.screenshotsSubfolder = options.screenshotsSubfolder;
     } else {
         this.screenshotsSubfolder = '';
     }
 
-    if(typeof (options.jsonsSubfolder) !== 'undefined' &&  _.isString(options.jsonsSubfolder) ){
+    if (typeof options.jsonsSubfolder !== 'undefined' && _.isString(options.jsonsSubfolder)) {
         this.jsonsSubfolder = options.jsonsSubfolder;
     } else {
         this.jsonsSubfolder = '';
@@ -4680,12 +4640,9 @@ function ScreenshotReporter(options) {
     this.sortFunction = options.sortFunction || sortFunction;
     this.preserveDirectory = typeof options.preserveDirectory !== 'undefined' ? options.preserveDirectory : true;
     this.excludeSkippedSpecs = options.excludeSkippedSpecs || false;
-    this.takeScreenShotsForSkippedSpecs =
-        options.takeScreenShotsForSkippedSpecs || false;
-    this.gatherBrowserLogs =
-        options.gatherBrowserLogs || true;
-    this.takeScreenShotsOnlyForFailedSpecs =
-        options.takeScreenShotsOnlyForFailedSpecs || false;
+    this.takeScreenShotsForSkippedSpecs = options.takeScreenShotsForSkippedSpecs || false;
+    this.gatherBrowserLogs = options.gatherBrowserLogs || true;
+    this.takeScreenShotsOnlyForFailedSpecs = options.takeScreenShotsOnlyForFailedSpecs || false;
     this.finalOptions = {
         excludeSkippedSpecs: this.excludeSkippedSpecs,
         takeScreenShotsOnlyForFailedSpecs: this.takeScreenShotsOnlyForFailedSpecs,
@@ -4700,14 +4657,16 @@ function ScreenshotReporter(options) {
         cssOverrideFile: this.cssOverrideFile
     };
 
-    if(!this.preserveDirectory){
+    if (!this.preserveDirectory) {
         util.removeDirectory(this.finalOptions.baseDirectory);
     }
 }
 
-class Jasmine2Reporter {
+var Jasmine2Reporter = function () {
+    function Jasmine2Reporter(_ref) {
+        var screenshotReporter = _ref.screenshotReporter;
 
-    constructor({screenshotReporter}) {
+        _classCallCheck(this, Jasmine2Reporter);
 
         /* `_asyncFlow` is a promise.
          * It is a "flow" that we create in `specDone`.
@@ -4717,181 +4676,387 @@ class Jasmine2Reporter {
 
         this._screenshotReporter = screenshotReporter;
         this._suiteNames = [];
-
     }
 
-    jasmineStarted() {
+    _createClass(Jasmine2Reporter, [{
+        key: 'jasmineStarted',
+        value: function jasmineStarted() {
+            var _this = this;
 
-        /* Register `beforeEach` that will wait for all tasks in flow to be finished. */
-        beforeEach(() => this._awaitAsyncFlow());
-        afterAll(() => this._awaitAsyncFlow());
-
-    }
-
-    suiteStarted(result) {
-        this._addTaskToFlow(async () => this._suiteNames.push(result.description));
-    }
-
-    suiteDone(result) {
-        this._addTaskToFlow(async () => this._suiteNames.pop());
-    }
-
-    specStarted(result) {
-        this._addTaskToFlow(async () => result.started = nowString());
-    }
-
-    specDone(result) {
-        this._addTaskToFlow(async () => this._asyncSpecDone(result));
-    }
-
-    _addTaskToFlow(callback) {
-
-        /* Create. */
-        if (this._asyncFlow == null) {
-            this._asyncFlow = callback();
+            /* Register `beforeEach` that will wait for all tasks in flow to be finished. */
+            beforeEach(function () {
+                return _this._awaitAsyncFlow();
+            });
+            afterAll(function () {
+                return _this._awaitAsyncFlow();
+            });
         }
-        /* Chain. */
-        else {
-            this._asyncFlow = this._asyncFlow.then(callback);
+    }, {
+        key: 'suiteStarted',
+        value: function suiteStarted(result) {
+            var _this2 = this;
+
+            this._addTaskToFlow(_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+                return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                        switch (_context.prev = _context.next) {
+                            case 0:
+                                return _context.abrupt('return', _this2._suiteNames.push(result.description));
+
+                            case 1:
+                            case 'end':
+                                return _context.stop();
+                        }
+                    }
+                }, _callee, _this2);
+            })));
         }
+    }, {
+        key: 'suiteDone',
+        value: function suiteDone(result) {
+            var _this3 = this;
 
-    }
+            this._addTaskToFlow(_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2() {
+                return regeneratorRuntime.wrap(function _callee2$(_context2) {
+                    while (1) {
+                        switch (_context2.prev = _context2.next) {
+                            case 0:
+                                return _context2.abrupt('return', _this3._suiteNames.pop());
 
-    /* @hack: `_awaitAsyncFlow` waits for `specDone` task to finish before running the next spec.*/
-    async _awaitAsyncFlow() {
-        await this._asyncFlow;
-        this._asyncFlow = null;
-    }
-
-    async _asyncSpecDone(result) {
-        // Don't report if it's skipped and we don't need it
-        if ((result.status === 'pending' || result.status === 'disabled') && this._screenshotReporter.excludeSkippedSpecs) {
-            return;
+                            case 1:
+                            case 'end':
+                                return _context2.stop();
+                        }
+                    }
+                }, _callee2, _this3);
+            })));
         }
+    }, {
+        key: 'specStarted',
+        value: function specStarted(result) {
+            var _this4 = this;
 
-        result.stopped = nowString();
+            this._addTaskToFlow(_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3() {
+                return regeneratorRuntime.wrap(function _callee3$(_context3) {
+                    while (1) {
+                        switch (_context3.prev = _context3.next) {
+                            case 0:
+                                return _context3.abrupt('return', result.started = nowString());
 
-        await this._gatherBrowserLogs(result);
-        await this._takeScreenShotAndAddMetaData(result);
-
-    }
-
-    async _gatherBrowserLogs(result) {
-
-        if (!this._screenshotReporter.gatherBrowserLogs) {
-            return;
+                            case 1:
+                            case 'end':
+                                return _context3.stop();
+                        }
+                    }
+                }, _callee3, _this4);
+            })));
         }
+    }, {
+        key: 'specDone',
+        value: function specDone(result) {
+            var _this5 = this;
 
-        const capabilities = await browser.getCapabilities();
-        const browserName = capabilities.get('browserName');
+            this._addTaskToFlow(_asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4() {
+                return regeneratorRuntime.wrap(function _callee4$(_context4) {
+                    while (1) {
+                        switch (_context4.prev = _context4.next) {
+                            case 0:
+                                return _context4.abrupt('return', _this5._asyncSpecDone(result));
 
-        /* Skip incompatible browsers. */
-        if (browserName == null || !browserName.toLowerCase().match(/chrome/)) {
-            return;
+                            case 1:
+                            case 'end':
+                                return _context4.stop();
+                        }
+                    }
+                }, _callee4, _this5);
+            })));
         }
+    }, {
+        key: '_addTaskToFlow',
+        value: function _addTaskToFlow(callback) {
 
-        result.browserLogs = await browser.manage().logs().get('browser');
-
-    }
-
-    async _takeScreenShotAndAddMetaData(result) {
-
-        const capabilities = await browser.getCapabilities();
-        const suite = this._buildSuite();
-
-        var descriptions = util.gatherDescriptions(
-            suite,
-            [result.description]
-            ),
-
-            baseName = this._screenshotReporter.pathBuilder(
-                null,
-                descriptions,
-                result,
-                capabilities
-            ),
-
-            metaData = this._screenshotReporter.jasmine2MetaDataBuilder(
-                null,
-                descriptions,
-                result,
-                capabilities
-            ),
-
-            screenShotFileName = path.basename(baseName + '.png'),
-            screenShotFilePath = path.join(path.dirname(baseName + '.png'), this._screenshotReporter.screenshotsSubfolder),
-
-            metaFile = baseName + '.json',
-            screenShotPath = path.join(this._screenshotReporter.baseDirectory, screenShotFilePath, screenShotFileName),
-            metaDataPath = path.join(this._screenshotReporter.baseDirectory, metaFile),
-            jsonPartsPath = path.join(this._screenshotReporter.baseDirectory, path.dirname(metaFile), this._screenshotReporter.jsonsSubfolder, path.basename(metaFile));
-
-
-
-        metaData.browserLogs = [];
-
-        if (!(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
-            metaData.screenShotFile = path.join(this._screenshotReporter.screenshotsSubfolder, screenShotFileName);
+            /* Create. */
+            if (this._asyncFlow == null) {
+                this._asyncFlow = callback();
+            }
+            /* Chain. */
+            else {
+                    this._asyncFlow = this._asyncFlow.then(callback);
+                }
         }
 
-        if (result.browserLogs) { metaData.browserLogs = result.browserLogs };
-        metaData.timestamp = new Date(result.started).getTime();
-        metaData.duration = new Date(result.stopped) - new Date(result.started);
+        /* @hack: `_awaitAsyncFlow` waits for `specDone` task to finish before running the next spec.*/
 
-        if ((result.status !== 'pending' && result.status !== 'disabled') && !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
-            const png = await browser.takeScreenshot();
-            util.storeScreenShot(png, screenShotPath);
-        }
+    }, {
+        key: '_awaitAsyncFlow',
+        value: function () {
+            var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5() {
+                return regeneratorRuntime.wrap(function _callee5$(_context5) {
+                    while (1) {
+                        switch (_context5.prev = _context5.next) {
+                            case 0:
+                                _context5.next = 2;
+                                return this._asyncFlow;
 
-        util.storeMetaData(metaData, jsonPartsPath, descriptions);
-        util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
+                            case 2:
+                                this._asyncFlow = null;
 
-    }
+                            case 3:
+                            case 'end':
+                                return _context5.stop();
+                        }
+                    }
+                }, _callee5, this);
+            }));
 
-    // Enabling backwards-compat.  Construct Jasmine v1 style spec.suite.
-    _buildSuite() {
+            function _awaitAsyncFlow() {
+                return _ref6.apply(this, arguments);
+            }
 
-        const buildSuite = (suiteNames, i) => {
-            if(i<0) {return null;}
-            return {
-                description: suiteNames[i],
-                parentSuite: buildSuite(suiteNames, i-1)
+            return _awaitAsyncFlow;
+        }()
+    }, {
+        key: '_asyncSpecDone',
+        value: function () {
+            var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(result) {
+                return regeneratorRuntime.wrap(function _callee6$(_context6) {
+                    while (1) {
+                        switch (_context6.prev = _context6.next) {
+                            case 0:
+                                if (!((result.status === 'pending' || result.status === 'disabled') && this._screenshotReporter.excludeSkippedSpecs)) {
+                                    _context6.next = 2;
+                                    break;
+                                }
+
+                                return _context6.abrupt('return');
+
+                            case 2:
+
+                                result.stopped = nowString();
+
+                                _context6.next = 5;
+                                return this._gatherBrowserLogs(result);
+
+                            case 5:
+                                _context6.next = 7;
+                                return this._takeScreenShotAndAddMetaData(result);
+
+                            case 7:
+                            case 'end':
+                                return _context6.stop();
+                        }
+                    }
+                }, _callee6, this);
+            }));
+
+            function _asyncSpecDone(_x) {
+                return _ref7.apply(this, arguments);
+            }
+
+            return _asyncSpecDone;
+        }()
+    }, {
+        key: '_gatherBrowserLogs',
+        value: function () {
+            var _ref8 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(result) {
+                var capabilities, browserName;
+                return regeneratorRuntime.wrap(function _callee7$(_context7) {
+                    while (1) {
+                        switch (_context7.prev = _context7.next) {
+                            case 0:
+                                if (this._screenshotReporter.gatherBrowserLogs) {
+                                    _context7.next = 2;
+                                    break;
+                                }
+
+                                return _context7.abrupt('return');
+
+                            case 2:
+                                _context7.next = 4;
+                                return browser.getCapabilities();
+
+                            case 4:
+                                capabilities = _context7.sent;
+                                browserName = capabilities.get('browserName');
+
+                                /* Skip incompatible browsers. */
+
+                                if (!(browserName == null || !browserName.toLowerCase().match(/chrome/))) {
+                                    _context7.next = 8;
+                                    break;
+                                }
+
+                                return _context7.abrupt('return');
+
+                            case 8:
+                                _context7.next = 10;
+                                return browser.manage().logs().get('browser');
+
+                            case 10:
+                                result.browserLogs = _context7.sent;
+
+                            case 11:
+                            case 'end':
+                                return _context7.stop();
+                        }
+                    }
+                }, _callee7, this);
+            }));
+
+            function _gatherBrowserLogs(_x2) {
+                return _ref8.apply(this, arguments);
+            }
+
+            return _gatherBrowserLogs;
+        }()
+    }, {
+        key: '_takeScreenShotAndAddMetaData',
+        value: function () {
+            var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8(result) {
+                var capabilities, suite, descriptions, baseName, metaData, screenShotFileName, screenShotFilePath, metaFile, screenShotPath, metaDataPath, jsonPartsPath, png;
+                return regeneratorRuntime.wrap(function _callee8$(_context8) {
+                    while (1) {
+                        switch (_context8.prev = _context8.next) {
+                            case 0:
+                                _context8.next = 2;
+                                return browser.getCapabilities();
+
+                            case 2:
+                                capabilities = _context8.sent;
+                                suite = this._buildSuite();
+                                descriptions = util.gatherDescriptions(suite, [result.description]), baseName = this._screenshotReporter.pathBuilder(null, descriptions, result, capabilities), metaData = this._screenshotReporter.jasmine2MetaDataBuilder(null, descriptions, result, capabilities), screenShotFileName = path.basename(baseName + '.png'), screenShotFilePath = path.join(path.dirname(baseName + '.png'), this._screenshotReporter.screenshotsSubfolder), metaFile = baseName + '.json', screenShotPath = path.join(this._screenshotReporter.baseDirectory, screenShotFilePath, screenShotFileName), metaDataPath = path.join(this._screenshotReporter.baseDirectory, metaFile), jsonPartsPath = path.join(this._screenshotReporter.baseDirectory, path.dirname(metaFile), this._screenshotReporter.jsonsSubfolder, path.basename(metaFile));
+
+
+                                metaData.browserLogs = [];
+
+                                if (!(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
+                                    metaData.screenShotFile = path.join(this._screenshotReporter.screenshotsSubfolder, screenShotFileName);
+                                }
+
+                                if (result.browserLogs) {
+                                    metaData.browserLogs = result.browserLogs;
+                                };
+                                metaData.timestamp = new Date(result.started).getTime();
+                                metaData.duration = new Date(result.stopped) - new Date(result.started);
+
+                                if (!(result.status !== 'pending' && result.status !== 'disabled' && !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed'))) {
+                                    _context8.next = 16;
+                                    break;
+                                }
+
+                                _context8.next = 14;
+                                return browser.takeScreenshot();
+
+                            case 14:
+                                png = _context8.sent;
+
+                                util.storeScreenShot(png, screenShotPath);
+
+                            case 16:
+
+                                util.storeMetaData(metaData, jsonPartsPath, descriptions);
+                                util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
+
+                            case 18:
+                            case 'end':
+                                return _context8.stop();
+                        }
+                    }
+                }, _callee8, this);
+            }));
+
+            function _takeScreenShotAndAddMetaData(_x3) {
+                return _ref9.apply(this, arguments);
+            }
+
+            return _takeScreenShotAndAddMetaData;
+        }()
+
+        // Enabling backwards-compat.  Construct Jasmine v1 style spec.suite.
+
+    }, {
+        key: '_buildSuite',
+        value: function _buildSuite() {
+
+            var buildSuite = function buildSuite(suiteNames, i) {
+                if (i < 0) {
+                    return null;
+                }
+                return {
+                    description: suiteNames[i],
+                    parentSuite: buildSuite(suiteNames, i - 1)
+                };
             };
-        };
 
-        return buildSuite(this._suiteNames, this._suiteNames.length);
+            return buildSuite(this._suiteNames, this._suiteNames.length);
+        }
+    }]);
 
-    }
-
-}
+    return Jasmine2Reporter;
+}();
 
 /**
  * Returns a reporter that complies with the new Jasmine 2.x custom_reporter.js spec:
  * http://jasmine.github.io/2.1/custom_reporter.html
  */
-ScreenshotReporter.prototype.getJasmine2Reporter = function() {
 
-    return new Jasmine2Reporter({screenshotReporter: this});
 
+ScreenshotReporter.prototype.getJasmine2Reporter = function () {
+
+    return new Jasmine2Reporter({ screenshotReporter: this });
 };
-
-
 
 /** Function: reportSpecResults
  * Backward compatibility
  * Jasmine 1 is no longer supported
  */
-ScreenshotReporter.prototype.reportSpecResults =
-    function reportSpecResults(spec) {
-        throw new Error('Jasmine 1 is no longer supported. Please upgrade to Jasmine2.')
-    };
+ScreenshotReporter.prototype.reportSpecResults = function reportSpecResults(spec) {
+    throw new Error('Jasmine 1 is no longer supported. Please upgrade to Jasmine2.');
+};
 
 function nowString() {
-    return (new Date()).toISOString();
+    return new Date().toISOString();
 }
 
 module.exports = ScreenshotReporter;
-/* WEBPACK VAR INJECTION */}.call(__webpack_exports__, __webpack_require__(371)(module)))
+
+/***/ }),
+/* 140 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+__webpack_require__(343);
+
+__webpack_require__(142);
+
+__webpack_require__(144);
+
+/* eslint max-len: 0 */
+
+if (global._babelPolyfill) {
+  throw new Error("only one instance of babel-polyfill is allowed");
+}
+global._babelPolyfill = true;
+
+// Should be removed in the next major release:
+
+var DEFINE_PROPERTY = "defineProperty";
+function define(O, key, value) {
+  O[key] || Object[DEFINE_PROPERTY](O, key, {
+    writable: true,
+    configurable: true,
+    value: value
+  });
+}
+
+define(String.prototype, "padLeft", "".padStart);
+define(String.prototype, "padRight", "".padEnd);
+
+"pop,reverse,shift,keys,values,entries,indexOf,every,some,forEach,map,filter,find,findIndex,includes,join,slice,concat,push,splice,unshift,sort,lastIndexOf,reduce,reduceRight,copyWithin,fill".split(",").forEach(function (key) {
+  [][key] && define(Array, key, Function.call.bind([][key]));
+});
 
 /***/ }),
 /* 141 */
@@ -4899,7 +5064,7 @@ module.exports = ScreenshotReporter;
 
 var fs = __webpack_require__(54)
     , path = __webpack_require__(9)
-    , crypto = __webpack_require__(373)
+    , crypto = __webpack_require__(372)
     , CircularJSON = __webpack_require__(143)
     , fse = __webpack_require__(355);
 
@@ -12053,7 +12218,7 @@ module.exports = assign
 
 
 const fs = __webpack_require__(10)
-const os = __webpack_require__(374)
+const os = __webpack_require__(373)
 const path = __webpack_require__(9)
 
 // HFS, ext{2,3}, FAT do not, Node.js v0.10 does not
@@ -12128,7 +12293,7 @@ module.exports = {
 /* 367 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var Stream = __webpack_require__(375).Stream
+var Stream = __webpack_require__(374).Stream
 
 module.exports = legacy
 
@@ -12253,7 +12418,7 @@ function legacy (fs) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var fs = __webpack_require__(137)
-var constants = __webpack_require__(372)
+var constants = __webpack_require__(371)
 
 var origCwd = process.cwd
 var cwd = null
@@ -14078,68 +14243,38 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
 /* 371 */
 /***/ (function(module, exports) {
 
-module.exports = function(originalModule) {
-	if(!originalModule.webpackPolyfill) {
-		var module = Object.create(originalModule);
-		// module.parent = undefined by default
-		if(!module.children) module.children = [];
-		Object.defineProperty(module, "loaded", {
-			enumerable: true,
-			get: function() {
-				return module.l;
-			}
-		});
-		Object.defineProperty(module, "id", {
-			enumerable: true,
-			get: function() {
-				return module.i;
-			}
-		});
-		Object.defineProperty(module, "exports", {
-			enumerable: true,
-		});
-		module.webpackPolyfill = 1;
-	}
-	return module;
-};
-
+module.exports = require("constants");
 
 /***/ }),
 /* 372 */
 /***/ (function(module, exports) {
 
-module.exports = require("constants");
+module.exports = require("crypto");
 
 /***/ }),
 /* 373 */
 /***/ (function(module, exports) {
 
-module.exports = require("crypto");
+module.exports = require("os");
 
 /***/ }),
 /* 374 */
 /***/ (function(module, exports) {
 
-module.exports = require("os");
+module.exports = require("stream");
 
 /***/ }),
 /* 375 */
 /***/ (function(module, exports) {
 
-module.exports = require("stream");
-
-/***/ }),
-/* 376 */
-/***/ (function(module, exports) {
-
 module.exports = require("util");
 
 /***/ }),
-/* 377 */
+/* 376 */
 /***/ (function(module, exports, __webpack_require__) {
 
-__webpack_require__(139);
-module.exports = __webpack_require__(140);
+__webpack_require__(140);
+module.exports = __webpack_require__(139);
 
 
 /***/ })
