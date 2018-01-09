@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.1.1
+* Added Github link
+
 ## Version 1.1.0
 * Compiled app to ES5
 
