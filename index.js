@@ -5102,23 +5102,19 @@ function addHTMLReport(jsonData, baseName, options){
         jsTemplate = path.join(__dirname, 'lib', 'app.js'),
         streamJs,
         streamHtml,
-        cssLink = 'bootstrap.css';
+        cssLink = path.join('assets', 'bootstrap.css');
 
     try {
         if (options.cssOverrideFile) {
             cssLink = options.cssOverrideFile;
         }
 
-        var libs = [
-            'bootstrap.css',
-            'jquery.min.js',
-            'angular.min.js',
-            'bootstrap.min.js'
-        ];
-        for (var i = 0; i < libs.length; i++) {
-            fs.createReadStream(path.join(__dirname, 'lib', 'assets', libs[i]))
-                .pipe(fs.createWriteStream(path.join(basePath, libs[i])));
-        }
+        //copy assets
+        fse.copySync(path.join(__dirname, 'lib', 'assets'), path.join(basePath, 'assets'));
+
+        //copy bootstrap fonts
+        fse.copySync(path.join(__dirname, 'lib', 'fonts'), path.join(basePath, 'fonts'));
+
 
         // Construct index.html
         streamHtml = fs.createWriteStream(htmlFile);
