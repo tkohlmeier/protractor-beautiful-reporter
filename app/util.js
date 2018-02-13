@@ -94,9 +94,18 @@ function addMetaData(test, baseName, options){
         basePath = path.dirname(baseName),
         jsonsDirectory = path.join(basePath,'jsons'),
         file = path.join(basePath,'combined.json'),
+        lock = file + '.lock',
         data = [];
 
     try {
+        // delay if one write operation is pending
+        if (fse.pathExistsSync(lock)) {
+            setTimeout(function () {
+                addMetaData(test, baseName, options);
+            }, 200);
+            return;
+        }
+        fs.writeFileSync(lock, '1');
         //concat all tests
         if (fse.pathExistsSync(file)) {
             data = JSON.parse(fse.readJsonSync(file), {encoding: 'utf8'});
@@ -114,6 +123,7 @@ function addMetaData(test, baseName, options){
         console.error('Could not save JSON for data: ' + test);
     }
     addHTMLReport(data, baseName, options);
+    fs.unlinkSync(lock);
 }
 
 /** Function: storeMetaData
