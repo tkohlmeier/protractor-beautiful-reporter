@@ -9,6 +9,10 @@
 ## Version 1.0.3
 * Added option to skip disabled specs
 
+## Version 1.0.2
+* Fix for missing glyph-icons
+* Fix for missing css caused by cross-origin
+
 ## Version 1.0.1
 * Bundled assets into report
 
