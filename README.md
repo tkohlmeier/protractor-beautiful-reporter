@@ -174,7 +174,7 @@ new HtmlReporter({
 });
 ```
 
-If you omit this, all specs will be sorted by timestamp (please be aware that sharded runs look ugly when sorted by default sort).
+By default all specs will be sorted by sessionId and then by timestamp, if you experience issues try using function above.
 
 
 ### Exclude report for skipped test cases (optional)

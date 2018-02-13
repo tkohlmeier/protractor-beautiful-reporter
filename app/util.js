@@ -45,25 +45,27 @@ function addHTMLReport(jsonData, baseName, options){
             cssLink = options.cssOverrideFile;
         }
 
-        //copy assets
-        fse.copySync(path.join(__dirname, 'lib', 'assets'), path.join(basePath, 'assets'));
+        if (options.prepareAssets) {
+            //copy assets
+            fse.copySync(path.join(__dirname, 'lib', 'assets'), path.join(basePath, 'assets'));
 
-        //copy bootstrap fonts
-        fse.copySync(path.join(__dirname, 'lib', 'fonts'), path.join(basePath, 'fonts'));
+            //copy bootstrap fonts
+            fse.copySync(path.join(__dirname, 'lib', 'fonts'), path.join(basePath, 'fonts'));
 
 
-        // Construct index.html
-        streamHtml = fs.createWriteStream(htmlFile);
+            // Construct index.html
+            streamHtml = fs.createWriteStream(htmlFile);
 
-        streamHtml.write(
-            fs.readFileSync(htmlInFile)
-                .toString()
-                .replace('<!-- Here will be CSS placed -->', '<link rel="stylesheet" href="'+cssLink+'">')
-                .replace('<!-- Here goes title -->', options.docTitle)
-        );
+            streamHtml.write(
+                fs.readFileSync(htmlInFile)
+                    .toString()
+                    .replace('<!-- Here will be CSS placed -->', '<link rel="stylesheet" href="'+cssLink+'">')
+                    .replace('<!-- Here goes title -->', options.docTitle)
+            );
 
-        streamHtml.end();
+            streamHtml.end();
 
+        }
         // Construct app.js
         streamJs = fs.createWriteStream(jsFile);
 

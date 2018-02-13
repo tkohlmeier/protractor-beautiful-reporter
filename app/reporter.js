@@ -99,11 +99,13 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
 
 
 function sortFunction(a, b) {
-    var firstTimestamp = a.timestamp;
-    var secondTimestamp = b.timestamp;
+    if (a.sessionId < b.sessionId) return -1;
+    else if (a.sessionId > b.sessionId) return 1;
 
-    if(firstTimestamp < secondTimestamp) return -1;
-    else return 1;
+    if (a.timestamp < b.timestamp) return -1;
+    else if (a.timestamp > b.timestamp) return 1;
+
+    return 0;
 }
 
 
@@ -181,7 +183,8 @@ function ScreenshotReporter(options) {
         screenshotsSubfolder: this.screenshotsSubfolder,
         docTitle: this.docTitle,
         docName: this.docName,
-        cssOverrideFile: this.cssOverrideFile
+        cssOverrideFile: this.cssOverrideFile,
+        prepareAssets: true
     };
 
     if(!this.preserveDirectory){
@@ -329,6 +332,7 @@ class Jasmine2Reporter {
 
         util.storeMetaData(metaData, jsonPartsPath, descriptions);
         util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
+        this._screenshotReporter.finalOptions.prepareAssets = false; // signal to utils not to write all files again
 
     }
 
