@@ -5187,12 +5187,15 @@ function addMetaData(test, baseName, options){
         data.push(test);
 
         fse.outputJsonSync(file, CircularJSON.stringify(data));
+
+	addHTMLReport(data, baseName, options);
+
+	fs.unlinkSync(lock);
+
     } catch(e) {
         console.error(e);
         console.error('Could not save JSON for data: ' + test);
     }
-    addHTMLReport(data, baseName, options);
-    fs.unlinkSync(lock);
 }
 
 /** Function: storeMetaData
