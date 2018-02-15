@@ -45,6 +45,7 @@ function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
         passed: results.passed(),
         os: capabilities.caps_.platform,
         sessionId: capabilities.caps_['webdriver.remote.sessionid'],
+        instanceId: process.pid,
         browser: {
             name: capabilities.caps_.browserName,
             version: capabilities.caps_.version
@@ -78,6 +79,7 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
         pending: results.status === 'pending' || results.status === 'disabled',
         os: capabilities.get('platform'),
         sessionId: capabilities.get('webdriver.remote.sessionid'),
+        instanceId: process.pid,
         browser: {
             name: capabilities.get('browserName'),
             version: capabilities.get('version')
@@ -99,13 +101,11 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
 
 
 function sortFunction(a, b) {
-    if (a.sessionId < b.sessionId) return -1;
-    else if (a.sessionId > b.sessionId) return 1;
+    var firstTimestamp = a.timestamp;
+    var secondTimestamp = b.timestamp;
 
-    if (a.timestamp < b.timestamp) return -1;
-    else if (a.timestamp > b.timestamp) return 1;
-
-    return 0;
+    if(firstTimestamp < secondTimestamp) return -1;
+    else return 1;
 }
 
 
