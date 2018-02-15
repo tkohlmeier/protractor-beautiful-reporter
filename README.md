@@ -174,8 +174,21 @@ new HtmlReporter({
 });
 ```
 
-By default all specs will be sorted by sessionId and then by timestamp, if you experience issues try using function above.
+If you omit this, all specs will be sorted by timestamp (please be aware that sharded runs look ugly when sorted by default sort).
 
+Alternatively if the result is not good enough in sharded test you can try and sort by instanceId (for now it's process.pid) first:
+
+```javascript
+function sortFunction(a, b) {
+    if (a.instanceId < b.instanceId) return -1;
+    else if (a.instanceId > b.instanceId) return 1;
+
+    if (a.timestamp < b.timestamp) return -1;
+    else if (a.timestamp > b.timestamp) return 1;
+
+    return 0;
+}
+```
 
 ### Exclude report for skipped test cases (optional)
 You can set `excludeSkippedSpecs` to `true` to exclude reporting skipped test cases entirely.
