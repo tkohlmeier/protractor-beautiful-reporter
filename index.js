@@ -5164,7 +5164,7 @@ function addMetaData(test, baseName, options){
         basePath = path.dirname(baseName),
         jsonsDirectory = path.join(basePath,'jsons'),
         file = path.join(basePath,'combined.json'),
-        lock = file + '.lock',
+        lock = path.join(basePath,'.lock'),
         data = [];
 
     try {
@@ -5175,7 +5175,7 @@ function addMetaData(test, baseName, options){
             }, 200);
             return;
         }
-        fs.writeFileSync(lock, '1');
+        fs.mkdirSync(lock);
         //concat all tests
         if (fse.pathExistsSync(file)) {
             data = JSON.parse(fse.readJsonSync(file), {encoding: 'utf8'});
@@ -5191,7 +5191,7 @@ function addMetaData(test, baseName, options){
         
         addHTMLReport(data, baseName, options);
 
-        fs.unlinkSync(lock);
+        fs.rmdirSync(lock);
 
     } catch(e) {
         console.error(e);
