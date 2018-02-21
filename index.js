@@ -4529,6 +4529,7 @@ function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
         passed: results.passed(),
         os: capabilities.caps_.platform,
         sessionId: capabilities.caps_['webdriver.remote.sessionid'],
+        instanceId: process.pid,
         browser: {
             name: capabilities.caps_.browserName,
             version: capabilities.caps_.version
@@ -4559,6 +4560,7 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
         pending: results.status === 'pending' || results.status === 'disabled',
         os: capabilities.get('platform'),
         sessionId: capabilities.get('webdriver.remote.sessionid'),
+        instanceId: process.pid,
         browser: {
             name: capabilities.get('browserName'),
             version: capabilities.get('version')
@@ -4654,7 +4656,8 @@ function ScreenshotReporter(options) {
         screenshotsSubfolder: this.screenshotsSubfolder,
         docTitle: this.docTitle,
         docName: this.docName,
-        cssOverrideFile: this.cssOverrideFile
+        cssOverrideFile: this.cssOverrideFile,
+        prepareAssets: true
     };
 
     if (!this.preserveDirectory) {
@@ -4956,8 +4959,9 @@ var Jasmine2Reporter = function () {
 
                                 util.storeMetaData(metaData, jsonPartsPath, descriptions);
                                 util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
+                                this._screenshotReporter.finalOptions.prepareAssets = false; // signal to utils not to write all files again
 
-                            case 18:
+                            case 19:
                             case 'end':
                                 return _context8.stop();
                         }
@@ -5109,25 +5113,27 @@ function addHTMLReport(jsonData, baseName, options){
             cssLink = options.cssOverrideFile;
         }
 
-        //copy assets
-        fse.copySync(path.join(__dirname, 'lib', 'assets'), path.join(basePath, 'assets'));
+        if (options.prepareAssets) {
+            //copy assets
+            fse.copySync(path.join(__dirname, 'lib', 'assets'), path.join(basePath, 'assets'));
 
-        //copy bootstrap fonts
-        fse.copySync(path.join(__dirname, 'lib', 'fonts'), path.join(basePath, 'fonts'));
+            //copy bootstrap fonts
+            fse.copySync(path.join(__dirname, 'lib', 'fonts'), path.join(basePath, 'fonts'));
 
 
-        // Construct index.html
-        streamHtml = fs.createWriteStream(htmlFile);
+            // Construct index.html
+            streamHtml = fs.createWriteStream(htmlFile);
 
-        streamHtml.write(
-            fs.readFileSync(htmlInFile)
-                .toString()
-                .replace('<!-- Here will be CSS placed -->', '<link rel="stylesheet" href="'+cssLink+'">')
-                .replace('<!-- Here goes title -->', options.docTitle)
-        );
+            streamHtml.write(
+                fs.readFileSync(htmlInFile)
+                    .toString()
+                    .replace('<!-- Here will be CSS placed -->', '<link rel="stylesheet" href="'+cssLink+'">')
+                    .replace('<!-- Here goes title -->', options.docTitle)
+            );
 
-        streamHtml.end();
+            streamHtml.end();
 
+        }
         // Construct app.js
         streamJs = fs.createWriteStream(jsFile);
 
@@ -5158,9 +5164,18 @@ function addMetaData(test, baseName, options){
         basePath = path.dirname(baseName),
         jsonsDirectory = path.join(basePath,'jsons'),
         file = path.join(basePath,'combined.json'),
+        lock = path.join(basePath,'.lock'),
         data = [];
 
     try {
+        // delay if one write operation is pending
+        if (fse.pathExistsSync(lock)) {
+            setTimeout(function () {
+                addMetaData(test, baseName, options);
+            }, 200);
+            return;
+        }
+        fs.mkdirSync(lock);
         //concat all tests
         if (fse.pathExistsSync(file)) {
             data = JSON.parse(fse.readJsonSync(file), {encoding: 'utf8'});
@@ -5173,11 +5188,15 @@ function addMetaData(test, baseName, options){
         data.push(test);
 
         fse.outputJsonSync(file, CircularJSON.stringify(data));
+        
+        addHTMLReport(data, baseName, options);
+
+        fs.rmdirSync(lock);
+
     } catch(e) {
         console.error(e);
         console.error('Could not save JSON for data: ' + test);
-    }
-    addHTMLReport(data, baseName, options);
+    }    
 }
 
 /** Function: storeMetaData

@@ -45,6 +45,7 @@ function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
         passed: results.passed(),
         os: capabilities.caps_.platform,
         sessionId: capabilities.caps_['webdriver.remote.sessionid'],
+        instanceId: process.pid,
         browser: {
             name: capabilities.caps_.browserName,
             version: capabilities.caps_.version
@@ -78,6 +79,7 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
         pending: results.status === 'pending' || results.status === 'disabled',
         os: capabilities.get('platform'),
         sessionId: capabilities.get('webdriver.remote.sessionid'),
+        instanceId: process.pid,
         browser: {
             name: capabilities.get('browserName'),
             version: capabilities.get('version')
@@ -181,7 +183,8 @@ function ScreenshotReporter(options) {
         screenshotsSubfolder: this.screenshotsSubfolder,
         docTitle: this.docTitle,
         docName: this.docName,
-        cssOverrideFile: this.cssOverrideFile
+        cssOverrideFile: this.cssOverrideFile,
+        prepareAssets: true
     };
 
     if(!this.preserveDirectory){
@@ -329,6 +332,7 @@ class Jasmine2Reporter {
 
         util.storeMetaData(metaData, jsonPartsPath, descriptions);
         util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
+        this._screenshotReporter.finalOptions.prepareAssets = false; // signal to utils not to write all files again
 
     }
 
