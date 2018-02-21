@@ -99,8 +99,8 @@ exports.config = {
                     validDescriptions.join('-'));
             },
             sortFunction: function sortFunction(a, b) {
-                if (a.instanceId < b.instanceId) return -1;
-                else if (a.instanceId > b.instanceId) return 1;
+                if (a.sessionId < b.sessionId) return -1;
+                else if (a.sessionId > b.sessionId) return 1;
             
                 if (a.timestamp < b.timestamp) return -1;
                 else if (a.timestamp > b.timestamp) return 1;

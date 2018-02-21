@@ -101,11 +101,13 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
 
 
 function sortFunction(a, b) {
-    var firstTimestamp = a.timestamp;
-    var secondTimestamp = b.timestamp;
+    if (a.sessionId < b.sessionId) return -1;
+    else if (a.sessionId > b.sessionId) return 1;
 
-    if(firstTimestamp < secondTimestamp) return -1;
-    else return 1;
+    if (a.timestamp < b.timestamp) return -1;
+    else if (a.timestamp > b.timestamp) return 1;
+
+    return 0;
 }
 
 
