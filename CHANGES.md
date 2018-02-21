@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.2.0
+* Improved speed
+* Fixed issue with status bar on IE
+* Grouping tests per browser in sharded runs
+
 ## Version 1.1.1
 * Added Github link
 
