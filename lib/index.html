@@ -60,8 +60,8 @@
         .spec {
             /*background-color: grey;*/
             /*color: white;*/
-            font-size: 200%;
-            padding-top: 80px !important;
+            font-size: 220%;
+            padding-top: 20px !important;
         }
 
         .btn {
@@ -98,7 +98,7 @@
         .label-white {
             background-color: #ffffff;
             color: #444444;
-            font-size: 92%;
+            font-size: 100%;
             margin: 3px;
             cursor:pointer;
         }
@@ -112,9 +112,6 @@
 </head>
 <body ng-controller="ScreenshotReportController as ctrl" class="ng-cloak">
 
-<div class="center">
-    <a class="github-button" href="https://github.com/Evilweed/protractor-beautiful-reporter" data-size="large" data-show-count="true" aria-label="Star Evilweed/protractor-beautiful-reporter on GitHub">Star</a>
-</div>
 <!-- Header -->
 <h2>
     <!-- Here goes title -->
@@ -272,11 +269,11 @@
                             <span class="glyphicon glyphicon-picture"></span>
                 </span>
                 <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
-                    <img ng-src="{{result.screenShotFile}}" style="max-width: 100%"/></a>
+                    <img ng-src="{{result.screenShotFile}}" class="pull-right" style="max-width: 60%"/></a>
                 <!-- Screenshot Modal -->
                 <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
                      aria-labelledby="imageModalLabel{{$index}}">
-                    <div class="modal-dialog modal-lg" role="document">
+                    <div class="modal-dialog modal-md" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
@@ -316,6 +313,9 @@
     </tr>
     </tbody>
 </table>
+<div class="center">
+    <a class="github-button" href="https://github.com/Evilweed/protractor-beautiful-reporter" data-size="large" data-show-count="true" aria-label="Star Evilweed/protractor-beautiful-reporter on GitHub">Star</a>
+</div>
 {{ctrl.currentParent = "";""}}
 <script>
     $(document).ready(function () {
