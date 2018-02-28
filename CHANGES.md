@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.2.1
+* Improved look of generated report
+
 ## Version 1.2.0
 * Improved speed
 * Fixed issue with status bar on IE
