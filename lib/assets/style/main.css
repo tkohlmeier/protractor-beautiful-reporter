@@ -98,3 +98,15 @@ table {
 .center {
     text-align: center;
 }
+
+.progress-striped {
+    height: 30px;
+}
+
+.screenshotLink {
+    max-width: 100%;
+}
+
+.screenshotImage {
+    width: 100%;
+}

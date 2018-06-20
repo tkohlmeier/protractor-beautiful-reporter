@@ -37,7 +37,7 @@
 </h2>
 
 <!-- Pass/Fail counts -->
-<div class="progress progress-striped" style="height: 30px;">
+<div class="progress progress-striped">
     <div class="progress-bar progress-bar-success" ng-if="ctrl.passCount()" data-toggle="tooltip"
          title="Passed: {{ctrl.passCount()}} {{str = (ctrl.failCount() ? '' : '(no failures!)'); str}}"
          ng-style="{'width': (ctrl.passCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100) + '%'}"><div class="statusNumber">{{ctrl.passCount()}}</div></div>
@@ -171,7 +171,7 @@
                             <span class="glyphicon glyphicon-picture"></span>
                 </span>
                 <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
-                    <img ng-src="{{result.screenShotFile}}" style="max-width: 100%"/></a>
+                    <img ng-src="{{result.screenShotFile}}" class="screenshotLink"/></a>
                 <!-- Screenshot Modal -->
                 <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
                      aria-labelledby="imageModalLabel{{$index}}">
@@ -187,7 +187,7 @@
                                     {{ctrl.getShortDescription(result.description)}}</h5>
                             </div>
                             <div class="modal-body">
-                                <img style="width: 100%" ng-src="{{result.screenShotFile}}">
+                                <img class="screenshotImage" ng-src="{{result.screenShotFile}}">
                             </div>
                             <div class="modal-footer">
                                 <div class="pull-left">
