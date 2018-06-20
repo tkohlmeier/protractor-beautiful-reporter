@@ -5107,7 +5107,7 @@ function addHTMLReport(jsonData, baseName, options){
         jsTemplate = path.join(__dirname, 'lib', 'app.js'),
         streamJs,
         streamHtml,
-        cssLink = path.join('assets/style', 'bootstrap.css');
+        cssLink = path.join('assets', 'bootstrap.css');
 
     try {
         if (options.cssOverrideFile) {
