@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.2.2
+* Updated outdated and vulnerable JQuery and Angular dependencies.
+* Removed loading JS from external source (button.js) to improve security. Now it's under assets.
+* Updated HTML, JS and CSS to be more compatible with strict content-security-policy. (e.g. Jenkins default CSP now only requires a more reasonable change)
+
 ## Version 1.2.1
 * Improved look of generated report
 
