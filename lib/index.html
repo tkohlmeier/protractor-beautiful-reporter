@@ -1,119 +1,16 @@
 <!DOCTYPE html>
-<html lang="en" ng-app="reportingApp">
+<html lang="en" ng-app="reportingApp" ng-csp>
 <head>
     <meta charset="UTF-8">
     <title>Protractor Screenshot Report</title>
 
+    <link rel="stylesheet" href="assets/main.css">
+    <!-- Here will be CSS placed -->
     <script src="assets/angular.min.js"></script>
     <script src="app.js"></script>
     <script src="assets/jquery.min.js"></script>
     <script src="assets/bootstrap.min.js"></script>
 
-    <!-- Here will be CSS placed -->
-    <style>
-        body {
-            padding: 10px;
-        }
-
-        h2 {
-          margin-top: 0;
-        }
-
-        .modal-lg {
-            width: 95%;
-        }
-
-        .highlight {
-            background-color: #ffd600;
-        }
-
-        .browserLogLabel {
-            margin-right: 10px;
-        }
-
-        .browserLogItem {
-            margin-bottom: 10px;
-        }
-
-        .logContainer {
-            max-height: 488px;
-        }
-
-        .smallColumn {
-            width: 50px;
-        }
-
-        .mediumColumn {
-            width: 30%;
-        }
-
-        .status {
-            width: 70px;
-            text-align: right;
-        }
-
-        .duration {
-            width: 100%;
-        }
-
-        .testCase {
-            font-size: 160%;
-            padding-left: 40px !important;
-            padding-top: 20px !important;
-        }
-
-        .spec {
-            /*background-color: grey;*/
-            /*color: white;*/
-            font-size: 220%;
-            padding-top: 20px !important;
-        }
-
-        .btn {
-            padding: 1px 10px;
-        }
-
-        table {
-            border-collapse: separate;
-        }
-
-        .table > thead > tr > th, .table > tbody > tr > th, .table > tfoot > tr > th, .table > thead > tr > td, .table > tbody > tr > td, .table > tfoot > tr > td {
-            /*border-top: 0px;*/
-            padding: 4px;
-        }
-
-        .statusNumber {
-            font-size: 22px;
-            font-weight: 900;
-            margin: 4px;
-        }
-
-        .logColumn {
-            font-weight: 900;
-            width: 100px;
-        }
-
-        .consoleLogLabel {
-            font-size: 100%;
-            font-weight: 900;
-            margin: 3px;
-            cursor:pointer;
-        }
-
-        .label-white {
-            background-color: #ffffff;
-            color: #444444;
-            font-size: 100%;
-            margin: 3px;
-            cursor:pointer;
-        }
-
-        .center {
-            text-align: center;
-        }
-
-
-    </style>
 </head>
 <body ng-controller="ScreenshotReportController as ctrl" class="ng-cloak">
 
@@ -140,7 +37,7 @@
 </h2>
 
 <!-- Pass/Fail counts -->
-<div class="progress progress-striped" style="height: 30px;">
+<div class="progress progress-striped">
     <div class="progress-bar progress-bar-success" ng-if="ctrl.passCount()" data-toggle="tooltip"
          title="Passed: {{ctrl.passCount()}} {{str = (ctrl.failCount() ? '' : '(no failures!)'); str}}"
          ng-style="{'width': (ctrl.passCount() / (ctrl.passCount()+ctrl.failCount()+ctrl.pendingCount()) * 100) + '%'}"><div class="statusNumber">{{ctrl.passCount()}}</div></div>
@@ -271,10 +168,10 @@
                       class="label label-white ng-binding pull-right"
                       data-toggle="modal"
                       data-target="#imageModal{{$index}}">
-                            <span class="glyphicon glyphicon-picture"></span>
+                            <span class="glyphicon glyphicon-picture black"></span>
                 </span>
                 <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
-                    <img ng-src="{{result.screenShotFile}}" style="max-width: 100%"/></a>
+                    <img ng-src="{{result.screenShotFile}}" class="screenshotLink"/></a>
                 <!-- Screenshot Modal -->
                 <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
                      aria-labelledby="imageModalLabel{{$index}}">
@@ -290,7 +187,7 @@
                                     {{ctrl.getShortDescription(result.description)}}</h5>
                             </div>
                             <div class="modal-body">
-                                <img style="width: 100%" ng-src="{{result.screenShotFile}}">
+                                <img class="screenshotImage" ng-src="{{result.screenShotFile}}">
                             </div>
                             <div class="modal-footer">
                                 <div class="pull-left">
@@ -322,11 +219,7 @@
     <a class="github-button" href="https://github.com/Evilweed/protractor-beautiful-reporter" data-size="large" data-show-count="true" aria-label="Star Evilweed/protractor-beautiful-reporter on GitHub">Star</a>
 </div>
 {{ctrl.currentParent = "";""}}
-<script>
-    $(document).ready(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-    });
-</script>
-<script async defer src="https://buttons.github.io/buttons.js"></script>
+<script src="assets/main.js"></script>
+<script async defer src="assets/buttons.js"></script>
 </body>
 </html>
