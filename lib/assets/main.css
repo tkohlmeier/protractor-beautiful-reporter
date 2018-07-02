@@ -100,7 +100,7 @@ table {
 }
 
 .progress-striped {
-    height: 30px;
+    height: 30px !important;
 }
 
 .screenshotLink {
