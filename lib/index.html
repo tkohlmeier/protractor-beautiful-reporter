@@ -123,7 +123,9 @@
         <td class="smallColumn">
             <!-- Show stacktrace if failure -->
             <div ng-if="(!result.passed && !result.pending) || result.browserLogs.length > 0">
-                <span class="label label-white ng-binding pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></span>
+                <span class="label label-white ng-binding pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0">
+                    <span class="glyphicon glyphicon-warning-sign red"></span>
+                </span>
                 <!--<button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></button>-->
                 <!-- Stacktrace Modal -->
                 <div class="modal" id="modal{{$index}}" tabindex="-1" role="dialog"
