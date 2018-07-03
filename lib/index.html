@@ -51,7 +51,7 @@
 
 <label>Search: <input ng-model="searchSettings.description"></label>
 <div class="pull-right">
-    <button class="btn btn-default" ng-click="ctrl.chooseAllTypes()">ALL</button>
+    <button class="btn btn-default" ng-class="{active: searchSettings.allselected}" ng-click="ctrl.chooseAllTypes()">ALL</button>
     <button class="btn btn-default" ng-class="{active: searchSettings.passed}"
             ng-click="searchSettings.passed = !searchSettings.passed">PASSED
     </button>
