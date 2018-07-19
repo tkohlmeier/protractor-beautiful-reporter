@@ -100,7 +100,7 @@ table {
 }
 
 .progress-striped {
-    height: 30px;
+    height: 30px !important;
 }
 
 .screenshotLink {
@@ -113,4 +113,8 @@ table {
 
 .black {
     color: #222222;
+}
+
+.red {
+    color: #FF0000;
 }

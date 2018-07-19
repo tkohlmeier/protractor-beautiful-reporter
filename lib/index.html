@@ -18,16 +18,16 @@
 <h2>
     <!-- Here goes title -->
     <div class="pull-right">
-        <button class="btn btn-default" ng-class="{active: ctrl.displayTime}"
+        <button class="btn btn-default" ng-class="{active: !ctrl.displayTime}"
                 ng-click="ctrl.displayTime = !ctrl.displayTime">TIME
         </button>
-        <button class="btn btn-default" ng-class="{active: ctrl.displayBrowser}"
+        <button class="btn btn-default" ng-class="{active: !ctrl.displayBrowser}"
                 ng-click="ctrl.displayBrowser = !ctrl.displayBrowser">BROWSER
         </button>
-        <button class="btn btn-default" ng-class="{active: ctrl.displaySessionId}"
+        <button class="btn btn-default" ng-class="{active: !ctrl.displaySessionId}"
                 ng-click="ctrl.displaySessionId = !ctrl.displaySessionId">SESSION ID
         </button>
-        <button class="btn btn-default" ng-class="{active: ctrl.displayOS}"
+        <button class="btn btn-default" ng-class="{active: !ctrl.displayOS}"
                 ng-click="ctrl.displayOS = !ctrl.displayOS">OS
         </button>
         <button class="btn btn-default" ng-class="{active: ctrl.inlineScreenshots}"
@@ -51,7 +51,7 @@
 
 <label>Search: <input ng-model="searchSettings.description"></label>
 <div class="pull-right">
-    <button class="btn btn-default" ng-click="ctrl.chooseAllTypes()">ALL</button>
+    <button class="btn btn-default" ng-class="{active: searchSettings.allselected}" ng-click="ctrl.chooseAllTypes()">ALL</button>
     <button class="btn btn-default" ng-class="{active: searchSettings.passed}"
             ng-click="searchSettings.passed = !searchSettings.passed">PASSED
     </button>
@@ -72,11 +72,11 @@
     <thead>
     <tr class="active">
         <th>Status</th>
-        <th ng-show="ctrl.displayTime">Time</th>
+        <th ng-if="!ctrl.displayTime" ng-show="ctrl.displayTime">Time</th>
         <th>Description</th>
-        <th ng-show="ctrl.displayBrowser">Browser</th>
-        <th ng-show="ctrl.displaySessionId">Session ID</th>
-        <th ng-show="ctrl.displayOS">OS</th>
+        <th ng-if="!ctrl.displayBrowser" ng-show="ctrl.displayBrowser">Browser</th>
+        <th ng-if="!ctrl.displaySessionId" ng-show="ctrl.displaySessionId">Session ID</th>
+        <th ng-if="!ctrl.displayOS" ng-show="ctrl.displayOS">OS</th>
         <th>Message</th>
         <th>Log</th>
         <th>Stack</th>
@@ -106,13 +106,13 @@
         <td class="smallColumn status" ng-if="result.pending">
             <span class="label label-warning"><span class="glyphicon glyphicon-option-horizontal"></span></span>
         </td>
-        <td class="smallColumn" ng-show="ctrl.displayTime">
+        <td class="smallColumn" ng-if="!ctrl.displayTime" ng-show="ctrl.displayTime">
             <span class="label label-default" ng-class="{'label-warning': result.duration > 14, 'label-danger': result.duration > 19}">{{ctrl.round(result.duration, 1)}} s</span>
         </td>
         <td class="mediumColumn">{{ctrl.getShortDescription(result.description)}}</td>
-        <td ng-show="ctrl.displayBrowser">{{result.browser.name}} {{result.browser.version}}</td>
-        <td ng-show="ctrl.displaySessionId">{{result.sessionId}}</td>
-        <td ng-show="ctrl.displayOS">{{result.os}}</td>
+        <td ng-if="!ctrl.displayBrowser" ng-show="ctrl.displayBrowser">{{result.browser.name}} {{result.browser.version}}</td>
+        <td ng-if="!ctrl.displaySessionId" ng-show="ctrl.displaySessionId">{{result.sessionId}}</td>
+        <td ng-if="!ctrl.displayOS" ng-show="ctrl.displayOS">{{result.os}}</td>
         <td>{{result.message}}</td>
         <td class="logColumn">
             <!--<button class="btn btn-warning pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.logWarnings > 0">{{result.logWarnings}}</button>-->
@@ -123,8 +123,9 @@
         <td class="smallColumn">
             <!-- Show stacktrace if failure -->
             <div ng-if="(!result.passed && !result.pending) || result.browserLogs.length > 0">
-                <span class="label label-white ng-binding pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></span>
-                <!--<button class="btn btn-default" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0"><span class="glyphicon glyphicon-warning-sign"></span></button>-->
+                <span class="label label-white ng-binding pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.trace.length > 0">
+                    <span class="glyphicon glyphicon-warning-sign red"></span>
+                </span>
                 <!-- Stacktrace Modal -->
                 <div class="modal" id="modal{{$index}}" tabindex="-1" role="dialog"
                      aria-labelledby="modalLabel{{$index}}">
@@ -153,7 +154,7 @@
                                 <button class="btn btn-default"
                                         ng-class="{active: ctrl.showSmartStackTraceHighlight}"
                                         ng-click="ctrl.showSmartStackTraceHighlight = !ctrl.showSmartStackTraceHighlight">
-                                    <span class="glyphicon glyphicon-education"></span> Smart Stack Trace
+                                    <span class="glyphicon glyphicon-education black"></span> Smart Stack Trace
                                 </button>
                                 <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
                             </div>
