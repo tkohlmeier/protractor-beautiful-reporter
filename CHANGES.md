@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.2.3
+* All buttons should now work
+* Warning sign now should be visible
+* Progress bar counter should be working as well
+
 ## Version 1.2.2
 * Updated outdated and vulnerable JQuery and Angular dependencies.
 * Removed loading JS from external source (button.js) to improve security. Now it's under assets.
