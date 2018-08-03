@@ -2144,7 +2144,7 @@ var store = global[SHARED] || (global[SHARED] = {});
 })('versions', []).push({
   version: core.version,
   mode: __webpack_require__(34) ? 'pure' : 'global',
-  copyright: '© 2018 Denis Pushkarev (zloirock.ru)'
+  copyright: 'Â© 2018 Denis Pushkarev (zloirock.ru)'
 });
 
 
@@ -6981,7 +6981,7 @@ $export($export.S, 'Math', { fround: __webpack_require__(112) });
 /* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
+// 20.2.2.17 Math.hypot([value1[, value2[, â€¦ ]]])
 var $export = __webpack_require__(0);
 var abs = Math.abs;
 
@@ -13221,7 +13221,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
   };
 
   // Shuffle an array, using the modern version of the
-  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
+  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisherâ€“Yates_shuffle).
   _.shuffle = function(obj) {
     var rand;
     var index = 0;
