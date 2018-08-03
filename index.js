@@ -2144,7 +2144,7 @@ var store = global[SHARED] || (global[SHARED] = {});
 })('versions', []).push({
   version: core.version,
   mode: __webpack_require__(34) ? 'pure' : 'global',
-  copyright: 'Â© 2018 Denis Pushkarev (zloirock.ru)'
+  copyright: '© 2018 Denis Pushkarev (zloirock.ru)'
 });
 
 
@@ -4652,6 +4652,8 @@ function ScreenshotReporter(options) {
     this.takeScreenShotsForSkippedSpecs = options.takeScreenShotsForSkippedSpecs || false;
     this.gatherBrowserLogs = options.gatherBrowserLogs || true;
     this.takeScreenShotsOnlyForFailedSpecs = options.takeScreenShotsOnlyForFailedSpecs || false;
+    this.searchSettings = options.searchSettings;
+    this.columnSettings = options.columnSettings;
     this.finalOptions = {
         excludeSkippedSpecs: this.excludeSkippedSpecs,
         takeScreenShotsOnlyForFailedSpecs: this.takeScreenShotsOnlyForFailedSpecs,
@@ -4664,7 +4666,9 @@ function ScreenshotReporter(options) {
         docTitle: this.docTitle,
         docName: this.docName,
         cssOverrideFile: this.cssOverrideFile,
-        prepareAssets: true
+        prepareAssets: true,
+        searchSettings: this.searchSettings,
+        columnSettings: this.columnSettings
     };
 
     if (!this.preserveDirectory) {
@@ -5149,6 +5153,8 @@ function addHTMLReport(jsonData, baseName, options){
                 .toString()
                 .replace('\'<Results Replacement>\'', JSON.stringify(jsonData, null, 4))
                 .replace('\'<Sort Function Replacement>\'', options.sortFunction.toString())
+                .replace('\'<Search Settings Replacement>\'',options.searchSettings?JSON.stringify(options.searchSettings):'{}')
+                .replace('\'<Column Settings Replacement>\'',options.columnSettings?JSON.stringify(options.columnSettings):'undefined')
         );
 
         streamJs.end();
@@ -6975,7 +6981,7 @@ $export($export.S, 'Math', { fround: __webpack_require__(112) });
 /* 188 */
 /***/ (function(module, exports, __webpack_require__) {
 
-// 20.2.2.17 Math.hypot([value1[, value2[, â€¦ ]]])
+// 20.2.2.17 Math.hypot([value1[, value2[, … ]]])
 var $export = __webpack_require__(0);
 var abs = Math.abs;
 
@@ -13215,7 +13221,7 @@ var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;//     Underscor
   };
 
   // Shuffle an array, using the modern version of the
-  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisherâ€“Yates_shuffle).
+  // [Fisher-Yates shuffle](http://en.wikipedia.org/wiki/Fisher–Yates_shuffle).
   _.shuffle = function(obj) {
     var rand;
     var index = 0;

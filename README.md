@@ -283,6 +283,43 @@ Default is `true`.
  ```
 Default is `true`.
 
+### Customize default search settings
+ If you do not all buttons in the search filter pressed by default you can modify the default state via `searchSettings:` option:
+ 
+ For example: We filter out all passed tests when report page is opened
+ ```javascript
+ new HtmlReporter({
+    baseDirectory: 'tmp/screenshots'
+    , searchSettings:{
+        allselected: false,
+        passed: false,
+        failed: true,
+        pending: true,
+        withLog: true
+    }
+ });
+ ```
+Default is every option is set to `true`
+ 
+### Customize default column settings
+  If you do not want to show all columns by default you can modify the default choice via `columnSettings:` option:
+  
+  For example: We only show the time column by default
+  ```javascript
+  new HtmlReporter({
+     baseDirectory: 'tmp/screenshots'
+     , columnSettings:{
+        displayTime:true,
+        displayBrowser:false,
+        displaySessionId:false,
+        inlineScreenshots:false
+     }
+  });
+  ```
+
+Default is every option except `inlineScreenshots` is set to `true`  
+
+
 ## HTML Reporter
 
 Upon running Protractor tests with the above config, the screenshot reporter will generate JSON and PNG files for each test.

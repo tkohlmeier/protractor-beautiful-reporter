@@ -174,6 +174,8 @@ function ScreenshotReporter(options) {
         options.gatherBrowserLogs || true;
     this.takeScreenShotsOnlyForFailedSpecs =
         options.takeScreenShotsOnlyForFailedSpecs || false;
+    this.searchSettings = options.searchSettings;
+    this.columnSettings = options.columnSettings;
     this.finalOptions = {
         excludeSkippedSpecs: this.excludeSkippedSpecs,
         takeScreenShotsOnlyForFailedSpecs: this.takeScreenShotsOnlyForFailedSpecs,
@@ -186,7 +188,9 @@ function ScreenshotReporter(options) {
         docTitle: this.docTitle,
         docName: this.docName,
         cssOverrideFile: this.cssOverrideFile,
-        prepareAssets: true
+        prepareAssets: true,
+        searchSettings: this.searchSettings,
+        columnSettings: this.columnSettings
     };
 
     if(!this.preserveDirectory){
