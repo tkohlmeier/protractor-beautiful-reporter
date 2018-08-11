@@ -284,7 +284,7 @@ Default is `true`.
 Default is `true`.
 
 ### Customize default search settings
- If you do not all buttons in the search filter pressed by default you can modify the default state via `searchSettings:` option:
+ If you do not want all buttons in the search filter pressed by default you can modify the default state via `searchSettings:` option:
  
  For example: We filter out all passed tests when report page is opened
  ```javascript
@@ -304,7 +304,7 @@ Default is every option is set to `true`
 ### Customize default column settings
   If you do not want to show all columns by default you can modify the default choice via `columnSettings:` option:
   
-  For example: We only show the time column by default
+  For example: We only want the time column by default
   ```javascript
   new HtmlReporter({
      baseDirectory: 'tmp/screenshots'

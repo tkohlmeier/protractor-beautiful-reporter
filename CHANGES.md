@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.2.4
+* Customize default search settings
+* Customize default column settings
+
 ## Version 1.2.3
 * All buttons should now work
 * Warning sign now should be visible
