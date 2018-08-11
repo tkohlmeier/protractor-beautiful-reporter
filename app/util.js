@@ -74,6 +74,8 @@ function addHTMLReport(jsonData, baseName, options){
                 .toString()
                 .replace('\'<Results Replacement>\'', JSON.stringify(jsonData, null, 4))
                 .replace('\'<Sort Function Replacement>\'', options.sortFunction.toString())
+                .replace('\'<Search Settings Replacement>\'',options.searchSettings?JSON.stringify(options.searchSettings):'{}')
+                .replace('\'<Column Settings Replacement>\'',options.columnSettings?JSON.stringify(options.columnSettings):'undefined')
         );
 
         streamJs.end();

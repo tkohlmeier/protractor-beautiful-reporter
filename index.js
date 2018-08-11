@@ -4652,6 +4652,8 @@ function ScreenshotReporter(options) {
     this.takeScreenShotsForSkippedSpecs = options.takeScreenShotsForSkippedSpecs || false;
     this.gatherBrowserLogs = options.gatherBrowserLogs || true;
     this.takeScreenShotsOnlyForFailedSpecs = options.takeScreenShotsOnlyForFailedSpecs || false;
+    this.searchSettings = options.searchSettings;
+    this.columnSettings = options.columnSettings;
     this.finalOptions = {
         excludeSkippedSpecs: this.excludeSkippedSpecs,
         takeScreenShotsOnlyForFailedSpecs: this.takeScreenShotsOnlyForFailedSpecs,
@@ -4664,7 +4666,9 @@ function ScreenshotReporter(options) {
         docTitle: this.docTitle,
         docName: this.docName,
         cssOverrideFile: this.cssOverrideFile,
-        prepareAssets: true
+        prepareAssets: true,
+        searchSettings: this.searchSettings,
+        columnSettings: this.columnSettings
     };
 
     if (!this.preserveDirectory) {
@@ -5149,6 +5153,8 @@ function addHTMLReport(jsonData, baseName, options){
                 .toString()
                 .replace('\'<Results Replacement>\'', JSON.stringify(jsonData, null, 4))
                 .replace('\'<Sort Function Replacement>\'', options.sortFunction.toString())
+                .replace('\'<Search Settings Replacement>\'',options.searchSettings?JSON.stringify(options.searchSettings):'{}')
+                .replace('\'<Column Settings Replacement>\'',options.columnSettings?JSON.stringify(options.columnSettings):'undefined')
         );
 
         streamJs.end();
