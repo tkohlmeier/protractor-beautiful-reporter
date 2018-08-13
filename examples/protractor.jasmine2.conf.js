@@ -59,7 +59,13 @@ exports.config = {
         version: '',
         platform: 'ANY',
         shardTestFiles: false,
-        maxInstances: 2,
+        maxInstances: 2
+        // comment out but need to keep for local testing
+        // chromeOptions:{
+        //     args:["--window-size=1680,1680"]
+        //     //args:["--headless","--disable-gpu","--window-size=1680,1680"]
+        //     //args:["--headless","--disable-gpu","--force-device-scale-factor=1.75","--high-dpi-support=1.75","--window-size=1400,1680"]
+        // }
     },
 
     // A base URL for your application under test. Calls to protractor.get()
