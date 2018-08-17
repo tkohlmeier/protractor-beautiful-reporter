@@ -153,7 +153,7 @@
                                         <pre ng-repeat="trace in result.trace track by $index" class="logContainer"><div ng-class="ctrl.applySmartHighlight(line)" ng-repeat="line in trace.split('\n') track by $index">{{line}}</div></pre>
                                     </div>
                                     <div ng-if="!ctrl.isValueAnArray(result.trace)">
-                                        <pre class="logContainer"><div ng-class="ctrl.applySmartHighlight(line)" ng-if="result.trace.length > 0 && !ctrl.isValueAnArray(result.trace)" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div></pre>
+                                        <pre class="logContainer"><div ng-class="ctrl.applySmartHighlight(line)" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div></pre>
                                     </div>
                                 </div>
                                 <div ng-if="result.browserLogs.length > 0">
