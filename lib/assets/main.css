@@ -118,3 +118,11 @@ table {
 .red {
     color: #FF0000;
 }
+
+.message {
+    display: block;
+}
+
+.message:not(:first-child) {
+    margin-top: 10px;
+}
