@@ -113,7 +113,14 @@
         <td ng-if="!ctrl.displayBrowser" ng-show="ctrl.displayBrowser">{{result.browser.name}} {{result.browser.version}}</td>
         <td ng-if="!ctrl.displaySessionId" ng-show="ctrl.displaySessionId">{{result.sessionId}}</td>
         <td ng-if="!ctrl.displayOS" ng-show="ctrl.displayOS">{{result.os}}</td>
-        <td>{{result.message}}</td>
+        <td>
+            <div ng-if="ctrl.isValueAnArray(result.message)">
+                <span class="message" ng-repeat="message in result.message track by $index">{{message}}</span>
+            </div>
+            <div ng-if="!ctrl.isValueAnArray(result.message)">
+                {{result.message}}
+            </div>
+        </td>
         <td class="logColumn">
             <!--<button class="btn btn-warning pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.logWarnings > 0">{{result.logWarnings}}</button>-->
             <!--<button class="btn btn-danger pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.logErrors > 0">{{result.logErrors}}</button>-->
@@ -141,7 +148,14 @@
                                     {{ctrl.getShortDescription(result.description)}}</h5>
                             </div>
                             <div class="modal-body">
-                                <pre ng-if="result.trace.length > 0" class="logContainer"><div ng-class="ctrl.applySmartHighlight(line)" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div></pre>
+                                <div ng-if="result.trace.length > 0">
+                                    <div ng-if="ctrl.isValueAnArray(result.trace)">
+                                        <pre ng-repeat="trace in result.trace track by $index" class="logContainer"><div ng-class="ctrl.applySmartHighlight(line)" ng-repeat="line in trace.split('\n') track by $index">{{line}}</div></pre>
+                                    </div>
+                                    <div ng-if="!ctrl.isValueAnArray(result.trace)">
+                                        <pre class="logContainer"><div ng-class="ctrl.applySmartHighlight(line)" ng-if="result.trace.length > 0 && !ctrl.isValueAnArray(result.trace)" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div></pre>
+                                    </div>
+                                </div>
                                 <div ng-if="result.browserLogs.length > 0">
                                     <h5 class="modal-title" id="imageModalLabel{{$index}}">
                                         Browser logs:
