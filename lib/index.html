@@ -150,7 +150,7 @@
                             <div class="modal-body">
                                 <div ng-if="result.trace.length > 0">
                                     <div ng-if="ctrl.isValueAnArray(result.trace)">
-                                        <pre ng-repeat="trace in result.trace track by $index" class="logContainer"><div ng-class="ctrl.applySmartHighlight(line)" ng-repeat="line in trace.split('\n') track by $index">{{line}}</div></pre>
+                                        <pre class="logContainer" ng-repeat="trace in result.trace track by $index"><div ng-class="ctrl.applySmartHighlight(line)" ng-repeat="line in trace.split('\n') track by $index">{{line}}</div></pre>
                                     </div>
                                     <div ng-if="!ctrl.isValueAnArray(result.trace)">
                                         <pre class="logContainer"><div ng-class="ctrl.applySmartHighlight(line)" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div></pre>
