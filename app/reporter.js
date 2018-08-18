@@ -92,8 +92,18 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
     } else if(results.status === 'pending' || results.status === 'disabled') {
         metaData.message = results.pendingReason || 'Pending';
     } else {
-        metaData.message = (results.failedExpectations[0] || {}).message || 'Failed';
-        metaData.trace = (results.failedExpectations[0] || {}).stack || 'No Stack trace information';
+
+        if (results.failedExpectations[0].message) {
+            metaData.message = results.failedExpectations.map(result => result.message);
+        } else {
+            metaData.message = 'Failed';
+        }
+
+        if (results.failedExpectations[0].stack) {
+            metaData.trace = results.failedExpectations.map(result => result.stack);
+        } else {
+            metaData.trace = 'No Stack trace information';
+        }
     }
 
     return metaData;
