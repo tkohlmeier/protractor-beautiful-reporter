@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.2.5
+
+* Fixed: Shows only first "except" failure even if there where more than one
+
 ## Version 1.2.4
 * Customize default search settings
 * Customize default column settings
