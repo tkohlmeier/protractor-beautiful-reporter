@@ -4,3 +4,4 @@ examples/node_modules/
 examples/reports-tmp
 npm-debug.log
 .idea/
+tmp/
