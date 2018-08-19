@@ -10,7 +10,7 @@
   "scripts": {
     "app:compile": "node --max_old_space_size=5760 ./node_modules/webpack/bin/webpack.js --config ./webpack.config.js",
     "test": "karma start --single-run",
-    "test-coverage": "karma start karma-coverage.conf.js --single-run --cc",
+    "test-coverage": "karma start --single-run --cc",
     "test-watch": "karma start --auto-watch --no-single-run"
   },
   "dependencies": {

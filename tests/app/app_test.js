@@ -285,7 +285,7 @@ describe('unit tests', function () {
 
 
     });
-    fdescribe('bySearchSettings filter', function () {
+    describe('bySearchSettings filter', function () {
 
         beforeEach(function () {
             module("reportingApp");
@@ -332,6 +332,20 @@ describe('unit tests', function () {
                 expect(fResults.length).toEqual(4);
             });
 
+            it('shows passed OR withLog', function () {
+                var settings = {
+                    description: '',
+                    allselected: false,
+                    passed: true,
+                    failed: false,
+                    pending: false,
+                    withLog: true
+                };
+                var filter = $filter('bySearchSettings');
+                var fResults = filter(referenceTestResults, settings);
+                expect(fResults.length).toEqual(5);
+            });
+
             it('shows only failed', function () {
                 var settings = {
                     description: '',
@@ -344,6 +358,77 @@ describe('unit tests', function () {
                 var filter = $filter('bySearchSettings');
                 var fResults = filter(referenceTestResults, settings);
                 expect(fResults.length).toEqual(2);
+            });
+
+            it('shows failed OR withLog', function () {
+                var settings = {
+                    description: '',
+                    allselected: false,
+                    passed: false,
+                    failed: true,
+                    pending: false,
+                    withLog: true
+                };
+                var filter = $filter('bySearchSettings');
+                var fResults = filter(referenceTestResults, settings);
+                expect(fResults.length).toEqual(2);
+            });
+
+
+            it('shows only pending', function () {
+                var settings = {
+                    description: '',
+                    allselected: false,
+                    passed: false,
+                    failed: false,
+                    pending: true,
+                    withLog: false
+                };
+                var filter = $filter('bySearchSettings');
+                var fResults = filter(referenceTestResults, settings);
+                expect(fResults.length).toEqual(3);
+            });
+
+            it('shows only withLog', function () {
+                var settings = {
+                    description: '',
+                    allselected: false,
+                    passed: false,
+                    failed: false,
+                    pending: false,
+                    withLog: true
+                };
+                var filter = $filter('bySearchSettings');
+                var fResults = filter(referenceTestResults, settings);
+                expect(fResults.length).toEqual(1);
+            });
+
+            it('filters by description', function () {
+                var settings = {
+                    description: 'should',
+                    allselected: true,
+                    passed: true,
+                    failed: true,
+                    pending: true,
+                    withLog: true
+                };
+                var filter = $filter('bySearchSettings');
+                var fResults = filter(referenceTestResults, settings);
+                expect(fResults.length).toEqual(7);
+            });
+
+            it('filters by description2', function () {
+                var settings = {
+                    description: 'pending',
+                    allselected: true,
+                    passed: true,
+                    failed: true,
+                    pending: true,
+                    withLog: true
+                };
+                var filter = $filter('bySearchSettings');
+                var fResults = filter(referenceTestResults, settings);
+                expect(fResults.length).toEqual(3);
             });
 
         });
