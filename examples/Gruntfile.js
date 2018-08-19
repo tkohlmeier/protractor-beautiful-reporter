@@ -6,20 +6,23 @@ require('matchdep').filterDev('grunt-*').forEach(grunt.loadNpmTasks);
     pkg: grunt.file.readJSON('package.json'),
 
     shell: {
-      options: {
+      "options": {
         stdout: true
       },
-      selenium: {
+      "selenium": {
         command: './selenium/start',
         options: {
           stdout: false,
           async: true
         }
       },
-      protractor_install: {
+      "protractor_install": {
         command: 'node ./node_modules/protractor/bin/webdriver-manager update'
       },
-      npm_install: {
+      "webdriver_start": {
+          command: 'node ./node_modules/protractor/bin/webdriver-manager start'
+      },
+      "npm_install": {
         command: 'npm install'
       }
     },
