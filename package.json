@@ -9,7 +9,8 @@
   },
   "scripts": {
     "app:compile": "node --max_old_space_size=5760 ./node_modules/webpack/bin/webpack.js --config ./webpack.config.js",
-    "test": "karma start",
+    "test": "karma start --single-run",
+    "test-coverage": "karma start karma-coverage.conf.js --single-run --cc",
     "test-watch": "karma start --auto-watch --no-single-run"
   },
   "dependencies": {
@@ -56,9 +57,7 @@
     "karma-coverage": "^1.0.0",
     "karma-jasmine": "^1.0.2",
     "karma-phantomjs-launcher": "^1.0.0",
-    "karma-sourcemap-loader": "^0.3.7",
     "karma-spec-reporter": "0.0.32",
-    "karma-webpack": "^3.0.0",
     "phantomjs-prebuilt": "^2.1.4"
   }
 }

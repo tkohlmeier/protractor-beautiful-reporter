@@ -21,7 +21,10 @@ module.exports = function (config) {
         }:{},
 
         frameworks: ['jasmine'],
-        reporters: config.cc?['coverage']:['spec'],
+        reporters: [
+           'progress', 'coverage'
+        ],
+
         // Configure code coverage reporter
         coverageReporter: {
             dir: 'tmp/coverage',
