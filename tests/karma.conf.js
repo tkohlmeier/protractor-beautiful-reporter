@@ -1,23 +1,20 @@
 //jshint strict: false
 module.exports = function (config) {
     config.set({
-        basePath: './',
-        // '../node_modules/angular/angular.js',
-        // '../node_modules/angular-mocks/angular-mocks.js',
-        // './**/*.js'
+        basePath: '.',
         files: [
             'node_modules/angular/angular.js',
             'node_modules/angular-mocks/angular-mocks.js',
             'node_modules/babel-polyfill/dist/polyfill.js',
-            'lib/assets/jquery.min.js',
-            'lib/assets/bootstrap.min.js',
-            'lib/assets/buttons.js',
-            './examples/reports/19-8-2018/app.js',
-            'tests/app/test_data.js',
-            'tests/app/app_test.js'
+            '../lib/assets/jquery.min.js',
+            '../lib/assets/bootstrap.min.js',
+            '../lib/assets/buttons.js',
+            '../examples/reports/19-8-2018/app.js',
+            'app/test_data.js',
+            'app/app_test.js'
         ],
         preprocessors:config.cc?{
-            './examples/reports/19-8-2018/app.js': ['coverage']
+            '../examples/reports/19-8-2018/app.js': ['coverage']
         }:{},
 
         frameworks: ['jasmine'],
