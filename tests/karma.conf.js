@@ -9,19 +9,20 @@ module.exports = function (config) {
             '../lib/assets/jquery.min.js',
             '../lib/assets/bootstrap.min.js',
             '../lib/assets/buttons.js',
-            '../examples/reports/19-8-2018/app.js',
+            '../tmp/tests/lib/app.js',
             'app/test_data.js',
             'app/app_test.js'
         ],
+        /** file is place in tnp by grunt task 'string-replace' */
         preprocessors:config.cc?{
-            '../examples/reports/19-8-2018/app.js': ['coverage']
+            '../tmp/tests/lib/app.js': ['coverage']
         }:{},
 
         frameworks: ['jasmine'],
         reporters: config.cc?['coverage']:['spec'],
         // Configure code coverage reporter
         coverageReporter: {
-            dir: 'tmp/coverage',
+            dir: '../tmp/coverage',
             subdir: 'report',
             reporters: [
                 {type: 'text-summary'},
@@ -34,7 +35,6 @@ module.exports = function (config) {
             'karma-spec-reporter',
             'karma-coverage',
             'karma-phantomjs-launcher',
-            'karma-chrome-launcher',
             'karma-jasmine'
         ]
 
