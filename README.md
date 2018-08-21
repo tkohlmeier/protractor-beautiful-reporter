@@ -95,19 +95,31 @@ Caution: The format/structure of these parameters (spec, descriptions, results, 
 
 
 ### Meta Data Builder (optional)
-You can modify the contents of the JSON meta data file by passing a function `metaDataBuilder` function as third constructor parameter:
+(removed because was only used in jasmine 1.x)
+
+### Jasmine2 Meta Data Builder (optional)
+
+You can modify the contents of the JSON meta data file by passing a function `jasmine2MetaDataBuilder` as part of the options parameter. 
+Note: We have to store and call the original jasmine2MetaDataBuilder also, else we break the "whole" reporter.
+
+The example is a workaround for the jasmine quirk https://github.com/angular/jasminewd/issues/32 which reports pending() as failed.
 
 ```javascript
-new HtmlReporter({
-   baseDirectory: 'tmp/screenshots'
-   , metaDataBuilder: function metaDataBuilder(spec, descriptions, results, capabilities) {
-      // Return the description of the spec and if it has passed or not:
-      return {
-         description: descriptions.join(' ')
-         , passed: results.passed()
-      };
-   }
-});
+var originalJasmine2MetaDataBuilder = new HtmlReporter({'baseDirectory': './'})["jasmine2MetaDataBuilder"];
+jasmine.getEnv().addReporter(new HtmlReporter({
+    baseDirectory: 'tmp/screenshots'
+    jasmine2MetaDataBuilder: function (spec, descriptions, results, capabilities) {
+        //filter for pendings with pending() function and "unfail" them
+        if (results && results.failedExpectations && results.failedExpectations.length>0 && "Failed: => marked Pending" === results.failedExpectations[0].message) {
+            results.pendingReason = "Marked Pending with pending()";
+            results.status = "pending";
+            results.failedExpectations = [];
+        }
+        //call the original method after my own mods
+        return originalJasmine2MetaDataBuilder(spec, descriptions, results, capabilities);
+    },
+    preserveDirectory: false
+}).getJasmine2Reporter());
 ```
 
 ### Screenshots Subfolder (optional)
