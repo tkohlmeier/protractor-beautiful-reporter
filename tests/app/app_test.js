@@ -144,37 +144,6 @@ describe('unit tests', function () {
                     expect(controller.getParent("a|b|c|d|e")).toEqual("d > c > b");
                 });
 
-                xit('specLevel detection', function () { // specLevel is unused function
-                    var $scope = $rootScope.$new();
-                    var controller = $controller('ScreenshotReportController', {$scope: $scope});
-                    var levels = [];
-                    for (var i = 0; i < referenceTestResults.length; i++) {
-                        var resultDesc = referenceTestResults[i].description;
-                        if (resultDesc) {
-                            levels.push(controller.specLevel(resultDesc));
-                        }
-                    }
-
-                    expect(levels.length).toEqual(9);
-
-                    expect(levels[0]).toBeTruthy();
-                    expect(levels[1]).toBeTruthy();
-                    expect(levels[2]).toBeTruthy();
-                    expect(levels[3]).toBeFalsy();
-                    expect(levels[4]).toBeFalsy();
-                    expect(levels[6]).toBeFalsy();
-                    expect(levels[7]).toBeFalsy();
-                    expect(levels[8]).toBeFalsy();
-                    expect(levels[9]).toBeFalsy();
-
-                });
-
-                xit('ntToBr', function () { // specLevel is unused function
-                    var controller = $controller('ScreenshotReportController', {$scope: {}});
-                    var l3 = controller.nToBr("line1\r\nline2\r\nline3\r\n");
-                    expect(l3.indexOf("\r\n")).toEqual(-1);
-                });
-
                 it('getShortDescription gets actual describe text', function () {
                     var $scope = $rootScope.$new();
                     var controller = $controller('ScreenshotReportController', {$scope: $scope});
