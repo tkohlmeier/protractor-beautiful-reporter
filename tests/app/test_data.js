@@ -1,4 +1,4 @@
-var referenceTestResults =[
+var results =[
     {
         "description": "should fail as greeting text is different|angularjs homepage",
         "passed": false,

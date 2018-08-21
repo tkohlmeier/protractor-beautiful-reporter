@@ -1,4 +1,5 @@
 describe('unit tests', function () {
+    var referenceTestResults = results;
     describe('reportingApp', function () {
 
         beforeEach(function () {
