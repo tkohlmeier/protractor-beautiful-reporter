@@ -3,6 +3,8 @@
 ## Version 1.2.5
 
 * Fixed: Shows only first "except" failure even if there where more than one
+* Fixed: Tooltips in top bargraph did not show up on mousehover
+* Fixed: Small numbers in top bargraph where clipped if the perecentage was too low
 
 ## Version 1.2.4
 * Customize default search settings

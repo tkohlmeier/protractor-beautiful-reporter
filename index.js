@@ -4581,13 +4581,17 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
     } else {
 
         if (results.failedExpectations[0].message) {
-            metaData.message = results.failedExpectations.map(result => result.message);
+            metaData.message = results.failedExpectations.map(function (result) {
+                return result.message;
+            });
         } else {
             metaData.message = 'Failed';
         }
 
         if (results.failedExpectations[0].stack) {
-            metaData.trace = results.failedExpectations.map(result => result.stack);
+            metaData.trace = results.failedExpectations.map(function (result) {
+                return result.stack;
+            });
         } else {
             metaData.trace = 'No Stack trace information';
         }
