@@ -1,5 +1,6 @@
+var referenceTestResults = results;
+var testDataBackup;
 describe('unit tests', function () {
-    var referenceTestResults = results;
     describe('reportingApp', function () {
 
         beforeEach(function () {
@@ -123,7 +124,7 @@ describe('unit tests', function () {
                         }
                     }
 
-                    expect(parents.length).toEqual(9);
+                    expect(parents.length).toEqual(12);
 
                     expect(parents[0]).toEqual("[no parent]");
                     expect(parents[1]).toEqual("[no parent]");
@@ -160,7 +161,7 @@ describe('unit tests', function () {
                         }
                     }
 
-                    expect(shortDescs.length).toEqual(9);
+                    expect(shortDescs.length).toEqual(12);
 
                     expect(shortDescs[0]).toEqual("should fail as greeting text is different");
                     expect(shortDescs[1]).toEqual("should greet the named user");
@@ -189,7 +190,7 @@ describe('unit tests', function () {
                         }
                     }
 
-                    expect(shortDescs.length).toEqual(9);
+                    expect(shortDescs.length).toEqual(12);
 
                     expect(shortDescs[0]).toEqual("angularjs homepage");
                     expect(shortDescs[1]).toEqual("angularjs homepage");
@@ -245,9 +246,25 @@ describe('unit tests', function () {
                     var $scope = $rootScope.$new();
                     expect($scope).toBeDefined();
                     var controller = $controller('ScreenshotReportController', {$scope: $scope});
-                    expect(controller.passCount()).toEqual(4);
-                    expect(controller.pendingCount()).toEqual(3);
-                    expect(controller.failCount()).toEqual(2);
+                    expect(controller.passCount()).toEqual(5);
+                    expect(controller.pendingCount()).toEqual(4);
+                    expect(controller.failCount()).toEqual(3);
+                });
+
+                it('check percents', function () {
+                    var $scope = $rootScope.$new();
+                    expect($scope).toBeDefined();
+                    var controller = $controller('ScreenshotReportController', {$scope: $scope});
+                    expect(Math.trunc(controller.passPerc())).toEqual(41);
+                    expect(Math.trunc(controller.pendingPerc())).toEqual(33);
+                    expect(Math.trunc(controller.failPerc())).toEqual(25);
+                });
+
+                it('sortingFunctions', function () {
+                    var $scope = $rootScope.$new();
+                    expect($scope).toBeDefined();
+                    var controller = $controller('ScreenshotReportController', {$scope: $scope});
+                    controller.sortSpecs();
                 });
 
             });
@@ -285,7 +302,7 @@ describe('unit tests', function () {
                 };
                 var filter = $filter('bySearchSettings');
                 var fResults = filter(referenceTestResults, settings);
-                expect(fResults.length).toEqual(9);
+                expect(fResults.length).toEqual(12);
             });
 
             it('shows only passed', function () {
@@ -299,7 +316,7 @@ describe('unit tests', function () {
                 };
                 var filter = $filter('bySearchSettings');
                 var fResults = filter(referenceTestResults, settings);
-                expect(fResults.length).toEqual(4);
+                expect(fResults.length).toEqual(5);
             });
 
             it('shows passed OR withLog', function () {
@@ -313,7 +330,7 @@ describe('unit tests', function () {
                 };
                 var filter = $filter('bySearchSettings');
                 var fResults = filter(referenceTestResults, settings);
-                expect(fResults.length).toEqual(5);
+                expect(fResults.length).toEqual(6);
             });
 
             it('shows only failed', function () {
@@ -327,7 +344,7 @@ describe('unit tests', function () {
                 };
                 var filter = $filter('bySearchSettings');
                 var fResults = filter(referenceTestResults, settings);
-                expect(fResults.length).toEqual(2);
+                expect(fResults.length).toEqual(3);
             });
 
             it('shows failed OR withLog', function () {
@@ -341,7 +358,7 @@ describe('unit tests', function () {
                 };
                 var filter = $filter('bySearchSettings');
                 var fResults = filter(referenceTestResults, settings);
-                expect(fResults.length).toEqual(2);
+                expect(fResults.length).toEqual(3);
             });
 
 
@@ -356,7 +373,7 @@ describe('unit tests', function () {
                 };
                 var filter = $filter('bySearchSettings');
                 var fResults = filter(referenceTestResults, settings);
-                expect(fResults.length).toEqual(3);
+                expect(fResults.length).toEqual(4);
             });
 
             it('shows only withLog', function () {
@@ -398,10 +415,60 @@ describe('unit tests', function () {
                 };
                 var filter = $filter('bySearchSettings');
                 var fResults = filter(referenceTestResults, settings);
-                expect(fResults.length).toEqual(3);
+                expect(fResults.length).toEqual(4);
+            });
+
+
+        });
+
+        describe("does not crash", function () {
+
+            beforeAll(function () {
+                testDataBackup = referenceTestResults.slice();
+            });
+            afterEach(function () {
+                referenceTestResults = testDataBackup.slice();
+            });
+
+            it('testDataBackup is ok', function () {
+               expect(testDataBackup).toBeDefined();
+               expect(testDataBackup.length).toEqual(12);
+            });
+
+            it('when test data is empty', function () {
+                //global variable defined in test_data.js
+                referenceTestResults = [];
+                var settings = {
+                    description: '',
+                    allselected: true,
+                    passed: true,
+                    failed: true,
+                    pending: true,
+                    withLog: true
+                };
+                var filter = $filter('bySearchSettings');
+                var fResults = filter(referenceTestResults, settings);
+                expect(fResults.length).toEqual(0);
+            });
+
+            it('when test data is undefined', function () {
+                //global variable defined in test_data.js
+                referenceTestResults = undefined;
+                var settings = {
+                    description: '',
+                    allselected: true,
+                    passed: true,
+                    failed: true,
+                    pending: true,
+                    withLog: true
+                };
+                var filter = $filter('bySearchSettings');
+                var fResults = filter(referenceTestResults, settings);
+                expect(fResults.length).toEqual(0);
             });
 
         });
+
     });
 
 });
