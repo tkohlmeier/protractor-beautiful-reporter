@@ -7,25 +7,26 @@ app.controller('ScreenshotReportController', function ($scope) {
         passed: true,
         failed: true,
         pending: true,
-        withLog: true,
-    },{}); // enable customisation of search settings on first page hit
+        withLog: true
+    }, {}); // enable customisation of search settings on first page hit
 
-    var initialColumnSettings=undefined; // enable customisation of visible columns on first page hit
-    if(initialColumnSettings) {
-        if(initialColumnSettings.displayTime !==undefined) {
-            this.displayTime=!initialColumnSettings.displayTime; // initial settings have be inverted because the html bindings are inverted (e.g. !ctrl.displayTime)
+    var initialColumnSettings = undefined; // enable customisation of visible columns on first page hit
+    if (initialColumnSettings) {
+        if (initialColumnSettings.displayTime !== undefined) {
+            // initial settings have be inverted because the html bindings are inverted (e.g. !ctrl.displayTime)
+            this.displayTime = !initialColumnSettings.displayTime;
         }
-        if(initialColumnSettings.displayBrowser !==undefined) {
-            this.displayBrowser=!initialColumnSettings.displayBrowser; // same as above
+        if (initialColumnSettings.displayBrowser !== undefined) {
+            this.displayBrowser = !initialColumnSettings.displayBrowser; // same as above
         }
-        if(initialColumnSettings.displaySessionId !== undefined) {
-            this.displaySessionId=!initialColumnSettings.displaySessionId; // same as above
+        if (initialColumnSettings.displaySessionId !== undefined) {
+            this.displaySessionId = !initialColumnSettings.displaySessionId; // same as above
         }
-        if(initialColumnSettings.displaySessionId !== undefined) {
-            this.displaySessionId=!initialColumnSettings.displaySessionId; // same as above
+        if (initialColumnSettings.displayOS !== undefined) {
+            this.displayOS = !initialColumnSettings.displayOS; // same as above
         }
-        if(initialColumnSettings.inlineScreenshots !== undefined) {
-            this.inlineScreenshots=initialColumnSettings.inlineScreenshots; // this setting does not have to be inverted
+        if (initialColumnSettings.inlineScreenshots !== undefined) {
+            this.inlineScreenshots = initialColumnSettings.inlineScreenshots; // this setting does not have to be inverted
         }
 
     }
@@ -49,7 +50,7 @@ app.controller('ScreenshotReportController', function ($scope) {
 
     this.isValueAnArray = function (val) {
         return isValueAnArray(val);
-    }
+    };
 
     this.getParent = function (str) {
         var arr = str.split('|');
@@ -60,15 +61,6 @@ app.controller('ScreenshotReportController', function ($scope) {
         return str.slice(0, -3);
     };
 
-    this.specLevel = function (str) {
-        var arr = str.split('|');
-        str = "";
-        if (arr.length < 3) {
-            return true;
-        }
-        return false;
-    };
-
     this.getSpec = function (str) {
         return getSpec(str);
     };
@@ -77,12 +69,6 @@ app.controller('ScreenshotReportController', function ($scope) {
     this.getShortDescription = function (str) {
         return str.split('|')[0];
     };
-
-
-    this.nToBr = function (str) {
-        return str.replace(/(?:\r\n|\r|\n)/g, '<br />');
-    };
-
 
     this.convertTimestamp = function (timestamp) {
         var d = new Date(timestamp),
@@ -101,7 +87,7 @@ app.controller('ScreenshotReportController', function ($scope) {
         } else if (hh === 12) {
             h = 12;
             ampm = 'PM';
-        } else if (hh == 0) {
+        } else if (hh === 0) {
             h = 12;
         }
 
@@ -121,7 +107,9 @@ app.controller('ScreenshotReportController', function ($scope) {
         var passCount = 0;
         for (var i in this.results) {
             var result = this.results[i];
-            if (result.passed) {passCount++};
+            if (result.passed) {
+                passCount++;
+            }
         }
         return passCount;
     };
@@ -131,7 +119,9 @@ app.controller('ScreenshotReportController', function ($scope) {
         var pendingCount = 0;
         for (var i in this.results) {
             var result = this.results[i];
-            if (result.pending) {pendingCount++};
+            if (result.pending) {
+                pendingCount++;
+            }
         }
         return pendingCount;
     };
@@ -141,9 +131,24 @@ app.controller('ScreenshotReportController', function ($scope) {
         var failCount = 0;
         for (var i in this.results) {
             var result = this.results[i];
-            if (!result.passed && !result.pending) {failCount++}
+            if (!result.passed && !result.pending) {
+                failCount++;
+            }
         }
         return failCount;
+    };
+
+    this.passPerc = function () {
+        return (this.passCount() / this.totalCount()) * 100;
+    };
+    this.pendingPerc = function () {
+        return (this.pendingCount() / this.totalCount()) * 100;
+    };
+    this.failPerc = function () {
+        return (this.failCount() / this.totalCount()) * 100;
+    };
+    this.totalCount = function () {
+        return this.passCount() + this.failCount() + this.pendingCount();
     };
 
     this.applySmartHighlight = function (line) {
@@ -356,6 +361,9 @@ app.controller('ScreenshotReportController', function ($scope) {
 app.filter('bySearchSettings', function () {
     return function (items, searchSettings) {
         var filtered = [];
+        if (!items) {
+            return filtered; // to avoid crashing in where results might be empty
+        }
         var prevItem = null;
 
         for (var i = 0; i < items.length; i++) {
@@ -371,15 +379,15 @@ app.filter('bySearchSettings', function () {
                 if (searchSettings.passed && item.passed || hasLog) {
                     checkIfShouldDisplaySpecName(prevItem, item);
                     filtered.push(item);
-                    var prevItem = item;
+                    prevItem = item;
                 } else if (searchSettings.failed && !item.passed && !item.pending || hasLog) {
                     checkIfShouldDisplaySpecName(prevItem, item);
                     filtered.push(item);
-                    var prevItem = item;
+                    prevItem = item;
                 } else if (searchSettings.pending && item.pending || hasLog) {
                     checkIfShouldDisplaySpecName(prevItem, item);
                     filtered.push(item);
-                    var prevItem = item;
+                    prevItem = item;
                 }
 
             }
@@ -391,7 +399,7 @@ app.filter('bySearchSettings', function () {
 
 var isValueAnArray = function (val) {
     return Array.isArray(val);
-}
+};
 
 var checkIfShouldDisplaySpecName = function (prevItem, item) {
     if (!prevItem) {
@@ -407,7 +415,7 @@ var checkIfShouldDisplaySpecName = function (prevItem, item) {
 
 var getSpec = function (str) {
     var describes = str.split('|');
-    return describes[describes.length-1];
+    return describes[describes.length - 1];
 };
 
 var countLogMessages = function (item) {
