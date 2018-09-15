@@ -1,4 +1,4 @@
-var results =[
+var testResults = [
     {
         "description": "should fail as greeting text is different|angularjs homepage",
         "passed": false,
@@ -232,3 +232,5 @@ var results =[
         "duration": 0
     }
 ];
+
+module.exports = testResults;
