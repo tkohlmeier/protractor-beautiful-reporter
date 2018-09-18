@@ -20,6 +20,7 @@
 * HTML Dump
 
 Need some feature? Let me know or code it and propose Pull Request :)
+But you might also look in our [WIKI](https://github.com/Evilweed/protractor-beautiful-reporter/wiki)/FAQ where we present some solutions how you can enhance the reporter by yourself.
 
 ## Props
 
