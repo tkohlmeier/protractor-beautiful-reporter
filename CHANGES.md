@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.2.6
+* Fixed: Reporter not working in Internet Explorer
+* Improved: Minds newlines in messages with callstacks
+* Optional: Load test results via ajax instead of patching app.js
+
 ## Version 1.2.5
 * Fixed: Shows only first "except" failure even if there were more than one
 * Fixed: Tooltips in top bargraph did not show up on mousehover
