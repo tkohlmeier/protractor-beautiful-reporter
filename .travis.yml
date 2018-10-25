@@ -8,4 +8,5 @@ install:
 script:
   - npm test 
   - istanbul cover ./tests/jasmine.runner.js --reporter lcovonly 
+  - karma start karma.conf.js --cc=true
   - codecov
