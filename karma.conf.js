@@ -48,8 +48,8 @@ module.exports = function (config) {
             dir: 'tmp/coverage',
             subdir: 'app',
             reporters: [
-                {type: 'text-summary'},
-                {type: 'html'}
+                {type: 'lcov', subdir: 'app'},
+                {type: 'json', subdir: 'app'}
             ]
         },
 
