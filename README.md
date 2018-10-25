@@ -306,12 +306,14 @@ Default is `true`.
  ```javascript
  new HtmlReporter({
     baseDirectory: 'tmp/screenshots'
-    , searchSettings:{
-        allselected: false,
-        passed: false,
-        failed: true,
-        pending: true,
-        withLog: true
+    , clientDefaults:{
+        searchSettings:{
+            allselected: false,
+            passed: false,
+            failed: true,
+            pending: true,
+            withLog: true
+        }
     }
  });
  ```
@@ -324,12 +326,14 @@ Default is every option is set to `true`
   ```javascript
   new HtmlReporter({
      baseDirectory: 'tmp/screenshots'
-     , columnSettings:{
-        displayTime:true,
-        displayBrowser:false,
-        displaySessionId:false,
-        inlineScreenshots:false
-     }
+     , clientDefaults:{
+        columnSettings:{
+            displayTime:true,
+            displayBrowser:false,
+            displaySessionId:false,
+            inlineScreenshots:false
+        }
+     }     
   });
   ```
 
