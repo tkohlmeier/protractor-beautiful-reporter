@@ -1,4 +1,5 @@
 [![npm](https://img.shields.io/npm/v/protractor-beautiful-reporter.svg)](https://www.npmjs.com/package/protractor-beautiful-reporter)
+[![coverage](https://codecov.io/github/miller45/protractor-beautiful-reporter/branch/master/graph/badge.svg)](https://codecov.io/github/miller45/protractor-beautiful-reporter)
 
 # Angularized HTML Reporter with Screenshots for Protractor
 
