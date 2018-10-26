@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/protractor-beautiful-reporter.svg)](https://www.npmjs.com/package/protractor-beautiful-reporter)
-
+[![Total Downloads](https://img.shields.io/npm/dt/protractor-beautiful-reporter.svg)](https://www.npmjs.com/protractor-beautiful-reporter.svg)
 # Angularized HTML Reporter with Screenshots for Protractor
 
 ![HTML / Angular Test Report](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/html-report.png "test report")
