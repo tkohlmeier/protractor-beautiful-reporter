@@ -1,5 +1,8 @@
 # Changelog
 
+## Version 1.2.7
+* Fixed: TypeError: Cannot set property 'searchSettings' of undefined
+
 ## Version 1.2.6
 * Fixed: Reporter not working in Internet Explorer
 * Improved: Minds newlines in messages with callstacks
