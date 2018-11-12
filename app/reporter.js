@@ -182,12 +182,12 @@ function ScreenshotReporter(options) {
         options.gatherBrowserLogs || true;
     this.takeScreenShotsOnlyForFailedSpecs =
         options.takeScreenShotsOnlyForFailedSpecs || false;
-    this.clientDefaults = options.clientDefaults;
+    this.clientDefaults = options.clientDefaults || {};
     if (options.searchSettings) { //settings in earlier "format" there?
-        options.clientDefaults.searchSettings = options.searchSettings;
+        this.clientDefaults.searchSettings = options.searchSettings;
     }
     if (options.columnSettings) {
-        options.clientDefaults.columnSettings = options.columnSettings;
+        this.clientDefaults.columnSettings = options.columnSettings;
     }
 
     this.finalOptions = {
