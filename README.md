@@ -1,5 +1,5 @@
 [![npm](https://img.shields.io/npm/v/protractor-beautiful-reporter.svg)](https://www.npmjs.com/package/protractor-beautiful-reporter)
-[![Total Downloads](https://img.shields.io/npm/dt/protractor-beautiful-reporter.svg)](https://www.npmjs.com/protractor-beautiful-reporter.svg)
+[![Total Downloads](https://img.shields.io/npm/dt/protractor-beautiful-reporter.svg)](https://www.npmjs.com/package/protractor-beautiful-reporter)
 [![CI](https://travis-ci.com/Evilweed/protractor-beautiful-reporter.svg?branch=master)](https://travis-ci.com/Evilweed/protractor-beautiful-reporter.svg?branch=master)
 # Angularized HTML Reporter with Screenshots for Protractor
 
