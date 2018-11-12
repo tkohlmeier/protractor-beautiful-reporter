@@ -7,6 +7,7 @@
 
 ## IMPORTANT !
 * Jasmine 1 is no longer supported
+* Version 1.2.6: needs an extra parameter 'clientDefaults: {}' in the options block until a bug is fixed:
 
 ## Features
 * Browser's Logs (only for Chrome)
