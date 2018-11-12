@@ -4666,13 +4666,13 @@ function ScreenshotReporter(options) {
     this.takeScreenShotsForSkippedSpecs = options.takeScreenShotsForSkippedSpecs || false;
     this.gatherBrowserLogs = options.gatherBrowserLogs || true;
     this.takeScreenShotsOnlyForFailedSpecs = options.takeScreenShotsOnlyForFailedSpecs || false;
-    this.clientDefaults = options.clientDefaults;
+    this.clientDefaults = options.clientDefaults || {};
     if (options.searchSettings) {
         //settings in earlier "format" there?
-        options.clientDefaults.searchSettings = options.searchSettings;
+        this.clientDefaults.searchSettings = options.searchSettings;
     }
     if (options.columnSettings) {
-        options.clientDefaults.columnSettings = options.columnSettings;
+        this.clientDefaults.columnSettings = options.columnSettings;
     }
 
     this.finalOptions = {
@@ -5122,7 +5122,7 @@ const fse = __webpack_require__(355);
 function storeScreenShot(data, file) {
     try {
         fse.outputFileSync(file, data, {encoding: 'base64'});
-    } catch (e) {
+    } catch(e) {
         console.error(e);
         console.error('Could not save image: ', file);
     }
@@ -5154,7 +5154,7 @@ function addHTMLReport(jsonData, baseName, options) {
     const jsTemplate = path.join(__dirname, 'lib', 'app.js');
     let streamJs;
     let streamHtml;
-    let cssLink = path.join('assets', 'bootstrap.css').replace(/\\/g,'/');
+    let cssLink = path.join('assets', 'bootstrap.css').replace(/\\/g, '/');
 
     try {
         if (options.cssOverrideFile) {
@@ -5197,13 +5197,13 @@ function addHTMLReport(jsonData, baseName, options) {
         streamJs.write(
             fs.readFileSync(jsTemplate)
                 .toString()
-                .replace('\[\];//\'<Results Replacement>\'',  jsonDataString)
+                .replace('\[\];//\'<Results Replacement>\'', jsonDataString)
                 .replace('defaultSortFunction/*<Sort Function Replacement>*/', options.sortFunction.toString())
                 .replace('{};//\'<Client Defaults Replacement>\'', JSON.stringify(options.clientDefaults, null, 4))
         );
 
         streamJs.end();
-    } catch (e) {
+    } catch(e) {
         console.error(e);
         console.error('Could not save combined.js for data: ' + jsonData);
     }
@@ -5247,7 +5247,7 @@ function addMetaData(test, baseName, options) {
 
         fs.rmdirSync(lock);
 
-    } catch (e) {
+    } catch(e) {
         console.error(e);
         console.error('Could not save JSON for data: ' + test);
     }
@@ -5265,7 +5265,7 @@ function storeMetaData(metaData, file, descriptions) {
     try {
         metaData.description = cleanArray(descriptions).join('|');
         fse.outputJsonSync(file, metaData);
-    } catch (e) {
+    } catch(e) {
         console.error(e);
         console.error('Could not save meta data for ' + file);
     }
@@ -5336,7 +5336,7 @@ function removeDirectory(dirPath) {
     try {
         files = fs.readdirSync(dirPath);
     }
-    catch (e) {
+    catch(e) {
         return;
     }
     if (files.length > 0) {

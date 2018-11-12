@@ -88,11 +88,7 @@ exports.config = {
             screenshotsSubfolder: 'images',
             jsonsSubfolder: 'jsons',
             baseDirectory: 'reports-tmp',
-            clientDefaults: {
-                columnSettings: {
-                    displaySessionId:false
-                }
-            },
+
             pathBuilder: function pathBuilder(spec, descriptions, results, capabilities) {
                 // Return '<30-12-2016>/<browser>/<specname>' as path for screenshots:
                 // Example: '30-12-2016/firefox/list-should work'.
