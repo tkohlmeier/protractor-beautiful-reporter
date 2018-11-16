@@ -1,0 +1,17 @@
+.DS_Store
+node_modules/
+examples/node_modules/
+examples/reports/
+examples/reports-tmp/
+npm-debug.log
+.idea/
+tmp/
+.npmrc
+tests/
+.istanbul.yml
+.jshintrc
+.travis.yml
+jasmine.json
+karma.conf.js
+karma.pre.js
+webpack.config.js

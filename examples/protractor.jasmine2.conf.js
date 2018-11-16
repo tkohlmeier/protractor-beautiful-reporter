@@ -64,6 +64,8 @@ exports.config = {
         chromeOptions: {
             args: ["--window-size=1680,1000"]
             // commented out but needed to keep it for local testing
+            //,  binary: process.env.CHROMIUM_BIN
+            //
             //     args:["--headless","--disable-gpu","--window-size=1680,1680"]
             //     args:["--headless","--disable-gpu","--force-device-scale-factor=1.75","--high-dpi-support=1.75","--window-size=1400,1680"]
         }
