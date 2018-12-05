@@ -7,7 +7,7 @@
 
 ## IMPORTANT !
 * Jasmine 1 is no longer supported
-* If you get `Error: TypeError: Cannot set property 'searchSettings' of undefined` use at least version 1.2.7, where the bug has been fixed)
+* If you get `Error: TypeError: Cannot set property 'searchSettings' of undefined` use at least version 1.2.7, where this bug has been fixed
 
 ## Features
 * Browser's Logs (only for Chrome)
