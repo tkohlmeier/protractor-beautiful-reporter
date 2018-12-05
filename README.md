@@ -7,7 +7,7 @@
 
 ## IMPORTANT !
 * Jasmine 1 is no longer supported
-* If you get `Error: TypeError: Cannot set property 'searchSettings' of undefined` in version 1.2.6 you have to add `clientDefaults:{}` to your options (e.g. after the `baseDirectory` setting)
+* If you get `Error: TypeError: Cannot set property 'searchSettings' of undefined` use at least version 1.2.7, where the bug has been fixed)
 
 ## Features
 * Browser's Logs (only for Chrome)
