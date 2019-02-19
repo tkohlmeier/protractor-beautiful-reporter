@@ -335,6 +335,7 @@ Default is every option is set to `true`
             displayTime:true,
             displayBrowser:false,
             displaySessionId:false,
+            displayOS:false,
             inlineScreenshots:false
         }
      }     
