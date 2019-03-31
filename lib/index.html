@@ -87,14 +87,10 @@
     <tbody ng-repeat="result in ctrl.results | bySearchSettings:searchSettings">
     <!-- Test Spec Header -->
     <tr ng-if="result.displaySpecName">
-        <th class="spec" colspan="10">
-            {{ctrl.currentSpec = ctrl.getSpec(result.description)}}
-        </th>
+        <th class="spec" colspan="10">{{ctrl.currentSpec = ctrl.getSpec(result.description)}}</th>
     </tr>
     <tr ng-if="ctrl.currentParent != ctrl.getParent(result.description) && ctrl.getParent(result.description)">
-        <th class="testCase" colspan="10">
-            {{ctrl.currentParent = ctrl.getParent(result.description)}}
-        </th>
+        <th class="testCase" colspan="10">{{ctrl.currentParent = ctrl.getParent(result.description)}}</th>
     </tr>
 
     <tr ng-class="{danger: !result.passed && !result.pending, warning: result.pending}">
@@ -108,7 +104,7 @@
             <span class="label label-warning"><span class="glyphicon glyphicon-option-horizontal"></span></span>
         </td>
         <td class="smallColumn" ng-if="!ctrl.displayTime" ng-show="ctrl.displayTime">
-            <span class="label label-default" ng-class="{'label-warning': result.duration > 14, 'label-danger': result.duration > 19}">{{ctrl.round(result.duration, 1)}} s</span>
+            <span class="label label-default" ng-class="{'label-warning': result.duration > ctrl.warningTime, 'label-danger': result.duration > ctrl.dangerTime}">{{ctrl.round(result.duration, 1)}} s</span>
         </td>
         <td class="mediumColumn">{{ctrl.getShortDescription(result.description)}}</td>
         <td ng-if="!ctrl.displayBrowser" ng-show="ctrl.displayBrowser">{{result.browser.name}} {{result.browser.version}}</td>
