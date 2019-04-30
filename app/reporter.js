@@ -72,10 +72,14 @@ function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
 }
 
 function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
-    var metaData = {
+
+    let isPassed = results.status === 'passed';
+    let isPending = ['pending', 'disabled', 'excluded'].includes(results.status);
+
+    let metaData = {
         description: descriptions.join(' '),
-        passed: results.status === 'passed',
-        pending: results.status === 'pending' || results.status === 'disabled',
+        passed: isPassed,
+        pending: isPending,
         os: capabilities.get('platform'),
         sessionId: capabilities.get('webdriver.remote.sessionid'),
         instanceId: process.pid,
@@ -85,10 +89,10 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
         }
     };
 
-    if (results.status === 'passed') {
+    if (isPassed) {
         metaData.message = (results.passedExpectations[0] || {}).message || 'Passed';
         metaData.trace = (results.passedExpectations[0] || {}).stack;
-    } else if (results.status === 'pending' || results.status === 'disabled') {
+    } else if (isPending) {
         metaData.message = results.pendingReason || 'Pending';
     } else {
 
@@ -270,7 +274,7 @@ class Jasmine2Reporter {
 
     async _asyncSpecDone(result) {
         // Don't report if it's skipped and we don't need it
-        if ((result.status === 'pending' || result.status === 'disabled') && this._screenshotReporter.excludeSkippedSpecs) {
+        if (['pending', 'disabled', 'excluded'].includes(result.status) && this._screenshotReporter.excludeSkippedSpecs) {
             return;
         }
 
@@ -333,7 +337,9 @@ class Jasmine2Reporter {
 
         metaData.browserLogs = [];
 
-        if (!(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
+        let considerScreenshot = !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')
+
+        if (considerScreenshot) {
             metaData.screenShotFile = path.join(this._screenshotReporter.screenshotsSubfolder, screenShotFileName);
         }
 
@@ -344,9 +350,21 @@ class Jasmine2Reporter {
         metaData.timestamp = new Date(result.started).getTime();
         metaData.duration = new Date(result.stopped) - new Date(result.started);
 
-        if ((result.status !== 'pending' && result.status !== 'disabled') && !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
-            const png = await browser.takeScreenshot();
-            util.storeScreenShot(png, screenShotPath);
+        let testWasExecuted = ! (['pending','disabled','excluded'].includes(result.status));
+        if (testWasExecuted && considerScreenshot) {
+            try {
+                const png = await browser.takeScreenshot();
+                util.storeScreenShot(png, screenShotPath);
+            }
+            catch(ex) {
+                if(ex['name'] === 'NoSuchWindowError') {
+                    console.warn('Protractor-beautiful-reporter could not take the screenshot because target window is already closed');
+                }else {
+                    console.error(ex);
+                    console.error('Protractor-beautiful-reporter could not take the screenshot');
+                }
+                metaData.screenShotFile = void 0;
+            }
         }
 
         util.storeMetaData(metaData, jsonPartsPath, descriptions);
