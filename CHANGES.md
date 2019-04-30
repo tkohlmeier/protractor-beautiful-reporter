@@ -1,5 +1,9 @@
 # Changelog
 
+## Version 1.2.8 (Not released yet)
+* Hardend: Continue test when screenshot fails. Especially when 'target window already closed' occurs.
+* Fixed: Handling of 'excluded' status with protractor 6.0.0  
+
 ## Version 1.2.7
 * Fixed: TypeError: Cannot set property 'searchSettings' of undefined
 

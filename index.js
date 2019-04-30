@@ -4560,10 +4560,14 @@ function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
 }
 
 function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
+
+    var isPassed = results.status === 'passed';
+    var isPending = ['pending', 'disabled', 'excluded'].includes(results.status);
+
     var metaData = {
         description: descriptions.join(' '),
-        passed: results.status === 'passed',
-        pending: results.status === 'pending' || results.status === 'disabled',
+        passed: isPassed,
+        pending: isPending,
         os: capabilities.get('platform'),
         sessionId: capabilities.get('webdriver.remote.sessionid'),
         instanceId: process.pid,
@@ -4573,10 +4577,10 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
         }
     };
 
-    if (results.status === 'passed') {
+    if (isPassed) {
         metaData.message = (results.passedExpectations[0] || {}).message || 'Passed';
         metaData.trace = (results.passedExpectations[0] || {}).stack;
-    } else if (results.status === 'pending' || results.status === 'disabled') {
+    } else if (isPending) {
         metaData.message = results.pendingReason || 'Pending';
     } else {
 
@@ -4856,7 +4860,7 @@ var Jasmine2Reporter = function () {
                     while (1) {
                         switch (_context6.prev = _context6.next) {
                             case 0:
-                                if (!((result.status === 'pending' || result.status === 'disabled') && this._screenshotReporter.excludeSkippedSpecs)) {
+                                if (!(['pending', 'disabled', 'excluded'].includes(result.status) && this._screenshotReporter.excludeSkippedSpecs)) {
                                     _context6.next = 2;
                                     break;
                                 }
@@ -4946,7 +4950,7 @@ var Jasmine2Reporter = function () {
         key: '_takeScreenShotAndAddMetaData',
         value: function () {
             var _ref9 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee8(result) {
-                var capabilities, suite, descriptions, baseName, metaData, screenShotFileName, screenShotFilePath, metaFile, screenShotPath, metaDataPath, jsonPartsPath, png;
+                var capabilities, suite, descriptions, baseName, metaData, screenShotFileName, screenShotFilePath, metaFile, screenShotPath, metaDataPath, jsonPartsPath, considerScreenshot, testWasExecuted, png;
                 return regeneratorRuntime.wrap(function _callee8$(_context8) {
                     while (1) {
                         switch (_context8.prev = _context8.next) {
@@ -4970,7 +4974,10 @@ var Jasmine2Reporter = function () {
 
                                 metaData.browserLogs = [];
 
-                                if (!(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')) {
+                                considerScreenshot = !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed');
+
+
+                                if (considerScreenshot) {
                                     metaData.screenShotFile = path.join(this._screenshotReporter.screenshotsSubfolder, screenShotFileName);
                                 }
 
@@ -4981,31 +4988,48 @@ var Jasmine2Reporter = function () {
                                 metaData.timestamp = new Date(result.started).getTime();
                                 metaData.duration = new Date(result.stopped) - new Date(result.started);
 
-                                if (!(result.status !== 'pending' && result.status !== 'disabled' && !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed'))) {
-                                    _context8.next = 23;
+                                testWasExecuted = !['pending', 'disabled', 'excluded'].includes(result.status);
+
+                                if (!(testWasExecuted && considerScreenshot)) {
+                                    _context8.next = 32;
                                     break;
                                 }
 
-                                _context8.next = 21;
+                                _context8.prev = 21;
+                                _context8.next = 24;
                                 return browser.takeScreenshot();
 
-                            case 21:
+                            case 24:
                                 png = _context8.sent;
 
                                 util.storeScreenShot(png, screenShotPath);
+                                _context8.next = 32;
+                                break;
 
-                            case 23:
+                            case 28:
+                                _context8.prev = 28;
+                                _context8.t0 = _context8['catch'](21);
+
+                                if (_context8.t0['name'] === 'NoSuchWindowError') {
+                                    console.warn('Protractor-beautiful-reporter could not take the screenshot because target window is already closed');
+                                } else {
+                                    console.error(_context8.t0);
+                                    console.error('Protractor-beautiful-reporter could not take the screenshot');
+                                }
+                                metaData.screenShotFile = void 0;
+
+                            case 32:
 
                                 util.storeMetaData(metaData, jsonPartsPath, descriptions);
                                 util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
                                 this._screenshotReporter.finalOptions.prepareAssets = false; // signal to utils not to write all files again
 
-                            case 26:
+                            case 35:
                             case 'end':
                                 return _context8.stop();
                         }
                     }
-                }, _callee8, this);
+                }, _callee8, this, [[21, 28]]);
             }));
 
             function _takeScreenShotAndAddMetaData(_x3) {
