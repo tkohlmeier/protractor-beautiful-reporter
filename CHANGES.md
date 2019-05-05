@@ -1,8 +1,9 @@
 # Changelog
 
-## Version 1.2.8 (Not released yet)
+## Version 1.2.8
 * Hardend: Continue test when screenshot fails. Especially when 'target window already closed' occurs.
-* Fixed: Handling of 'excluded' status with protractor 6.0.0  
+* Fixed: Handling of 'excluded' status with protractor 6.0.0 (but protractor still not working correctly with duration)
+* Values for coloring time column now customizable
 
 ## Version 1.2.7
 * Fixed: TypeError: Cannot set property 'searchSettings' of undefined
