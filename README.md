@@ -344,6 +344,20 @@ Default is every option is set to `true`
 
 Default is every option except `inlineScreenshots` is set to `true`  
 
+Additionally you can customize the time values for coloring the time column. 
+For example if you want to mark the time orange when the test took longer than 1 second and red when the test took longer than 1.5 seconds
+add the following to columnSettings (values are in milliseconds scale):
+```javascript
+   new HtmlReporter({
+      baseDirectory: 'tmp/screenshots'
+      , clientDefaults:{
+         columnSettings:{
+            warningTime: 1000,
+            dangerTime: 1500
+         }
+      }     
+   });
+```
 
 ## HTML Reporter
 

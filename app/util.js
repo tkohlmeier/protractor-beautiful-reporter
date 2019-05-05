@@ -15,7 +15,7 @@ const fse = require('fs-extra');
 function storeScreenShot(data, file) {
     try {
         fse.outputFileSync(file, data, {encoding: 'base64'});
-    } catch(e) {
+    } catch (e) {
         console.error(e);
         console.error('Could not save image: ', file);
     }
@@ -50,11 +50,17 @@ function addHTMLReport(jsonData, baseName, options) {
     let cssLink = path.join('assets', 'bootstrap.css').replace(/\\/g, '/');
 
     try {
+
         if (options.cssOverrideFile) {
             cssLink = options.cssOverrideFile;
         }
 
         if (options.prepareAssets) {
+            var cssInsert = `<link rel="stylesheet" href="${cssLink}">`;
+            if (options.customCssInline) {
+                cssInsert += ` <style type="text/css">${options.customCssInline}</style>`;
+            }
+
             //copy assets
             fse.copySync(path.join(__dirname, 'lib', 'assets'), path.join(basePath, 'assets'));
 
@@ -68,7 +74,7 @@ function addHTMLReport(jsonData, baseName, options) {
             streamHtml.write(
                 fs.readFileSync(htmlInFile)
                     .toString()
-                    .replace('<!-- Here will be CSS placed -->', '<link rel="stylesheet" href="' + cssLink + '">')
+                    .replace('<!-- Here will be CSS placed -->', cssInsert)
                     .replace('<!-- Here goes title -->', options.docTitle)
             );
 
@@ -96,7 +102,7 @@ function addHTMLReport(jsonData, baseName, options) {
         );
 
         streamJs.end();
-    } catch(e) {
+    } catch (e) {
         console.error(e);
         console.error('Could not save combined.js for data: ' + jsonData);
     }
@@ -140,7 +146,7 @@ function addMetaData(test, baseName, options) {
 
         fs.rmdirSync(lock);
 
-    } catch(e) {
+    } catch (e) {
         console.error(e);
         console.error('Could not save JSON for data: ' + test);
     }
@@ -158,7 +164,7 @@ function storeMetaData(metaData, file, descriptions) {
     try {
         metaData.description = cleanArray(descriptions).join('|');
         fse.outputJsonSync(file, metaData);
-    } catch(e) {
+    } catch (e) {
         console.error(e);
         console.error('Could not save meta data for ' + file);
     }
@@ -229,7 +235,7 @@ function removeDirectory(dirPath) {
     try {
         files = fs.readdirSync(dirPath);
     }
-    catch(e) {
+    catch (e) {
         return;
     }
     if (files.length > 0) {

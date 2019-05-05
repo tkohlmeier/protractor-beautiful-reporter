@@ -193,6 +193,7 @@ function ScreenshotReporter(options) {
     if (options.columnSettings) {
         this.clientDefaults.columnSettings = options.columnSettings;
     }
+    this.customCssInline = options.customCssInline;
 
     this.finalOptions = {
         excludeSkippedSpecs: this.excludeSkippedSpecs,
@@ -207,7 +208,8 @@ function ScreenshotReporter(options) {
         docName: this.docName,
         cssOverrideFile: this.cssOverrideFile,
         prepareAssets: true,
-        clientDefaults: this.clientDefaults
+        clientDefaults: this.clientDefaults,
+        customCssInline: this.customCssInline
     };
     if (!this.preserveDirectory) {
         util.removeDirectory(this.finalOptions.baseDirectory);
