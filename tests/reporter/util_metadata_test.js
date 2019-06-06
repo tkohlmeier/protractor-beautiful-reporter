@@ -158,18 +158,6 @@ describe('unit tests', () => {
                     }).toThrow();
 
                 });
-
-                it('catches error and logs if param pathExists throws', () => {
-                    const errorMsg = "fake error";
-                    const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
-                    spyOn(fse, 'pathExistsSync').and.callFake(() => {
-                        throw new Error(errorMsg);
-                    });
-                    spyOn(console, 'error').and.stub();
-                    util.addMetaData({}, fakePath, {});
-                    expect(console.error).toHaveBeenCalledWith(new Error(errorMsg));
-                });
-
             });
 
             describe('working scenarios', () => {
@@ -190,9 +178,6 @@ describe('unit tests', () => {
                     });
                     spyOn(fse, "outputJsonSync").and.stub();
                     spyOn(fse, 'pathExistsSync').and.callFake((fpath) => {
-                        if (fpath.endsWith(".lock")) {
-                            return false;
-                        }
                         if (fpath.endsWith("combined.json")) {
                             return false;
                         }
@@ -243,9 +228,6 @@ describe('unit tests', () => {
                     spyOn(fse, "outputJsonSync").and.stub();
 
                     spyOn(fse, 'pathExistsSync').and.callFake((fpath) => {
-                        if (fpath.endsWith(".lock")) {
-                            return false;
-                        }
                         if (fpath.endsWith("combined.json")) {
                             return true;
                         }
