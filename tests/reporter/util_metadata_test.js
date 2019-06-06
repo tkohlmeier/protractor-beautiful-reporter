@@ -850,6 +850,69 @@ describe('unit tests', () => {
                     const jsContentsWoLF = jsContents.replace(/\r\n/g, "").replace(/\n/g, "");
                     expect(jsContentsWoLF).toEqual('    var clientDefaults = {    "searchSettings": {},    "columnSettings": {}};  ');
                 });
+
+                it('adds customCssInline if configured so', () => {
+                    const htmlTemplate = '<!-- Here will be CSS placed -->';
+                    const errorMsg = "mock case not expected: ";
+                    const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
+
+                    //region mocks
+
+                    // for addMetaData
+                    spyOn(fse, "ensureFileSync").and.stub();
+                    spyOn(fs, "rmdirSync").and.stub();
+                    spyOn(fs, "mkdirSync").and.stub();
+                    spyOn(fse, "readJsonSync").and.callFake(() => {
+                        return "[]";
+                    });
+                    spyOn(fse, "outputJsonSync").and.stub();
+
+                    spyOn(fse, 'pathExistsSync').and.callFake((fpath) => {
+                        if (fpath.endsWith("combined.json")) {
+                            return true;
+                        }
+                        throw new Error(errorMsg + fpath);
+                    });
+
+                    // for addHTMLReport
+                    spyOn(fse, 'copySync').and.stub();
+                    spyOn(fs, 'readFileSync').and.callFake(() => {
+                        return Buffer.from(htmlTemplate);
+                    });
+
+                    let htmlContents;
+                    spyOn(fs, 'createWriteStream').and.callFake((wfile) => {
+                        if (wfile.endsWith(".html")) {
+                            return {
+                                write: function (txt) {
+                                    htmlContents = txt;
+                                },
+                                end: jasmine.createSpy('end')
+                            };
+                        }
+                        return {
+                            write: jasmine.createSpy('write'),
+                            end: jasmine.createSpy('end')
+                        };
+
+                    });
+
+                    // misc
+                    spyOn(console, 'error').and.stub();
+                    //end region mocks
+
+                    const metaData = {};
+                    const options = {
+                        docName: "report.html",
+                        sortFunction: defaultSortFunction,
+                        customCssInline: ".myspecial-custom-class { font-face: bold; }",
+                        prepareAssets: true
+                    };
+                    util.addMetaData(metaData, fakePath, options);
+
+                    expect(console.error).not.toHaveBeenCalled();
+                    expect(htmlContents).toEqual('<link rel="stylesheet" href="assets/bootstrap.css"> <style type="text/css">.myspecial-custom-class { font-face: bold; }</style>');
+                });
             });
 
         });
