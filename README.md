@@ -359,6 +359,12 @@ add the following to columnSettings (values are in milliseconds scale):
    });
 ```
 
+### Load spec results via ajax
+By default the raw data of all tests results from the e2e session are embedded in the main javascript file (array results in app.js).
+If you add `useAjax:true` to `clientDefaults` the data is not embedded in the app.js but is loaded from the file `combined.json` which contains all the raw test results.
+
+Currently the reason for this feature is a better testability in unit tests. But you could benefit from ajax loading, if you want to polish/postprocess tests results (e.g. filter duplicated test results). This would not be possible if the data is embedded in the app.js file.
+
 ## HTML Reporter
 
 Upon running Protractor tests with the above config, the screenshot reporter will generate JSON and PNG files for each test.
