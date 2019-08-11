@@ -180,13 +180,13 @@
                       class="label label-white ng-binding pull-right"
                       data-toggle="modal"
                       data-target="#imageModal{{$index}}">
-                            <span class="glyphicon glyphicon-picture black"></span>
+                        <span class="glyphicon glyphicon-picture black"></span>
                 </span>
                 <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
                     <img ng-src="{{result.screenShotFile}}" class="screenshotLink"/></a>
                 <!-- Screenshot Modal -->
                 <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
-                     aria-labelledby="imageModalLabel{{$index}}">
+                     aria-labelledby="imageModalLabel{{$index}}" ng-keydown="ctrl.updateSelectedModal($event, $index)">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
