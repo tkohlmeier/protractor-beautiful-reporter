@@ -16,13 +16,13 @@
             </div>
             <div class="modal-footer">
                 <div class="pull-left">
-                    <button ng-disabled="!($ctrl.index > 0)" class="btn btn-default" data-dismiss="modal"
-                            data-toggle="modal" data-target="#imageModal{{$ctrl.index - 1}}">
+                    <button ng-disabled="!($ctrl.index > 0)" class="btn btn-default btn-previous" data-dismiss="modal"
+                            data-toggle="modal" data-target="#imageModal{{$ctrl.previous}}">
                         Prev
                     </button>
-                    <button ng-disabled="!($ctrl.index < $ctrl.total - 1)" class="btn btn-default"
+                    <button ng-disabled="!($ctrl.index < $ctrl.total - 1)" class="btn btn-default btn-next"
                             data-dismiss="modal" data-toggle="modal"
-                            data-target="#imageModal{{$ctrl.index + 1}}">
+                            data-target="#imageModal{{$ctrl.next}}">
                         Next
                     </button>
                 </div>
