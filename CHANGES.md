@@ -1,5 +1,7 @@
 # Changelog
 
+## Version 1.2.10
+* Added option for disabling all screenshots
 ## Version 1.2.9
 * Added favico (from angulars) to report page
 

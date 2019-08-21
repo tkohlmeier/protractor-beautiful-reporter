@@ -246,6 +246,18 @@ Default is `false`.
  
  Default is `false`.
 
+### Disable all screenshots
+If you want no screenshots at all, set the `disableScreenshots` option to true.  
+ 
+ ```javascript
+ new HtmlReporter({
+    baseDirectory: 'tmp/reports'    
+    , disableScreenshots: true
+ });
+ ``` 
+ 
+ Default is `false`.
+
 
 ### Add title for the html report (optional)
  Also you can define a document title for the html report generated using the `docTitle:` option:
