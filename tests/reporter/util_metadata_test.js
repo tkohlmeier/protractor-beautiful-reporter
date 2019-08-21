@@ -8,7 +8,6 @@ const defaultSortFunction = (a, b) => {
     return (a + b) ? 0 : 0; //
 };
 
-const oldVersion = false; // upcoming need different handling of replacesments
 
 describe('unit tests', () => {
 
@@ -299,7 +298,7 @@ describe('unit tests', () => {
                     // for addHTMLReport
                     spyOn(fse, 'copySync').and.stub();
                     spyOn(fs, 'readFileSync').and.callFake(() => {
-                        return new Buffer(htmlTemplate);
+                        return Buffer.from(htmlTemplate);
                     });
 
 
@@ -354,7 +353,7 @@ describe('unit tests', () => {
                     // for addHTMLReport
                     spyOn(fse, 'copySync').and.stub();
                     spyOn(fs, 'readFileSync').and.callFake(() => {
-                        return new Buffer(htmlTemplate);
+                        return Buffer.from(htmlTemplate);
                     });
 
                     let htmlContents;
@@ -419,7 +418,7 @@ describe('unit tests', () => {
                     // for addHTMLReport
                     spyOn(fse, 'copySync').and.stub();
                     spyOn(fs, 'readFileSync').and.callFake(() => {
-                        return new Buffer(htmlTemplate);
+                        return Buffer.from(htmlTemplate);
                     });
 
                     let htmlContents;
@@ -485,7 +484,7 @@ describe('unit tests', () => {
                     // for addHTMLReport
                     spyOn(fse, 'copySync').and.stub();
                     spyOn(fs, 'readFileSync').and.callFake(() => {
-                        return new Buffer(htmlTemplate);
+                        return Buffer.from(htmlTemplate);
                     });
 
                     let htmlContents;
@@ -525,9 +524,6 @@ describe('unit tests', () => {
 
                 it('replaces results in app.js', () => {
                     let jsTemplate = "    var results = [];//'<Results Replacement>';   ";
-                    if (oldVersion) {
-                        jsTemplate = "    var results = '<Results Replacement>';";
-                    }
 
                     const errorMsg = "mock case not expected: ";
                     const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
@@ -556,7 +552,7 @@ describe('unit tests', () => {
                     // for addHTMLReport
                     spyOn(fse, 'copySync').and.stub();
                     spyOn(fs, 'readFileSync').and.callFake(() => {
-                        return new Buffer(jsTemplate);
+                        return Buffer.from(jsTemplate);
                     });
 
                     let jsContents;
@@ -591,16 +587,12 @@ describe('unit tests', () => {
                     };
                     util.addMetaData(metaData, fakePath, options);
                     expect(console.error).not.toHaveBeenCalled();
-                    if (oldVersion) {
-                        expect(jsContents.length).toEqual(15475);
-                    } else {
-                        //fs.writeFileSync(dbgFile,jsContents,'utf-8');
-                        expect(jsContents.length).toEqual(1920);
-                    }
+                    expect(jsContents.length).toEqual(1920);
+
 
                 });
-                if (!oldVersion) { // use ajax not yet implemwented
-                    it('replaces results with [] clientDefaults.useAjax is true in app.js', () => {
+
+                it('replaces results with [] clientDefaults.useAjax is true in app.js', () => {
                         const jsTemplate = "    var results = [];//'<Results Replacement>';  ";
                         const errorMsg = "mock case not expected: ";
                         const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
@@ -629,7 +621,7 @@ describe('unit tests', () => {
                         // for addHTMLReport
                         spyOn(fse, 'copySync').and.stub();
                         spyOn(fs, 'readFileSync').and.callFake(() => {
-                            return new Buffer(jsTemplate);
+                            return Buffer.from(jsTemplate);
                         });
 
                         let jsContents;
@@ -667,7 +659,7 @@ describe('unit tests', () => {
                         expect(console.error).not.toHaveBeenCalled();
                         expect(jsContents).toEqual('    var results = [];  ');
                     });
-                }
+
 
                 it('replaces sortfunction in app.js', () => {
                     const jsTemplate = "        this.results = results.sort(defaultSortFunction/*<Sort Function Replacement>*/);  ";
@@ -698,7 +690,7 @@ describe('unit tests', () => {
                     // for addHTMLReport
                     spyOn(fse, 'copySync').and.stub();
                     spyOn(fs, 'readFileSync').and.callFake(() => {
-                        return new Buffer(jsTemplate);
+                        return Buffer.from(jsTemplate);
                     });
 
                     let jsContents;
@@ -738,8 +730,8 @@ describe('unit tests', () => {
                 });
                 //}
 
-                if (!oldVersion) {
-                    it('replaces clientDefaults in app.js', () => {
+
+                it('replaces clientDefaults in app.js', () => {
                         const jsTemplate = "    var clientDefaults = {};//'<Client Defaults Replacement>';  ";
                         const errorMsg = "mock case not expected: ";
                         const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
@@ -768,7 +760,7 @@ describe('unit tests', () => {
                         // for addHTMLReport
                         spyOn(fse, 'copySync').and.stub();
                         spyOn(fs, 'readFileSync').and.callFake(() => {
-                            return new Buffer(jsTemplate);
+                            return Buffer.from(jsTemplate);
                         });
 
                         let jsContents;
@@ -809,303 +801,8 @@ describe('unit tests', () => {
                         const jsContentsWoLF = jsContents.replace(/\r\n/g, "").replace(/\n/g, "");
                         expect(jsContentsWoLF).toEqual('    var clientDefaults = {    "searchSettings": {},    "columnSettings": {}};  ');
                     });
-                } else {
-                    it('replaces columnsettings in app.js with defaults', () => {
-                        const jsTemplate = "    var initialColumnSettings = '<Column Settings Replacement>'" +
-                            "; // enable customisation of visible columns on first page hit";
-                        const errorMsg = "mock case not expected: ";
-                        const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
 
-                        //region mocks
 
-                        // for addMetaData
-                        spyOn(fse, "ensureFileSync").and.stub();
-                        spyOn(fs, "rmdirSync").and.stub();
-                        spyOn(fs, "mkdirSync").and.stub();
-                        spyOn(fse, "readJsonSync").and.callFake(() => {
-                            return "[]";
-                        });
-                        spyOn(fse, "outputJsonSync").and.stub();
-
-                        spyOn(fse, 'pathExistsSync').and.callFake((fpath) => {
-                            if (fpath.endsWith(".lock")) {
-                                return false;
-                            }
-                            if (fpath.endsWith("combined.json")) {
-                                return true;
-                            }
-                            throw new Error(errorMsg + fpath);
-                        });
-
-                        // for addHTMLReport
-                        spyOn(fse, 'copySync').and.stub();
-                        spyOn(fs, 'readFileSync').and.callFake(() => {
-                            return new Buffer(jsTemplate);
-                        });
-
-                        let jsContents;
-                        spyOn(fs, 'createWriteStream').and.callFake((wfile) => {
-                            if (wfile.endsWith(".js")) {
-                                return {
-                                    write: function (txt) {
-                                        jsContents = txt;
-                                    },
-                                    end: jasmine.createSpy('end')
-                                };
-                            }
-                            return {
-                                write: jasmine.createSpy('write'),
-                                end: jasmine.createSpy('end')
-                            };
-
-                        });
-
-                        // misc
-                        spyOn(console, 'error').and.stub();
-                        //end region mocks
-
-                        const metaData = testResults[0];
-                        const options = {
-                            docName: "report.html",
-                            docTitle: "my super fance document title",
-                            sortFunction: defaultSortFunction,
-                            prepareAssets: true
-                        };
-                        util.addMetaData(metaData, fakePath, options);
-
-                        expect(console.error).not.toHaveBeenCalled();
-                        expect(/'<Column Settings Replacement>'/.test(jsContents)).toBeFalsy();
-                        expect(/=[ ]*undefined/.test(jsContents)).toBeTruthy("columnSettings should be undefined");
-                    });
-
-                    it('replaces columnsettings in app.js with options', () => {
-                        const jsTemplate = "    var initialColumnSettings = '<Column Settings Replacement>'" +
-                            "; // enable customisation of visible columns on first page hit";
-                        const errorMsg = "mock case not expected: ";
-                        const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
-
-                        //region mocks
-
-                        // for addMetaData
-                        spyOn(fse, "ensureFileSync").and.stub();
-                        spyOn(fs, "rmdirSync").and.stub();
-                        spyOn(fs, "mkdirSync").and.stub();
-                        spyOn(fse, "readJsonSync").and.callFake(() => {
-                            return "[]";
-                        });
-                        spyOn(fse, "outputJsonSync").and.stub();
-
-                        spyOn(fse, 'pathExistsSync').and.callFake((fpath) => {
-                            if (fpath.endsWith(".lock")) {
-                                return false;
-                            }
-                            if (fpath.endsWith("combined.json")) {
-                                return true;
-                            }
-                            throw new Error(errorMsg + fpath);
-                        });
-
-                        // for addHTMLReport
-                        spyOn(fse, 'copySync').and.stub();
-                        spyOn(fs, 'readFileSync').and.callFake(() => {
-                            return new Buffer(jsTemplate);
-                        });
-
-                        let jsContents;
-                        spyOn(fs, 'createWriteStream').and.callFake((wfile) => {
-                            if (wfile.endsWith(".js")) {
-                                return {
-                                    write: function (txt) {
-                                        jsContents = txt;
-                                    },
-                                    end: jasmine.createSpy('end')
-                                };
-                            }
-                            return {
-                                write: jasmine.createSpy('write'),
-                                end: jasmine.createSpy('end')
-                            };
-
-                        });
-
-                        // misc
-                        spyOn(console, 'error').and.stub();
-                        //end region mocks
-
-                        const metaData = testResults[0];
-                        const options = {
-                            docName: "report.html",
-                            docTitle: "my super fance document title",
-                            sortFunction: defaultSortFunction,
-                            columnSettings: {
-                                displayTime: true,
-                                displayBrowser: false,
-                                displaySessionId: true,
-                                inlineScreenshots: false
-                            },
-                            prepareAssets: true
-                        };
-                        util.addMetaData(metaData, fakePath, options);
-
-                        expect(console.error).not.toHaveBeenCalled();
-                        expect(jsContents).toBeDefined();
-                        expect(/'<Column Settings Replacement>'/.test(jsContents)).toBeFalsy();
-                        let match = /var initialColumnSettings[ ]*=[ ]*([^;]+);/.exec(jsContents);
-                        expect(match).toBeDefined();
-                        let extrSettings = match[1];
-                        expect(extrSettings).toEqual(
-                            '{"displayTime":true,"displayBrowser":false,"displaySessionId":true,"inlineScreenshots":false}'
-                        );
-                    });
-
-                    it('replaces searchSettings in app.js with defaults', () => {
-                        const jsTemplate = "}, '<Search Settings Replacement>'); " +
-                            "// enable customisation of search settings on first page hit";
-                        const errorMsg = "mock case not expected: ";
-                        const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
-
-                        //region mocks
-
-                        // for addMetaData
-                        spyOn(fse, "ensureFileSync").and.stub();
-                        spyOn(fs, "rmdirSync").and.stub();
-                        spyOn(fs, "mkdirSync").and.stub();
-                        spyOn(fse, "readJsonSync").and.callFake(() => {
-                            return "[]";
-                        });
-                        spyOn(fse, "outputJsonSync").and.stub();
-
-                        spyOn(fse, 'pathExistsSync').and.callFake((fpath) => {
-                            if (fpath.endsWith(".lock")) {
-                                return false;
-                            }
-                            if (fpath.endsWith("combined.json")) {
-                                return true;
-                            }
-                            throw new Error(errorMsg + fpath);
-                        });
-
-                        // for addHTMLReport
-                        spyOn(fse, 'copySync').and.stub();
-                        spyOn(fs, 'readFileSync').and.callFake(() => {
-                            return new Buffer(jsTemplate);
-                        });
-
-                        let jsContents;
-                        spyOn(fs, 'createWriteStream').and.callFake((wfile) => {
-                            if (wfile.endsWith(".js")) {
-                                return {
-                                    write: function (txt) {
-                                        jsContents = txt;
-                                    },
-                                    end: jasmine.createSpy('end')
-                                };
-                            }
-                            return {
-                                write: jasmine.createSpy('write'),
-                                end: jasmine.createSpy('end')
-                            };
-
-                        });
-
-                        // misc
-                        spyOn(console, 'error').and.stub();
-                        //end region mocks
-
-                        const metaData = testResults[0];
-                        const options = {
-                            docName: "report.html",
-                            docTitle: "my super fance document title",
-                            sortFunction: defaultSortFunction,
-                            prepareAssets: true
-                        };
-                        util.addMetaData(metaData, fakePath, options);
-
-                        expect(console.error).not.toHaveBeenCalled();
-                        expect(/'<Search Settings Replacement>'/.test(jsContents)).toBeFalsy("placeholders not replaced");
-                        expect(/\{\}/.test(jsContents)).toBeTruthy("didt not find {} as replacement");
-                    });
-
-                    it('replaces searchSettings in app.js with options', () => {
-                        const jsTemplate = "\}, '<Search Settings Replacement>'); " +
-                            "// enable customisation of search settings on first page hit";
-                        const errorMsg = "mock case not expected: ";
-                        const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
-
-                        //region mocks
-
-                        // for addMetaData
-                        spyOn(fse, "ensureFileSync").and.stub();
-                        spyOn(fs, "rmdirSync").and.stub();
-                        spyOn(fs, "mkdirSync").and.stub();
-                        spyOn(fse, "readJsonSync").and.callFake(() => {
-                            return "[]";
-                        });
-                        spyOn(fse, "outputJsonSync").and.stub();
-
-                        spyOn(fse, 'pathExistsSync').and.callFake((fpath) => {
-                            if (fpath.endsWith(".lock")) {
-                                return false;
-                            }
-                            if (fpath.endsWith("combined.json")) {
-                                return true;
-                            }
-                            throw new Error(errorMsg + fpath);
-                        });
-
-                        // for addHTMLReport
-                        spyOn(fse, 'copySync').and.stub();
-                        spyOn(fs, 'readFileSync').and.callFake(() => {
-                            return new Buffer(jsTemplate);
-                        });
-
-                        let jsContents;
-                        spyOn(fs, 'createWriteStream').and.callFake((wfile) => {
-                            if (wfile.endsWith(".js")) {
-                                return {
-                                    write: function (txt) {
-                                        jsContents = txt;
-                                    },
-                                    end: jasmine.createSpy('end')
-                                };
-                            }
-                            return {
-                                write: jasmine.createSpy('write'),
-                                end: jasmine.createSpy('end')
-                            };
-
-                        });
-
-                        // misc
-                        spyOn(console, 'error').and.stub();
-                        //end region mocks
-
-                        const metaData = testResults;
-                        const options = {
-                            docName: "report.html",
-                            docTitle: "my super fance document title",
-                            sortFunction: defaultSortFunction,
-                            searchSettings: {
-                                allselected: false,
-                                passed: false,
-                                failed: false,
-                                pending: true,
-                                withLog: true
-                            },
-                            prepareAssets: true
-                        };
-                        util.addMetaData(metaData, fakePath, options);
-
-                        expect(console.error).not.toHaveBeenCalled();
-                        expect(/'<Search Settings Replacement>'/.test(jsContents)).toBeFalsy("placeholders not replaced");
-                        let match = /\}[ ]*,[ ]*([^;]+);/.exec(jsContents);
-                        expect(match).toBeDefined();
-                        let extrSettings = match[1];
-                        expect(extrSettings).toEqual(
-                            '{"allselected":false,"passed":false,"failed":false,"pending":true,"withLog":true})'
-                        );
-                    });
-                }
             });
 
         });

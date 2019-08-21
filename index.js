@@ -4863,6 +4863,7 @@ function ScreenshotReporter(options) {
     this.takeScreenShotsForSkippedSpecs = options.takeScreenShotsForSkippedSpecs || false;
     this.gatherBrowserLogs = options.gatherBrowserLogs || true;
     this.takeScreenShotsOnlyForFailedSpecs = options.takeScreenShotsOnlyForFailedSpecs || false;
+    this.disableScreenshots = options.disableScreenshots || false;
     this.clientDefaults = options.clientDefaults || {};
     if (options.searchSettings) {
         //settings in earlier "format" there?
@@ -4877,6 +4878,7 @@ function ScreenshotReporter(options) {
         excludeSkippedSpecs: this.excludeSkippedSpecs,
         takeScreenShotsOnlyForFailedSpecs: this.takeScreenShotsOnlyForFailedSpecs,
         takeScreenShotsForSkippedSpecs: this.takeScreenShotsForSkippedSpecs,
+        disableScreenshots: this.disableScreenshots,
         metaDataBuilder: this.metaDataBuilder,
         pathBuilder: this.pathBuilder,
         sortFunction: this.sortFunction,
@@ -5169,7 +5171,7 @@ var Jasmine2Reporter = function () {
 
                                 metaData.browserLogs = [];
 
-                                considerScreenshot = !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed');
+                                considerScreenshot = !this._screenshotReporter.disableScreenshots && !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed');
 
 
                                 if (considerScreenshot) {

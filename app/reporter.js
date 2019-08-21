@@ -186,6 +186,7 @@ function ScreenshotReporter(options) {
         options.gatherBrowserLogs || true;
     this.takeScreenShotsOnlyForFailedSpecs =
         options.takeScreenShotsOnlyForFailedSpecs || false;
+    this.disableScreenshots = options.disableScreenshots || false;
     this.clientDefaults = options.clientDefaults || {};
     if (options.searchSettings) { //settings in earlier "format" there?
         this.clientDefaults.searchSettings = options.searchSettings;
@@ -199,6 +200,7 @@ function ScreenshotReporter(options) {
         excludeSkippedSpecs: this.excludeSkippedSpecs,
         takeScreenShotsOnlyForFailedSpecs: this.takeScreenShotsOnlyForFailedSpecs,
         takeScreenShotsForSkippedSpecs: this.takeScreenShotsForSkippedSpecs,
+        disableScreenshots: this.disableScreenshots,
         metaDataBuilder: this.metaDataBuilder,
         pathBuilder: this.pathBuilder,
         sortFunction: this.sortFunction,
@@ -339,7 +341,7 @@ class Jasmine2Reporter {
 
         metaData.browserLogs = [];
 
-        let considerScreenshot = !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')
+        let considerScreenshot = !this._screenshotReporter.disableScreenshots && !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')
 
         if (considerScreenshot) {
             metaData.screenShotFile = path.join(this._screenshotReporter.screenshotsSubfolder, screenShotFileName);
