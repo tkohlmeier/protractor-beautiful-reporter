@@ -121,8 +121,6 @@
             </div>
         </td>
         <td class="logColumn c-log">
-            <!--<button class="btn btn-warning pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.logWarnings > 0">{{result.logWarnings}}</button>-->
-            <!--<button class="btn btn-danger pull-right" data-toggle="modal" data-target="#modal{{$index}}" ng-if="result.logErrors > 0">{{result.logErrors}}</button>-->
             <span class="label label-default ng-binding label-warning pull-right consoleLogLabel" ng-if="result.logWarnings > 0" data-toggle="modal" data-target="#modal{{$index}}">{{result.logWarnings}}</span>
             <span class="label label-default ng-binding label-danger pull-right consoleLogLabel" ng-if="result.logErrors > 0" data-toggle="modal" data-target="#modal{{$index}}">{{result.logErrors}}</span>
         </td>
@@ -133,47 +131,7 @@
                     <span class="glyphicon glyphicon-warning-sign red"></span>
                 </span>
                 <!-- Stacktrace Modal -->
-                <div class="modal" id="modal{{$index}}" tabindex="-1" role="dialog"
-                     aria-labelledby="modalLabel{{$index}}">
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                <h6 class="modal-title" id="imageModalLabel{{$index}}">
-                                    {{ctrl.getParent(result.description)}}</h6>
-                                <h5 class="modal-title" id="imageModalLabel{{$index}}">
-                                    {{ctrl.getShortDescription(result.description)}}</h5>
-                            </div>
-                            <div class="modal-body">
-                                <div ng-if="result.trace.length > 0">
-                                    <div ng-if="ctrl.isValueAnArray(result.trace)">
-                                        <pre class="logContainer" ng-repeat="trace in result.trace track by $index"><div ng-class="ctrl.applySmartHighlight(line)" ng-repeat="line in trace.split('\n') track by $index">{{line}}</div></pre>
-                                    </div>
-                                    <div ng-if="!ctrl.isValueAnArray(result.trace)">
-                                        <pre class="logContainer"><div ng-class="ctrl.applySmartHighlight(line)" ng-repeat="line in result.trace.split('\n') track by $index">{{line}}</div></pre>
-                                    </div>
-                                </div>
-                                <div ng-if="result.browserLogs.length > 0">
-                                    <h5 class="modal-title" id="imageModalLabel{{$index}}">
-                                        Browser logs:
-                                    </h5>
-
-                                    <pre class="logContainer"><div class="browserLogItem" ng-repeat="logError in result.browserLogs track by $index"><div><span class="label browserLogLabel label-default" ng-class="{'label-danger': logError.level==='SEVERE', 'label-warning': logError.level==='WARNING'}">{{logError.level}}</span><span class="label label-default">{{ctrl.convertTimestamp(logError.timestamp)}}</span><div ng-repeat="messageLine in logError.message.split('\\n') track by $index">{{ messageLine }}</div></div></div></pre>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button class="btn btn-default"
-                                        ng-class="{active: ctrl.showSmartStackTraceHighlight}"
-                                        ng-click="ctrl.showSmartStackTraceHighlight = !ctrl.showSmartStackTraceHighlight">
-                                    <span class="glyphicon glyphicon-education black"></span> Smart Stack Trace
-                                </button>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <pbr-stack-modal index="$index" data="result"></pbr-stack-modal>
             </div>
         </td>
         <td ng-class="{'mediumColumn': ctrl.inlineScreenshots && result.screenShotFile}" class="c-in-screenshots">
@@ -195,7 +153,7 @@
                                 <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
-                                <h6 class="modal-title" id="imageModalLabel{{$index}}">
+                                <h6 class="modal-title" id="imageModalLabelP{{$index}}">
                                     {{ctrl.getParent(result.description)}}</h6>
                                 <h5 class="modal-title" id="imageModalLabel{{$index}}">
                                     {{ctrl.getShortDescription(result.description)}}</h5>

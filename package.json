@@ -54,12 +54,13 @@
     "jasmine-spec-reporter": "^4.2.1",
     "karma": "^3.0.0",
     "karma-chrome-launcher": "^2.2.0",
+    "karma-cli": "^2.0.0",
     "karma-coverage": "^1.1.2",
     "karma-jasmine": "^1.1.2",
     "karma-phantomjs-launcher": "^1.0.4",
     "karma-spec-reporter": "0.0.32",
-    "phantomjs-prebuilt": "^2.1.4",
     "nodemon": "^1.18.4",
+    "phantomjs-prebuilt": "^2.1.4",
     "webpack": "2.7.0"
   }
 }
