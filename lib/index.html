@@ -18,8 +18,9 @@
 <body ng-controller="ScreenshotReportController as ctrl" class="ng-cloak">
 
 <!-- Header -->
-<h2>
+<h2><span class="report-title">
     <!-- Here goes title -->
+    </span>
     <div class="pull-right">
         <button class="btn btn-default" ng-class="{active: !ctrl.displayTime}"
                 ng-click="ctrl.displayTime = !ctrl.displayTime">TIME
@@ -145,11 +146,7 @@
                 <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
                     <img ng-src="{{result.screenShotFile}}" class="screenshotLink"/></a>
                 <!-- Screenshot Modal -->
-                <pbr-screenshot-modal index="$index" data="result" total="ctrl.results.length"  has-previous="ctrl.hasPreviousScreenshot($index)" previous="ctrl.getPrevScreenshotIdx($index)" has-next="ctrl.hasNextScreenshot($index)" next="ctrl.getNextScreenshotIdx($index)" ></pbr-screenshot-modal>            </div>
-                <pbr-screenshot-modal index="$index" data="result" total="ctrl.results.length" previous="ctrl.getPrevScreenshotIdx($index)" next="ctrl.getNextScreenshotIdx($index)" ></pbr-screenshot-modal>
-                <pbr-screenshot-modal index="$index" data="result" total="ctrl.results.length" ></pbr-screenshot-modal>
-                <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
-                     aria-labelledby="imageModalLabel{{$index}}" ng-keydown="ctrl.updateSelectedModal($event, $index)">
+                <pbr-screenshot-modal index="$index" data="result" has-previous="ctrl.hasPreviousScreenshot($index)" previous="ctrl.getPrevScreenshotIdx($index)" has-next="ctrl.hasNextScreenshot($index)" next="ctrl.getNextScreenshotIdx($index)" ></pbr-screenshot-modal>            </div>
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
