@@ -24,6 +24,9 @@ exports.config = {
     // find its own unused port.
     seleniumPort: null,
 
+    /* direct connect on my local system*/
+    directConnect:!!process.env.CHROMIUM_BIN,
+
     // Chromedriver location is used to help the selenium standalone server
     // find chromedriver. This will be passed to the selenium jar as
     // the system property webdriver.chrome.driver. If null, selenium will
@@ -53,7 +56,15 @@ exports.config = {
     // https://code.google.com/p/selenium/wiki/DesiredCapabilities
     // and
     // https://code.google.com/p/selenium/source/browse/javascript/webdriver/capabilities.js
-    capabilities: {
+    capabilities:!!process.env.CHROMIUM_BIN?{
+        'browserName': 'chrome',
+        'applicationName': 'chromium',
+        'chromeOptions': {
+            'binary': process.env.CHROMIUM_BIN,
+            'args': ['--lang=en',
+                '--window-size=1680,1050']
+        }
+    }:{
         browserName: 'chrome',
         logName: 'Chrome - English',
         version: '',
