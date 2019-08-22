@@ -306,6 +306,8 @@ describe('unit tests', () => {
                         throw new Error("Weird Error writing file");
                     });
 
+                    spyOn(fs,'copyFileSync').and.stub();
+
                     // misc
                     spyOn(console, 'error').and.stub();
                     //end region mocks
@@ -373,6 +375,8 @@ describe('unit tests', () => {
 
                     });
 
+                    spyOn(fs,'copyFileSync').and.stub();
+
                     // misc
                     spyOn(console, 'error').and.stub();
                     //end region mocks
@@ -437,6 +441,9 @@ describe('unit tests', () => {
                         };
 
                     });
+
+                    spyOn(fs,'copyFileSync').and.stub();
+
 
                     // misc
                     spyOn(console, 'error').and.stub();
@@ -503,6 +510,8 @@ describe('unit tests', () => {
                         };
 
                     });
+
+                    spyOn(fs,'copyFileSync').and.stub();
 
                     // misc
                     spyOn(console, 'error').and.stub();
@@ -571,6 +580,8 @@ describe('unit tests', () => {
                         };
 
                     });
+
+                    spyOn(fs,'copyFileSync').and.stub();
 
                     // misc
                     spyOn(console, 'error').and.stub();
@@ -641,7 +652,9 @@ describe('unit tests', () => {
 
                         });
 
-                        // misc
+                        spyOn(fs,'copyFileSync').and.stub();
+
+                    // misc
                         spyOn(console, 'error').and.stub();
                         //end region mocks
 
@@ -709,6 +722,8 @@ describe('unit tests', () => {
                         };
 
                     });
+
+                    spyOn(fs,'copyFileSync').and.stub();
 
                     // misc
                     spyOn(console, 'error').and.stub();
@@ -779,6 +794,8 @@ describe('unit tests', () => {
                             };
 
                         });
+
+                        spyOn(fs,'copyFileSync').and.stub();
 
                         // misc
                         spyOn(console, 'error').and.stub();
