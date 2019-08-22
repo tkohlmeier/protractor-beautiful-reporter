@@ -1,4 +1,6 @@
 # Changelog
+## Version 1.3.3
+* Added: Options for showing total duration in report 
 ## Version 1.3.2
 * Fixed: OS column in report is empty (with browsers other than chrome)
 * Removed: Unused code for jasmine 1 (defaultMetadataBuilder)
