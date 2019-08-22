@@ -1,5 +1,10 @@
 # Changelog
 
+## Version 1.3.0
+* Fixed: Navigation in screenshot dialog jumped to non-existing images 
+* Added: Keyboard navigation in screenshot dialog with left/right arrow keys 
+* Added: Specific css class for report columns
+* Changed: Screenshot dialogs bigger for bigger screens (added css media queries)
 ## Version 1.2.10
 * Added option for disabling all screenshots
 ## Version 1.2.9
