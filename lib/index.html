@@ -146,42 +146,7 @@
                 <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
                     <img ng-src="{{result.screenShotFile}}" class="screenshotLink"/></a>
                 <!-- Screenshot Modal -->
-                <pbr-screenshot-modal index="$index" data="result" has-previous="ctrl.hasPreviousScreenshot($index)" previous="ctrl.getPrevScreenshotIdx($index)" has-next="ctrl.hasNextScreenshot($index)" next="ctrl.getNextScreenshotIdx($index)" ></pbr-screenshot-modal>            </div>
-                    <div class="modal-dialog modal-lg" role="document">
-                        <div class="modal-content">
-                            <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                                    <span aria-hidden="true">&times;</span>
-                                </button>
-                                <h6 class="modal-title" id="imageModalLabelP{{$index}}">
-                                    {{ctrl.getParent(result.description)}}</h6>
-                                <h5 class="modal-title" id="imageModalLabel{{$index}}">
-                                    {{ctrl.getShortDescription(result.description)}}</h5>
-                            </div>
-                            <div class="modal-body">
-                                <img class="screenshotImage" ng-src="{{result.screenShotFile}}">
-                            </div>
-                            <div class="modal-footer">
-                                <div class="pull-left">
-                                    <button ng-disabled="!($index > 0)" class="btn btn-default" data-dismiss="modal"
-                                            data-toggle="modal" data-target="#imageModal{{$index - 1}}">
-                                        Prev
-                                    </button>
-                                    <button ng-disabled="!($index < ctrl.results.length - 1)" class="btn btn-default"
-                                            data-dismiss="modal" data-toggle="modal"
-                                            data-target="#imageModal{{$index + 1}}">
-                                        Next
-                                    </button>
-                                </div>
-                                <a class="btn btn-primary" href="{{result.screenShotFile}}" target="_blank">
-                                    Open Image in New Tab
-                                    <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>
-                                </a>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <pbr-screenshot-modal index="$index" data="result" has-previous="ctrl.hasPreviousScreenshot($index)" previous="ctrl.getPrevScreenshotIdx($index)" has-next="ctrl.hasNextScreenshot($index)" next="ctrl.getNextScreenshotIdx($index)" ></pbr-screenshot-modal>
             </div>
         </td>
     </tr>
