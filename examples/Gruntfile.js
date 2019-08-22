@@ -33,7 +33,7 @@ module.exports = function (grunt) {
         protractor: {
             options: {
                 keepAlive: true,
-                configFile: "protractor.jasmine2.conf.js"
+                configFile: "protractor.jasmine2-useajax.conf.js"
             },
             singlerun: {},
             auto: {

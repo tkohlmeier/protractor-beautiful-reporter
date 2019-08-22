@@ -40,6 +40,10 @@ describe('angularjs homepage', function () {
             expect(page.todoList.get(1).getText()).toEqual('build an AngularJS app');
         });
 
+        it('should fail because we check for wrong text for demonstration', function () {
+            expect(page.todoList.get(1).getText()).toEqual('Does not match');
+        });
+
         it('should add a todo', function () {
             page.addTodo.sendKeys('write a protractor test');
             page.addButton.click();
@@ -91,7 +95,7 @@ describe('angularjs homepage', function () {
                 });
                 describe('nested deeply spec level 4', function () {
                     it('level 4 it nr 1', function () {
-
+                        browser.executeScript("console.warn('Warn nexted deepply spec level4 test!');");
                     });
                     it('level 4 it nr 2', function () {
 
