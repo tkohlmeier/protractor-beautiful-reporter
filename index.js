@@ -5395,6 +5395,9 @@ function addHTMLReport(jsonData, baseName, options) {
             //copy bootstrap fonts
             fse.copySync(path.join(__dirname, 'lib', 'fonts'), path.join(basePath, 'fonts'));
 
+            // //copy templates
+            fs.copyFileSync(path.join(__dirname, 'lib', 'pbr-screenshot-modal.html'), path.join(basePath,'pbr-screenshot-modal.html'));
+            fs.copyFileSync(path.join(__dirname, 'lib', 'pbr-stack-modal.html'), path.join(basePath,'pbr-stack-modal.html'));
 
             // Construct index.html
             streamHtml = fs.createWriteStream(htmlFile);
