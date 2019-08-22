@@ -304,6 +304,66 @@ describe('unit tests', function () {
 
         });
     });
+
+    describe('pbrScreenshotModal', function () {
+        beforeEach(function () {
+            module("reportingApp");
+        });
+        var $controller;
+        var $rootScope;
+        beforeEach(inject(function (_$componentController_, _$rootScope_) {
+            $controller = _$componentController_;
+            $rootScope = _$rootScope_;
+        }));
+        describe('PbrScreenshotModalController', function () {
+            beforeEach(function () {
+               // $rootScope.showSmartStackTraceHighlight = true;
+            });
+
+            describe('Previous Next', function () {
+
+                it('can be instantiated without errors', function () {
+                    var bindings = {index: 0, data: {}, next:1, previous:0, hasNext:true,hasPrevious:false };
+                    var controller = $controller('pbrScreenshotModal', null, bindings);
+                    expect(controller).toBeDefined();
+                });
+
+                //
+                // it('applySmartHighlight with node_modules line', function () {
+                //     var bindings = {index: 0, data: {}};
+                //     var controller = $controller('pbrStackModal', null, bindings);
+                //     var lineWithNodePath = referenceTestResults[2].trace[0];
+                //     expect(lineWithNodePath.indexOf("node_modules") > -1);
+                //     //applySmartHighlight is applied to stack trace lines
+                //     expect(controller.applySmartHighlight(lineWithNodePath)).toEqual("greyout");
+                // });
+                //
+                // it('applySmartHighlight with misc lines', function () {
+                //     var bindings = {index: 0, data: {}};
+                //     var controller = $controller('pbrStackModal', null, bindings);
+                //     var sampleTrace = referenceTestResults[0].trace[0].split("\n");
+                //     //applySmartHighlight is applied to stack trace lines
+                //     expect(controller.applySmartHighlight(sampleTrace[0])).toEqual("");
+                //     expect(controller.applySmartHighlight(sampleTrace[1])).toEqual("highlight"); //contains '  at '
+                //     expect(controller.applySmartHighlight(sampleTrace[2])).toEqual("greyout"); //contains node_modules
+                // });
+                //
+                // it('applySmartHighlight switched off with misc lines', function () {
+                //     var bindings = {index: 0, data: {}};
+                //     var controller = $controller('pbrStackModal', null, bindings);
+                //     $rootScope.showSmartStackTraceHighlight = false;
+                //     var sampleTrace = referenceTestResults[0].trace[0].split("\n");
+                //     //applySmartHighlight is applied to stack trace lines
+                //     expect(controller.applySmartHighlight(sampleTrace[0])).toEqual('');
+                //     expect(controller.applySmartHighlight(sampleTrace[1])).toEqual(''); //contains '  at '
+                //     expect(controller.applySmartHighlight(sampleTrace[2])).toEqual(''); //contains node_modules
+                // });
+            });
+
+
+        });
+    });
+
     describe('bySearchSettings filter', function () {
 
         beforeEach(function () {
