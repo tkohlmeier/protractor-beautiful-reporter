@@ -5990,6 +5990,17 @@ button.close {
         width: 900px;
     }
 }
+@media (min-width: 1200px) {
+    .modal-lg {
+        width: 1100px;
+    }
+}
+@media (min-width: 1600px) {
+    .modal-lg {
+        width: 1250px;
+    }
+}
+
 .tooltip {
     position: absolute;
     z-index: 1070;

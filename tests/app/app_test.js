@@ -234,11 +234,53 @@ describe('unit tests', function () {
                     expect(Math.trunc(controller.failPerc())).toEqual(25);
                 });
 
-                it('sortingFunctions', function () {
+                it('sortingFunctions do not throw', function () {
                     var $scope = $rootScope.$new();
                     expect($scope).toBeDefined();
                     var controller = $controller('ScreenshotReportController', {$scope: $scope});
                     controller.sortSpecs();
+                });
+
+            });
+
+            describe("screenshot navigation", function () {
+
+                it('getNextScreenshot gives index of next available item with screenshot (start)', function () {
+                    var $scope = $rootScope.$new();
+                    var controller = $controller('ScreenshotReportController', {$scope: $scope});
+                    var nextIdx = controller.getNextScreenshotIdx(0);
+                    expect(nextIdx).toEqual(2);
+                });
+                it('getNextScreenshot gives index of next available item with screenshot (mid)', function () {
+                    var $scope = $rootScope.$new();
+                    var controller = $controller('ScreenshotReportController', {$scope: $scope});
+                    var nextIdx = controller.getNextScreenshotIdx(2);
+                    expect(nextIdx).toEqual(9);
+                });
+                it('getNextScreenshot gives current index if no next screenshot available (end)', function () {
+                    var $scope = $rootScope.$new();
+                    var controller = $controller('ScreenshotReportController', {$scope: $scope});
+                    var nextIdx = controller.getNextScreenshotIdx(9);
+                    expect(nextIdx).toEqual(9);
+                });
+
+                it('getPreviousScreenshotIdx gives index of previous available item with screenshot (end)', function () {
+                    var $scope = $rootScope.$new();
+                    var controller = $controller('ScreenshotReportController', {$scope: $scope});
+                    var nextIdx = controller.getPreviousScreenshotIdx(9);
+                    expect(nextIdx).toEqual(2);
+                });
+                it('getPreviousScreenshotIdx gives index of previous available item with screenshot (mid)', function () {
+                    var $scope = $rootScope.$new();
+                    var controller = $controller('ScreenshotReportController', {$scope: $scope});
+                    var nextIdx = controller.getPreviousScreenshotIdx(2);
+                    expect(nextIdx).toEqual(0);
+                });
+                it('getPreviousScreenshotIdx gives current index if no previous screenshot available (start)', function () {
+                    var $scope = $rootScope.$new();
+                    var controller = $controller('ScreenshotReportController', {$scope: $scope});
+                    var nextIdx = controller.getPreviousScreenshotIdx(0);
+                    expect(nextIdx).toEqual(0);
                 });
 
             });
@@ -328,36 +370,63 @@ describe('unit tests', function () {
                     expect(controller).toBeDefined();
                 });
 
-                //
-                // it('applySmartHighlight with node_modules line', function () {
-                //     var bindings = {index: 0, data: {}};
-                //     var controller = $controller('pbrStackModal', null, bindings);
-                //     var lineWithNodePath = referenceTestResults[2].trace[0];
-                //     expect(lineWithNodePath.indexOf("node_modules") > -1);
-                //     //applySmartHighlight is applied to stack trace lines
-                //     expect(controller.applySmartHighlight(lineWithNodePath)).toEqual("greyout");
-                // });
-                //
-                // it('applySmartHighlight with misc lines', function () {
-                //     var bindings = {index: 0, data: {}};
-                //     var controller = $controller('pbrStackModal', null, bindings);
-                //     var sampleTrace = referenceTestResults[0].trace[0].split("\n");
-                //     //applySmartHighlight is applied to stack trace lines
-                //     expect(controller.applySmartHighlight(sampleTrace[0])).toEqual("");
-                //     expect(controller.applySmartHighlight(sampleTrace[1])).toEqual("highlight"); //contains '  at '
-                //     expect(controller.applySmartHighlight(sampleTrace[2])).toEqual("greyout"); //contains node_modules
-                // });
-                //
-                // it('applySmartHighlight switched off with misc lines', function () {
-                //     var bindings = {index: 0, data: {}};
-                //     var controller = $controller('pbrStackModal', null, bindings);
-                //     $rootScope.showSmartStackTraceHighlight = false;
-                //     var sampleTrace = referenceTestResults[0].trace[0].split("\n");
-                //     //applySmartHighlight is applied to stack trace lines
-                //     expect(controller.applySmartHighlight(sampleTrace[0])).toEqual('');
-                //     expect(controller.applySmartHighlight(sampleTrace[1])).toEqual(''); //contains '  at '
-                //     expect(controller.applySmartHighlight(sampleTrace[2])).toEqual(''); //contains node_modules
-                // });
+                it('updateselectedModal shows next when arrow right pressed', function () {
+                    var bindings = {index: 0, data: {}, next:2, previous:0, hasNext:true, hasPrevious:false };
+                    var controller = $controller('pbrScreenshotModal', null, bindings);
+                    spyOn(controller,"showHideModal");
+                    controller.updateSelectedModal({key:"ArrowRight"},0);
+                    expect(controller.showHideModal).toHaveBeenCalledWith(0,2);
+                });
+
+                it('updateselectedModal shows next when arrow right pressed (has only keyCode)', function () {
+                    var bindings = {index: 0, data: {}, next:2, previous:0, hasNext:true, hasPrevious:false };
+                    var controller = $controller('pbrScreenshotModal', null, bindings);
+                    spyOn(controller,"showHideModal");
+                    controller.updateSelectedModal({keyCode:39},0);
+                    expect(controller.showHideModal).toHaveBeenCalledWith(0,2);
+                });
+
+                it('updateselectedModal ignores arrow right when no next screenshot available', function () {
+                    var bindings = {index: 0, data: {}, next:2, previous:0, hasNext:false, hasPrevious:false };
+                    var controller = $controller('pbrScreenshotModal', null, bindings);
+                    spyOn(controller,"showHideModal");
+                    controller.updateSelectedModal({key:"ArrowRight"},0);
+                    expect(controller.showHideModal).not.toHaveBeenCalled();
+                });
+
+                it('updateselectedModal shows previous when arrow left pressed', function () {
+                    var bindings = {index: 2, data: {}, next:2, previous:0, hasNext:false, hasPrevious:true };
+                    var controller = $controller('pbrScreenshotModal', null, bindings);
+                    spyOn(controller,"showHideModal");
+                    controller.updateSelectedModal({key:"ArrowLeft"},2);
+                    expect(controller.showHideModal).toHaveBeenCalledWith(2,0);
+                });
+
+                it('updateselectedModal shows previous when arrow left pressed (has only keyCode)', function () {
+                    var bindings = {index: 2, data: {}, next:2, previous:0, hasNext:false, hasPrevious:true };
+                    var controller = $controller('pbrScreenshotModal', null, bindings);
+                    spyOn(controller,"showHideModal");
+                    controller.updateSelectedModal({keyCode:37},2);
+                    expect(controller.showHideModal).toHaveBeenCalledWith(2,0);
+                });
+
+                it('updateselectedModal ignores arrow left when no previous screenshot available', function () {
+                    var bindings = {index: 0, data: {}, next:2, previous:0, hasNext:true, hasPrevious:false };
+                    var controller = $controller('pbrScreenshotModal', null, bindings);
+                    spyOn(controller,"showHideModal");
+                    controller.updateSelectedModal({key:"ArrowLeft"},0);
+                    expect(controller.showHideModal).not.toHaveBeenCalled();
+                });
+
+                it('showHideModal calls $.modal hide and show', function () {
+                    var bindings = {index: 2, data: {}, next:9, previous:0, hasNext:true, hasPrevious:true };
+                    var controller = $controller('pbrScreenshotModal', null, bindings);
+                    spyOn($.fn,"modal");
+                    controller.showHideModal(2,9);
+                    expect($.fn.modal).toHaveBeenCalledWith("hide");
+                    expect($.fn.modal).toHaveBeenCalledWith("show");
+                });
+
             });
 
 
