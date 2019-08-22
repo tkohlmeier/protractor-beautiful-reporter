@@ -135,7 +135,7 @@
             </div>
         </td>
         <td ng-class="{'mediumColumn': ctrl.inlineScreenshots && result.screenShotFile}" class="c-in-screenshots">
-            <div ng-if="!result.pending">
+            <div ng-if="!result.pending && result.screenShotFile">
                 <span ng-if="!ctrl.inlineScreenshots && result.screenShotFile"
                       class="label label-white ng-binding pull-right"
                       data-toggle="modal"
@@ -145,6 +145,7 @@
                 <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
                     <img ng-src="{{result.screenShotFile}}" class="screenshotLink"/></a>
                 <!-- Screenshot Modal -->
+                <pbr-screenshot-modal index="$index" data="result" total="ctrl.results.length"  has-previous="ctrl.hasPreviousScreenshot($index)" previous="ctrl.getPrevScreenshotIdx($index)" has-next="ctrl.hasNextScreenshot($index)" next="ctrl.getNextScreenshotIdx($index)" ></pbr-screenshot-modal>            </div>
                 <pbr-screenshot-modal index="$index" data="result" total="ctrl.results.length" previous="ctrl.getPrevScreenshotIdx($index)" next="ctrl.getNextScreenshotIdx($index)" ></pbr-screenshot-modal>
                 <pbr-screenshot-modal index="$index" data="result" total="ctrl.results.length" ></pbr-screenshot-modal>
                 <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
