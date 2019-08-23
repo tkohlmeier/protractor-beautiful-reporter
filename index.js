@@ -4677,6 +4677,8 @@ module.exports = require("assert");
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
+function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) { arr2[i] = arr[i]; } return arr2; } else { return Array.from(arr); } }
+
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
 
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
@@ -4855,6 +4857,7 @@ function ScreenshotReporter(options) {
     this.pathBuilder = options.pathBuilder || defaultPathBuilder;
     this.docTitle = options.docTitle || 'Test Results';
     this.docName = options.docName || 'report.html';
+    this.screenshotOnFailure = typeof options.screenshotOnFailure !== 'undefined' ? options.screenshotOnFailure : false;
     this.metaDataBuilder = options.metaDataBuilder || defaultMetaDataBuilder;
     this.jasmine2MetaDataBuilder = options.jasmine2MetaDataBuilder || jasmine2MetaDataBuilder;
     this.sortFunction = options.sortFunction || sortFunction;
@@ -4892,7 +4895,37 @@ function ScreenshotReporter(options) {
     if (!this.preserveDirectory) {
         util.removeDirectory(this.finalOptions.baseDirectory);
     }
+    this.screenshotArray = [];
 }
+
+function expectFailed(rep) {
+    var originalAddExpectationResult = jasmine.Spec.prototype.addExpectationResult;
+    jasmine.Spec.prototype.addExpectationResult = function (passed, expectation) {
+        var self = rep;
+        if (!passed && self._screenshotReporter.screenshotOnFailure) {
+            var baseName = self._screenshotReporter.pathBuilder(null, [expectation.message], null, null);
+            var gUid = util.generateGuid();
+            var screenShotFileName = path.basename(gUid + '.png');
+            var screenShotFilePath = path.join(path.dirname(baseName + '.png'), self._screenshotReporter.screenshotsSubfolder);
+            var screenShotPath = path.join(self._screenshotReporter.baseDirectory, screenShotFilePath, screenShotFileName);
+            self._screenshotReporter.screenshotArray.push(path.join(self._screenshotReporter.screenshotsSubfolder, screenShotFileName));
+            try {
+                browser.takeScreenshot().then(function (png) {
+                    util.storeScreenShot(png, screenShotPath);
+                });
+            } catch (ex) {
+                if (ex['name'] === 'NoSuchWindowError') {
+                    console.warn('Protractor-beautiful-reporter could not take the screenshot because target window is already closed');
+                } else {
+                    console.error(ex);
+                    console.error('Protractor-beautiful-reporter could not take the screenshot');
+                }
+                metaData.screenShotFile = void 0;
+            }
+        }
+        return originalAddExpectationResult.apply(this, arguments);
+    };
+};
 
 var Jasmine2Reporter = function () {
     function Jasmine2Reporter(_ref) {
@@ -5173,7 +5206,9 @@ var Jasmine2Reporter = function () {
 
 
                                 if (considerScreenshot) {
-                                    metaData.screenShotFile = path.join(this._screenshotReporter.screenshotsSubfolder, screenShotFileName);
+                                    this._screenshotReporter.screenshotArray.push(path.join(this._screenshotReporter.screenshotsSubfolder, screenShotFileName));
+                                    metaData.screenShotFile = [].concat(_toConsumableArray(this._screenshotReporter.screenshotArray));
+                                    this._screenshotReporter.screenshotArray.length = 0;
                                 }
 
                                 if (result.browserLogs) {
@@ -5265,7 +5300,9 @@ var Jasmine2Reporter = function () {
 
 ScreenshotReporter.prototype.getJasmine2Reporter = function () {
 
-    return new Jasmine2Reporter({ screenshotReporter: this });
+    var reporter = new Jasmine2Reporter({ screenshotReporter: this });
+    expectFailed(reporter);
+    return reporter;
 };
 
 /** Function: reportSpecResults

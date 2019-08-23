@@ -19,6 +19,7 @@ exports.config = {
 
     // Address of selenium server (before running protractor, run "webdriver-manager start" to start the Selenium server)
     seleniumAddress: process.env.SELENIUMSERVER ? process.env.SELENIUMSERVER : 'http://localhost:4444/wd/hub',
+    directConnect:true,
 
     // The port to start the selenium server on, or null if the server should
     // find its own unused port.
@@ -55,13 +56,12 @@ exports.config = {
     // https://code.google.com/p/selenium/source/browse/javascript/webdriver/capabilities.js
     capabilities: {
         browserName: 'chrome',
-        logName: 'Chrome - English',
-        version: '',
-        platform: 'ANY',
+        'applicationName': 'chromium',
         shardTestFiles: false,
         maxInstances: 2,
 
         chromeOptions: {
+            'binary': process.env.CHROMIUM_BIN ? process.env.CHROMIUM_BIN : undefined,
             args: ["--window-size=1680,1000"]
             // commented out but needed to keep it for local testing
             //,  binary: process.env.CHROMIUM_BIN
@@ -90,6 +90,8 @@ exports.config = {
             screenshotsSubfolder: 'images',
             jsonsSubfolder: 'jsons',
             baseDirectory: 'reports-tmp',
+            screenshotOnFailure:true,
+            screenshotEveryStep:true,
 
             pathBuilder: function pathBuilder(spec, descriptions, results, capabilities) {
                 // Return '<30-12-2016>/<browser>/<specname>' as path for screenshots:

@@ -5,6 +5,7 @@
     <title>Protractor Screenshot Report</title>
 
     <link rel="stylesheet" href="assets/main.css">
+    <link rel="icon" type="image/x-icon" href="assets/favicon.ico">
     <!-- Here will be CSS placed -->
     <script src="assets/angular.min.js"></script>
     <script src="app.js"></script>
@@ -69,6 +70,7 @@
 </div>
 
 <!-- Test Results Table -->
+    <div class="table-responsive">
 <table class="table">
     <thead>
     <tr class="active">
@@ -174,23 +176,34 @@
                 </div>
             </div>
         </td>
-        <td ng-class="{'mediumColumn': ctrl.inlineScreenshots && result.screenShotFile}">
+                    <td>
+                        <div class="row">
+                            <div class="col" ng-repeat="screenShotFile in result.screenShotFile track by $index"
+                                ng-class="{'mediumColumn': ctrl.inlineScreenshots && screenShotFile}">
             <div ng-if="!result.pending">
-                <span ng-if="!ctrl.inlineScreenshots && result.screenShotFile"
-                      class="label label-white ng-binding pull-right"
-                      data-toggle="modal"
-                      data-target="#imageModal{{$index}}">
+                                    <span
+                                        ng-if="!ctrl.inlineScreenshots && screenShotFile && result.screenShotFile.length - 1 > $index"
+                                        class="label label-white ng-binding pull-left" data-toggle="modal"
+                                        data-target="#imageModal{{($parent.$parent.$parent.$index *100) + $index}}">
                             <span class="glyphicon glyphicon-picture black"></span>
                 </span>
-                <a href="" ng-if="ctrl.inlineScreenshots && result.screenShotFile" data-toggle="modal" data-target="#imageModal{{$index}}">
-                    <img ng-src="{{result.screenShotFile}}" class="screenshotLink"/></a>
+                                    <span
+                                        ng-if="!ctrl.inlineScreenshots && screenShotFile && result.screenShotFile.length - 1 == $index"
+                                        class="label label-white ng-binding pull-left" data-toggle="modal"
+                                        data-target="#imageModal{{($parent.$parent.$parent.$index *100) + $index}}">
+                                        <span class="glyphicon glyphicon-time black"></span>
+                                    </span>
+                                    <a href="" ng-if="ctrl.inlineScreenshots && screenShotFile" data-toggle="modal"
+                                        data-target="#imageModal{{($parent.$parent.$parent.$index *100) + $index}}">
+                                        <img ng-src="{{screenShotFile}}" class="screenshotLink" /></a>
                 <!-- Screenshot Modal -->
-                <div class="modal" id="imageModal{{$index}}" tabindex="-1" role="dialog"
-                     aria-labelledby="imageModalLabel{{$index}}">
+                                    <div class="modal" id="imageModal{{($parent.$parent.$index *100) + $index}}"
+                                        tabindex="-1" role="dialog" aria-labelledby="imageModalLabel{{$index}}">
                     <div class="modal-dialog modal-lg" role="document">
                         <div class="modal-content">
                             <div class="modal-header">
-                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <button type="button" class="close" data-dismiss="modal"
+                                                        aria-label="Close">
                                     <span aria-hidden="true">&times;</span>
                                 </button>
                                 <h6 class="modal-title" id="imageModalLabel{{$index}}">
@@ -198,26 +211,34 @@
                                 <h5 class="modal-title" id="imageModalLabel{{$index}}">
                                     {{ctrl.getShortDescription(result.description)}}</h5>
                             </div>
-                            <div class="modal-body">
-                                <img class="screenshotImage" ng-src="{{result.screenShotFile}}">
+                                                <div class="modal-body">
+                                                    <img class="screenshotImage" ng-src="{{screenShotFile}}">
                             </div>
                             <div class="modal-footer">
                                 <div class="pull-left">
-                                    <button ng-disabled="!($index > 0)" class="btn btn-default" data-dismiss="modal"
-                                            data-toggle="modal" data-target="#imageModal{{$index - 1}}">
+                                                        <button ng-disabled="!($index > 0)" class="btn btn-default"
+                                                            data-dismiss="modal" data-toggle="modal"
+                                                            data-target="#imageModal{{($parent.$parent.$index *100) + $index - 1}}">
                                         Prev
                                     </button>
-                                    <button ng-disabled="!($index < ctrl.results.length - 1)" class="btn btn-default"
-                                            data-dismiss="modal" data-toggle="modal"
-                                            data-target="#imageModal{{$index + 1}}">
+                                                        <button
+                                                            ng-disabled="!($index < result.screenShotFile.length - 1)"
+                                                            class="btn btn-default" data-dismiss="modal"
+                                                            data-toggle="modal"
+                                                            data-target="#imageModal{{($parent.$parent.$index *100) + $index + 1}}">
                                         Next
                                     </button>
                                 </div>
-                                <a class="btn btn-primary" href="{{result.screenShotFile}}" target="_blank">
+                                                    <a class="btn btn-primary" href="{{screenShotFile}}"
+                                                        target="_blank">
                                     Open Image in New Tab
-                                    <span class="glyphicon glyphicon-new-window" aria-hidden="true"></span>
+                                                        <span class="glyphicon glyphicon-new-window"
+                                                            aria-hidden="true"></span>
                                 </a>
-                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                                    <button type="button" class="btn btn-default"
+                                                        data-dismiss="modal">Close</button>
+                                                </div>
+                                            </div>
                             </div>
                         </div>
                     </div>
@@ -227,7 +248,7 @@
     </tr>
     </tbody>
 </table>
-<div>Total time: {{ctrl.formatTotalTime(ctrl.totalTime)}}</div>
+    </div>
 <div class="center">
     <a class="github-button" href="https://github.com/Evilweed/protractor-beautiful-reporter" data-size="large" data-show-count="true" aria-label="Star Evilweed/protractor-beautiful-reporter on GitHub">Star</a>
 </div>

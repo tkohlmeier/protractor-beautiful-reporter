@@ -175,6 +175,7 @@ function ScreenshotReporter(options) {
     this.pathBuilder = options.pathBuilder || defaultPathBuilder;
     this.docTitle = options.docTitle || 'Test Results';
     this.docName = options.docName || 'report.html';
+    this.screenshotOnFailure = typeof options.screenshotOnFailure !== 'undefined' ? options.screenshotOnFailure : false;
     this.metaDataBuilder = options.metaDataBuilder || defaultMetaDataBuilder;
     this.jasmine2MetaDataBuilder = options.jasmine2MetaDataBuilder || jasmine2MetaDataBuilder;
     this.sortFunction = options.sortFunction || sortFunction;
@@ -214,8 +215,43 @@ function ScreenshotReporter(options) {
     if (!this.preserveDirectory) {
         util.removeDirectory(this.finalOptions.baseDirectory);
     }
+    this.screenshotArray = [];
 }
 
+function expectFailed(rep) {
+    var originalAddExpectationResult = jasmine.Spec.prototype.addExpectationResult;
+    jasmine.Spec.prototype.addExpectationResult = function (passed, expectation) {
+        var self = rep;
+        if (!passed && self._screenshotReporter.screenshotOnFailure) {
+            let baseName = self._screenshotReporter.pathBuilder(
+                null,
+                [expectation.message],
+                null,
+                null
+            );
+            let gUid = util.generateGuid();
+            let screenShotFileName = path.basename(gUid + '.png');
+            let screenShotFilePath = path.join(path.dirname(baseName + '.png'), self._screenshotReporter.screenshotsSubfolder);
+            let screenShotPath = path.join(self._screenshotReporter.baseDirectory, screenShotFilePath, screenShotFileName);
+            self._screenshotReporter.screenshotArray.push(path.join(self._screenshotReporter.screenshotsSubfolder, screenShotFileName));
+            try {
+                browser.takeScreenshot().then(png => {
+                    util.storeScreenShot(png, screenShotPath);
+                });
+            }
+            catch (ex) {
+                if (ex['name'] === 'NoSuchWindowError') {
+                    console.warn('Protractor-beautiful-reporter could not take the screenshot because target window is already closed');
+                } else {
+                    console.error(ex);
+                    console.error('Protractor-beautiful-reporter could not take the screenshot');
+                }
+                metaData.screenShotFile = void 0;
+            }
+        }
+        return originalAddExpectationResult.apply(this, arguments);
+    }
+};
 class Jasmine2Reporter {
 
     constructor({screenshotReporter}) {
@@ -342,7 +378,9 @@ class Jasmine2Reporter {
         let considerScreenshot = !(this._screenshotReporter.takeScreenShotsOnlyForFailedSpecs && result.status === 'passed')
 
         if (considerScreenshot) {
-            metaData.screenShotFile = path.join(this._screenshotReporter.screenshotsSubfolder, screenShotFileName);
+            this._screenshotReporter.screenshotArray.push(path.join(this._screenshotReporter.screenshotsSubfolder, screenShotFileName));
+            metaData.screenShotFile = [...this._screenshotReporter.screenshotArray];
+            this._screenshotReporter.screenshotArray.length = 0;
         }
 
         if (result.browserLogs) {
@@ -400,8 +438,9 @@ class Jasmine2Reporter {
  */
 ScreenshotReporter.prototype.getJasmine2Reporter = function () {
 
-    return new Jasmine2Reporter({screenshotReporter: this});
-
+    let reporter = new Jasmine2Reporter({ screenshotReporter: this });
+    expectFailed(reporter);
+    return reporter;
 };
 
 

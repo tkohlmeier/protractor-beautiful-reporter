@@ -11,6 +11,7 @@ describe('angularjs homepage', function () {
     it('should fail as greeting text is different', function () {
         page.yourNameInputField.sendKeys('Julie');
         expect(page.greetingText.getText()).toEqual('Hello Julie hello!');
+        expect(page.greetingText.getText()).toEqual('Hello Julie hello2!');
     });
 
     it('should greet the named user', function () {
