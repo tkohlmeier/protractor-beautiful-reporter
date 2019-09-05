@@ -7,4 +7,4 @@ npm-debug.log
 tmp/
 .npmrc
 package-lock.json
-
+.nyc_output

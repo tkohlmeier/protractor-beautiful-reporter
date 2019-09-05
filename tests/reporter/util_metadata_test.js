@@ -1,6 +1,7 @@
 const util = require('../../app/util');
 const fs = require('fs');
 const fse = require('fs-extra');
+const path = require('path');
 
 const testResults = require('./test_data');
 
@@ -818,6 +819,201 @@ describe('unit tests', () => {
                         const jsContentsWoLF = jsContents.replace(/\r\n/g, "").replace(/\n/g, "");
                         expect(jsContentsWoLF).toEqual('    var clientDefaults = {    "searchSettings": {},    "columnSettings": {}};  ');
                     });
+
+                it('replaces templates in app.js', () => {
+                    const jsTemplate = "         //'<templates replacement>';  ";
+                    const errorMsg = "mock case not expected: ";
+                    const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
+
+                    //region mocks
+
+                    // for addMetaData
+                    spyOn(fse, "ensureFileSync").and.stub();
+                    spyOn(fs, "rmdirSync").and.stub();
+                    spyOn(fs, "mkdirSync").and.stub();
+                    spyOn(fse, "readJsonSync").and.callFake(() => {
+                        return "[]";
+                    });
+                    spyOn(fse, "outputJsonSync").and.stub();
+
+                    spyOn(fse, 'pathExistsSync').and.callFake((fpath) => {
+                        if (fpath.endsWith(".lock")) {
+                            return false;
+                        }
+                        if (fpath.endsWith("combined.json")) {
+                            return true;
+                        }
+                        throw new Error(errorMsg + fpath);
+                    });
+
+                    // for addHTMLReport
+                    spyOn(fse, 'copySync').and.stub();
+                    spyOn(fs, 'readFileSync').and.callFake((fpath) => {
+                        if (fpath.endsWith("app.js")) {
+                            return Buffer.from(jsTemplate);
+                        }
+                        if(fpath.endsWith("pbr-screenshot-modal.html")){
+                            return Buffer.from("<screenshotmodal></screenshotmodal>");
+                        }
+                        if(fpath.endsWith("pbr-stack-modal.html")){
+                            return Buffer.from("<stackmodal></stackmodal>");
+                        }
+                        if(fpath.endsWith("index.html")){
+                            return "";//not interseted in index in this test
+                        }
+                        throw new Error(errorMsg + fpath);
+                    });
+
+                    let jsContents;
+                    spyOn(fs, 'createWriteStream').and.callFake((wfile) => {
+                        if (wfile.endsWith(".js")) {
+                            return {
+                                write: function (txt) {
+                                    jsContents = txt;
+                                },
+                                end: jasmine.createSpy('end')
+                            };
+                        }
+                        return {
+                            write: jasmine.createSpy('write'),
+                            end: jasmine.createSpy('end')
+                        };
+
+                    });
+
+                    spyOn(fs,'copyFileSync').and.stub();
+
+                    // misc
+                    var errout="";
+                    spyOn(console, 'error').and.callFake((e)=>{
+                       errout+=e.toString()+"\r\n";
+                    });
+                    //end region mocks
+
+                    const metaData = testResults[0];
+                    const options = {
+                        docName: "report.html",
+                        docTitle: "my super fance document title",
+                        sortFunction: defaultSortFunction,
+                        cssOverrideFile: "my-super-custom.css",
+                        prepareAssets: true
+                    };
+                    util.addMetaData(metaData, fakePath, options);
+                    //expect(errout).toEqual(""); //needed only when test fails
+                    expect(console.error).not.toHaveBeenCalled();
+                    expect(jsContents).not.toContain("//'<templates replacement>';");
+                    expect(jsContents).toContain("<screenshotmodal></screenshotmodal>");
+                    expect(jsContents).toContain("<stackmodal></stackmodal>");
+
+                });
+                //}
+
+                it('copies templates when useAjax is on', () => {
+                    const jsTemplate = "         //'<templates replacement>';  ";
+                    const errorMsg = "mock case not expected: ";
+                    const fakePath = "./not/existing/path/" + util.generateGuid() + "/subdir";
+
+                    //region mocks
+
+                    // for addMetaData
+                    spyOn(fse, "ensureFileSync").and.stub();
+                    spyOn(fs, "rmdirSync").and.stub();
+                    spyOn(fs, "mkdirSync").and.stub();
+                    spyOn(fse, "readJsonSync").and.callFake(() => {
+                        return "[]";
+                    });
+                    spyOn(fse, "outputJsonSync").and.stub();
+
+                    spyOn(fse, 'pathExistsSync').and.callFake((fpath) => {
+                        if (fpath.endsWith(".lock")) {
+                            return false;
+                        }
+                        if (fpath.endsWith("combined.json")) {
+                            return true;
+                        }
+                        throw new Error(errorMsg + fpath);
+                    });
+
+                    // for addHTMLReport
+                    spyOn(fse, 'copySync').and.stub();
+                    spyOn(fs, 'readFileSync').and.callFake((fpath) => {
+                        if (fpath.endsWith("app.js")) {
+                            return Buffer.from(jsTemplate);
+                        }
+                        // if(fpath.endsWith("pbr-screenshot-modal.html")){
+                        //     return Buffer.from("<screenshotmodal></screenshotmodal>");
+                        // }
+                        // if(fpath.endsWith("pbr-stack-modal.html")){
+                        //     return Buffer.from("<stackmodal></stackmodal>");
+                        // }
+                        if(fpath.endsWith("index.html")){
+                            return "";//not interseted in index in this test
+                        }
+                        throw new Error(errorMsg + fpath);
+                    });
+
+                    let jsContents;
+                    spyOn(fs, 'createWriteStream').and.callFake((wfile) => {
+                        if (wfile.endsWith(".js")) {
+                            return {
+                                write: function (txt) {
+                                    jsContents = txt;
+                                },
+                                end: jasmine.createSpy('end')
+                            };
+                        }
+                        return {
+                            write: jasmine.createSpy('write'),
+                            end: jasmine.createSpy('end')
+                        };
+
+                    });
+
+                    spyOn(fs,'copyFileSync').and.stub();
+
+                    // misc
+                    var errout="";
+                    spyOn(console, 'error').and.callFake((e)=>{
+                        errout+=e.toString()+"\r\n";
+                    });
+                    //end region mocks
+
+                    const metaData = testResults[0];
+                    const options = {
+                        docName: "report.html",
+                        docTitle: "my super fance document title",
+                        sortFunction: defaultSortFunction,
+                        cssOverrideFile: "my-super-custom.css",
+                        prepareAssets: true,
+                        clientDefaults:{
+                            useAjax:true
+                        }
+                    };
+                    util.addMetaData(metaData, fakePath, options);
+                    //expect(errout).toEqual(""); //needed only when test fails
+                    expect(console.error).not.toHaveBeenCalled();
+
+                    expect(jsContents).not.toContain("//'<templates replacement>';");
+                    // prepare async matcher
+                    var isTemplateFile={
+                        asymmetricMatch: function(actual) {
+                            //we match only the beginning of the warning because the end is a link that changes between angular versions
+                            return actual && /\.html$/.test(actual);
+                        }
+                    };
+                    // copied things?
+                    //expect(fs.copyFileSync).toHaveBeenCalledWith(isTemplateFile);
+                    var fsCopyArgfs=fs.copyFileSync.calls.allArgs();
+                    expect(fsCopyArgfs.length).toEqual(2);
+                    //check if the first argument was a template file
+                    expect(fsCopyArgfs[0][0]).toEqual(isTemplateFile);
+                    expect(fsCopyArgfs[1][0]).toEqual(isTemplateFile);
+                    // we copied the templates so the should not be in the javascript
+                    expect(jsContents).not.toContain("<screenshotmodal></screenshotmodal>");
+                    expect(jsContents).not.toContain("<stackmodal></stackmodal>");
+
+                });
+                //}
 
 
             });
