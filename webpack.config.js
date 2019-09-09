@@ -21,10 +21,7 @@ module.exports = {
             {
                 test: /reporter\.js?$/,
                 loader: 'babel-loader',
-                query: {
-                    presets: ['es2015', "stage-0"],
-                    plugins: ['babel-plugin-add-module-exports']
-                },
+                /* look into .babelrc for additional options*/
                 exclude: /node_modules/
             }
         ]
