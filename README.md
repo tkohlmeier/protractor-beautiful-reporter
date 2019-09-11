@@ -385,6 +385,19 @@ add the following to columnSettings (values are in milliseconds scale):
       }     
    });
 ```
+### Show total duration of test execution
+ If you want to show the total duration in the header or footer area...
+```javascript
+  new HtmlReporter({
+     baseDirectory: 'reports'
+     , clientDefaults:{
+         showTotalDurationIn: "header",                  
+         totalDurationFormat: "hms",            
+     }     
+  });
+```
+For all possible values for `showTotalDurationIn` and `totalDurationFormat` refer to the wiki entry [Options for showing total duration of e2e test](https://github.com/Evilweed/protractor-beautiful-reporter/wiki/Options-for-showing-total-duration-of-e2e-test)
+
 
 ### Load spec results via ajax
 By default the raw data of all tests results from the e2e session are embedded in the main javascript file (array results in app.js).
