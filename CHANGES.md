@@ -1,4 +1,7 @@
 # Changelog
+## Version 1.3.2
+* Fixed: OS column in report is empty (with browsers other than chrome)
+* Removed: Unused code for jasmine 1 (defaultMetadataBuilder)
 ## Version 1.3.1
 * Fixed: Template files could not be loaded because of CORS violation when run from filesystem
 ## Version 1.3.0
