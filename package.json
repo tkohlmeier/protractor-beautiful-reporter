@@ -15,8 +15,7 @@
     "test-app-coverage": "karma start karma.conf.js --cc=true",
     "test-reporter": "node tests/jasmine.runner.js",
     "test-reporter-watch": "node node_modules/nodemon/bin/nodemon.js -w tests/reporter/*_test.js -w app/*.js node tests/jasmine.runner.js",
-    "test-reporter-coverage": "cross-env NODE_ENV=test nyc --report-dir=tmp/reporter --reporter=html node tests/jasmine.runner.js",
-    "test-reporter-build-coverage": "cross-env NODE_ENV=test nyc --report-dir=tmp/reporter --reporter=lcov node tests/jasmine.runner.js"
+    "test-reporter-coverage": "cross-env NODE_ENV=test nyc --report-dir=coverage/reporter --reporter=lcov node tests/jasmine.runner.js"
   },
   "dependencies": {
     "circular-json": "^0.3.1",

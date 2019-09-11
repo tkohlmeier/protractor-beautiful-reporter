@@ -42,7 +42,7 @@ module.exports = function (config) {
         reporters: config.cc ? ['coverage'] : ['spec'],
 
         coverageReporter: {
-            dir: 'tmp/coverage',
+            dir: 'coverage',
             subdir: 'app',
             reporters: [
                 {type: 'lcov', subdir: 'app'},
