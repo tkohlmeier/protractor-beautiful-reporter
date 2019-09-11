@@ -1,4 +1,6 @@
-const HtmlReporter = require('../../index');
+//const HtmlReporter = require('../../index');
+
+const HtmlReporter = require('../../app/reporter');
 
 describe('unit tests', () => {
 
@@ -16,6 +18,17 @@ describe('unit tests', () => {
                 expect(reporter.clientDefaults).toBeDefined();
                 expect(reporter["clientDefaults"]["searchSettings"]).toBeUndefined();
                 expect(reporter["clientDefaults"]["columnSettings"]).toBeUndefined();
+            });
+
+            it('minimal options do not crash report and set clientDefaults to empty object', () => {
+
+                const options = {
+                    baseDirectory: 'reports-tmp',
+                    prepareAssets: false,
+                    preserveDirectory: true
+                };
+                const reporter = new HtmlReporter(options);
+                var j2 = reporter.getJasmine2Reporter()
             });
 
 

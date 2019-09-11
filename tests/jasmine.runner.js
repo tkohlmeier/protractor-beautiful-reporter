@@ -21,6 +21,7 @@ const specReporter = new SpecReporter({  // add jasmine-spec-reporter
 });
 
 jasmine.addReporter(specReporter);
+//other reports will be added from outside (e.g. nyc coverage)
 
 jasmine.execute();
 

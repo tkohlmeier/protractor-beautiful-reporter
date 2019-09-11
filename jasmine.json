@@ -2,7 +2,11 @@
   "spec_dir": "./",
   "spec_files": [
     "app/util.js",
+    "app/reporter.js",
     "tests/reporter/*_test.js"
+  ],
+  "helpers": [
+
   ],
   "random": false,
   "stopSpecOnExpectationFailure": false

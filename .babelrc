@@ -1,0 +1,9 @@
+{
+  "env": {
+    "test": {
+      "plugins": [ "istanbul" ]
+    }
+  },
+  "ignore": ["node_modules"],
+  "presets": ["es2015", "stage-0"]
+}
