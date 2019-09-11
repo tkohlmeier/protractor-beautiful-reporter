@@ -22,65 +22,16 @@ function defaultPathBuilder(spec, descriptions, results, capabilities) {
     return util.generateGuid();
 }
 
-/** Function: defaultMetaDataBuilder
- * Uses passed information to generate a meta data object which can be saved
- * along with a screenshot.
- * You do not have to add the screenshots file path since this will be appended
- * automatically.
- *
- * Parameters:
- *     (Object) spec - The spec currently reported
- *     (Array) descriptions - The specs and their parent suites descriptions
- *     (Object) result - The result object of the current test spec.
- *     (Object) capabilities - WebDrivers capabilities object containing
- *                             in-depth information about the Selenium node
- *                             which executed the test case.
- *
- * Returns:
- *     (Object) containing meta data to store along with a screenshot
- */
-function defaultMetaDataBuilder(spec, descriptions, results, capabilities) {
-    var metaData = {
-        description: descriptions.join(' '),
-        passed: results.passed(),
-        os: capabilities.caps_.platform,
-        sessionId: capabilities.caps_['webdriver.remote.sessionid'],
-        instanceId: process.pid,
-        browser: {
-            name: capabilities.caps_.browserName,
-            version: capabilities.caps_.version
-        }
-    };
-
-    if (results.items_.length > 0) {
-        var result = results.items_[0];
-        if (!results.passed()) {
-            var failedItem = _.where(results.items_, {passed_: false})[0];
-            if (failedItem) {
-                metaData.message = failedItem.message || 'Failed';
-                metaData.trace = failedItem.trace ? (failedItem.trace.stack || 'No Stack trace information') : 'No Stack trace information';
-            }
-
-        } else {
-            metaData.message = result.message || 'Passed';
-            metaData.trace = result.trace.stack;
-        }
-
-    }
-
-    return metaData;
-}
-
 function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
 
     let isPassed = results.status === 'passed';
     let isPending = ['pending', 'disabled', 'excluded'].includes(results.status);
-
+    let osInfo= capabilities.get("platform") || capabilities.get("platformName");
     let metaData = {
         description: descriptions.join(' '),
         passed: isPassed,
         pending: isPending,
-        os: capabilities.get('platform'),
+        os: osInfo,
         sessionId: capabilities.get('webdriver.remote.sessionid'),
         instanceId: process.pid,
         browser: {
@@ -138,7 +89,7 @@ function sortFunction(a, b) {
  *                              Mandatory.
  *     (Function) pathBuilder - A function which returns a path for a screenshot
  *                              to be stored. Optional.
- *     (Function) metaDataBuilder - Function which returns an object literal
+ *     (Function) jasmine2MetaDataBuilder - Function which returns an object literal
  *                                  containing meta data to store along with
  *                                  the screenshot. Optional.
  *     (Boolean) takeScreenShotsForSkippedSpecs - Do you want to capture a
@@ -175,7 +126,6 @@ function ScreenshotReporter(options) {
     this.pathBuilder = options.pathBuilder || defaultPathBuilder;
     this.docTitle = options.docTitle || 'Test Results';
     this.docName = options.docName || 'report.html';
-    this.metaDataBuilder = options.metaDataBuilder || defaultMetaDataBuilder;
     this.jasmine2MetaDataBuilder = options.jasmine2MetaDataBuilder || jasmine2MetaDataBuilder;
     this.sortFunction = options.sortFunction || sortFunction;
     this.preserveDirectory = typeof options.preserveDirectory !== 'undefined' ? options.preserveDirectory : true;
@@ -201,7 +151,6 @@ function ScreenshotReporter(options) {
         takeScreenShotsOnlyForFailedSpecs: this.takeScreenShotsOnlyForFailedSpecs,
         takeScreenShotsForSkippedSpecs: this.takeScreenShotsForSkippedSpecs,
         disableScreenshots: this.disableScreenshots,
-        metaDataBuilder: this.metaDataBuilder,
         pathBuilder: this.pathBuilder,
         sortFunction: this.sortFunction,
         baseDirectory: this.baseDirectory,
