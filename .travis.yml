@@ -7,6 +7,6 @@ install:
   - npm install -g codecov
 script:
   - npm test 
-  - cover ./tests/jasmine.runner.js --reporter lcovonly
+  - NODE_ENV=test nyc --report-dir=coverage/reporter --reporter=lcov-only node tests/jasmine.runner.js
   - karma start karma.conf.js --cc=true
   - codecov
