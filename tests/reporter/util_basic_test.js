@@ -363,6 +363,38 @@ describe('unit tests', () => {
 
         }); // removeDirectory
 
+        describe('_isString', ()=>{
+            it('with array returns false',()=> {
+                expect(util._isString([1, 2, 3])).toEqual(false);
+            });
+
+            it('with number returns false',()=> {
+                expect(util._isString(1)).toEqual(false);
+            });
+
+            it('with bool returns false',()=> {
+                expect(util._isString(true)).toEqual(false);
+            });
+
+            it('with empty object returns false',()=> {
+                expect(util._isString({})).toEqual(false);
+            });
+
+            it('with empty date returns false',()=> {
+                expect(util._isString(new Date())).toEqual(false);
+            });
+
+            it('with strings returns true',()=> {
+                expect(util._isString([1, 2, 3].join(', '))).toEqual(true);
+            });
+
+            it('with string object returns true',()=> {
+                let obj = new String('I am a string object');
+                expect(util._isString(obj)).toEqual(true);
+            });
+
+        });
+
     });
 
 

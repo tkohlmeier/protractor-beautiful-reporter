@@ -1,9 +1,19 @@
 {
   "env": {
     "test": {
-      "plugins": [ "istanbul" ]
+      "plugins": [
+        "istanbul"
+      ]
     }
   },
-  "ignore": ["node_modules"],
-  "presets": ["es2015", "stage-0"]
+  "ignore": [
+    "node_modules"
+  ],
+  "presets": [
+    "es2015",
+    "stage-0"
+  ],
+  "plugins": [
+    "babel-plugin-add-module-exports"
+  ]
 }
