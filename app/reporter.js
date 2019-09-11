@@ -1,6 +1,6 @@
-var util = require('./util'),
-    _ = require('underscore'),
-    path = require('path');
+const util = require('./util');
+const path = require('path');
+const _isString = util._isString;
 
 /** Function: defaultPathBuilder
  * This function builds paths for a screenshot file. It is appended to the
@@ -105,19 +105,19 @@ function ScreenshotReporter(options) {
         this.baseDirectory = options.baseDirectory;
     }
 
-    if (typeof (options.cssOverrideFile) !== 'undefined' && _.isString(options.cssOverrideFile)) {
+    if (typeof (options.cssOverrideFile) !== 'undefined' && _isString(options.cssOverrideFile)) {
         this.cssOverrideFile = options.cssOverrideFile;
     } else {
         this.cssOverrideFile = null;
     }
 
-    if (typeof (options.screenshotsSubfolder) !== 'undefined' && _.isString(options.screenshotsSubfolder)) {
+    if (typeof (options.screenshotsSubfolder) !== 'undefined' && _isString(options.screenshotsSubfolder)) {
         this.screenshotsSubfolder = options.screenshotsSubfolder;
     } else {
         this.screenshotsSubfolder = '';
     }
 
-    if (typeof (options.jsonsSubfolder) !== 'undefined' && _.isString(options.jsonsSubfolder)) {
+    if (typeof (options.jsonsSubfolder) !== 'undefined' && _isString(options.jsonsSubfolder)) {
         this.jsonsSubfolder = options.jsonsSubfolder;
     } else {
         this.jsonsSubfolder = '';

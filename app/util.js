@@ -4,6 +4,23 @@ const crypto = require('crypto');
 const CircularJSON = require('circular-json');
 const fse = require('fs-extra');
 
+function getTag(value) {
+    if (value == null) {
+        return value === undefined ? '[object Undefined]' : '[object Null]';
+    }
+    return toString.call(value);
+}
+
+/**
+ * checks if the given argument is a real string
+ * @param value the value to check
+ * @returns {boolean} true if its a string
+ * @private
+ */
+function _isString(value) {
+    const type = typeof value;
+    return type === 'string' || (type === 'object' && value != null && !Array.isArray(value) && getTag(value) === '[object String]');
+}
 
 /** Function: storeScreenShot
  * Stores base64 encoded PNG data to the file at the given path.
@@ -31,9 +48,9 @@ function cleanArray(actual) {
     return newArray;
 }
 
-function stringifyHtml(source){
+function stringifyHtml(source) {
     var quote = '\'';
-    var res=source.split(/^/gm).map(function(line) {
+    var res = source.split(/^/gm).map(function (line) {
         //var quote = '"';
         line = line.replace(/\\/g, '\\\\');
         line = line.replace(/\r/g, '');
@@ -42,20 +59,20 @@ function stringifyHtml(source){
         // line = line.replace(/\r/g, '\\r');
         var quoteRegExp = new RegExp(quote, 'g');
         line = line.replace(quoteRegExp, '\\' + quote);
-        if(line.length>0){
-            return quote + line + "\\n"+ quote +" +\n    ";
+        if (line.length > 0) {
+            return quote + line + "\\n" + quote + " +\n    ";
         }
         return "";
     }).join('') || '""';
 
-    return res+" "+quote+quote;
+    return res + " " + quote + quote;
 }
 
 function buildTemplateJs(file) {
     var templateName = path.basename(file);
     var template = fs.readFileSync(file)
         .toString();
-    var stemplate=stringifyHtml(template);
+    var stemplate = stringifyHtml(template);
     return "\n  $templateCache.put('" + templateName + "',\n    " + stemplate + "\n  );\n";
 }
 
@@ -303,4 +320,5 @@ module.exports = {
     , generateGuid: generateGuid
     , addMetaData: addMetaData
     , removeDirectory: removeDirectory
+    , _isString: _isString
 };
