@@ -19,7 +19,7 @@ module.exports = function (grunt) {
                     async: true
                 }
             },
-            "protractor_install": {
+            "webdriver_update": {
                 command: 'node ./node_modules/protractor/bin/webdriver-manager update'
             },
             "webdriver_start": {
@@ -50,8 +50,8 @@ module.exports = function (grunt) {
 
 
     grunt.registerTask('test:e2e', ['protractor:singlerun']);
-    grunt.registerTask('install', ['update', 'shell:protractor_install']);
-    grunt.registerTask('update', ['shell:npm_install']);
+    grunt.registerTask('webdriver-install', ['install', 'shell:webdriver_update']);
+    grunt.registerTask('install', ['shell:npm_install']);
     grunt.registerTask('unescape-combined-json', () => {
         const CircularJSON = require('circular-json');
 
