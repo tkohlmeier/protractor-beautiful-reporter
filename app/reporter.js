@@ -27,6 +27,7 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
     let isPassed = results.status === 'passed';
     let isPending = ['pending', 'disabled', 'excluded'].includes(results.status);
     let osInfo= capabilities.get("platform") || capabilities.get("platformName");
+    let version =  capabilities.get("browserVersion") || capabilities.get("version");
     let metaData = {
         description: descriptions.join(' '),
         passed: isPassed,
@@ -36,7 +37,7 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
         instanceId: process.pid,
         browser: {
             name: capabilities.get('browserName'),
-            version: capabilities.get('version')
+            version: version
         }
     };
 

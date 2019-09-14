@@ -224,6 +224,12 @@ exports.f = __webpack_require__(7) ? Object.defineProperty : function defineProp
 
 /***/ }),
 /* 9 */
+/***/ (function(module, exports) {
+
+module.exports = require("path");
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 // 7.1.13 ToObject(argument)
@@ -234,12 +240,6 @@ module.exports = function (it) {
 
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports) {
-
-module.exports = require("path");
-
-/***/ }),
 /* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
@@ -248,21 +248,9 @@ var polyfills = __webpack_require__(373)
 var legacy = __webpack_require__(372)
 var clone = __webpack_require__(371)
 
+var queue = []
+
 var util = __webpack_require__(379)
-
-/* istanbul ignore next - node 0.x polyfill */
-var gracefulQueue
-var previousSymbol
-
-/* istanbul ignore else - node 0.x polyfill */
-if (typeof Symbol === 'function' && typeof Symbol.for === 'function') {
-  gracefulQueue = Symbol.for('graceful-fs.queue')
-  // This is used in testing by future versions
-  previousSymbol = Symbol.for('graceful-fs.previous')
-} else {
-  gracefulQueue = '___graceful-fs.queue'
-  previousSymbol = '___graceful-fs.previous'
-}
 
 function noop () {}
 
@@ -276,58 +264,11 @@ else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
     console.error(m)
   }
 
-// Once time initialization
-if (!global[gracefulQueue]) {
-  // This queue can be shared by multiple loaded instances
-  var queue = []
-  Object.defineProperty(global, gracefulQueue, {
-    get: function() {
-      return queue
-    }
+if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
+  process.on('exit', function() {
+    debug(queue)
+    __webpack_require__(142).equal(queue.length, 0)
   })
-
-  // Patch fs.close/closeSync to shared queue version, because we need
-  // to retry() whenever a close happens *anywhere* in the program.
-  // This is essential when multiple graceful-fs instances are
-  // in play at the same time.
-  fs.close = (function (fs$close) {
-    function close (fd, cb) {
-      return fs$close.call(fs, fd, function (err) {
-        // This function uses the graceful-fs shared queue
-        if (!err) {
-          retry()
-        }
-
-        if (typeof cb === 'function')
-          cb.apply(this, arguments)
-      })
-    }
-
-    Object.defineProperty(close, previousSymbol, {
-      value: fs$close
-    })
-    return close
-  })(fs.close)
-
-  fs.closeSync = (function (fs$closeSync) {
-    function closeSync (fd) {
-      // This function uses the graceful-fs shared queue
-      fs$closeSync.apply(fs, arguments)
-      retry()
-    }
-
-    Object.defineProperty(closeSync, previousSymbol, {
-      value: fs$closeSync
-    })
-    return closeSync
-  })(fs.closeSync)
-
-  if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
-    process.on('exit', function() {
-      debug(global[gracefulQueue])
-      __webpack_require__(142).equal(global[gracefulQueue].length, 0)
-    })
-  }
 }
 
 module.exports = patch(clone(fs))
@@ -336,11 +277,45 @@ if (process.env.TEST_GRACEFUL_FS_GLOBAL_PATCH && !fs.__patched) {
     fs.__patched = true;
 }
 
+// Always patch fs.close/closeSync, because we want to
+// retry() whenever a close happens *anywhere* in the program.
+// This is essential when multiple graceful-fs instances are
+// in play at the same time.
+module.exports.close = (function (fs$close) { return function (fd, cb) {
+  return fs$close.call(fs, fd, function (err) {
+    if (!err)
+      retry()
+
+    if (typeof cb === 'function')
+      cb.apply(this, arguments)
+  })
+}})(fs.close)
+
+module.exports.closeSync = (function (fs$closeSync) { return function (fd) {
+  // Note that graceful-fs also retries when fs.closeSync() fails.
+  // Looks like a bug to me, although it's probably a harmless one.
+  var rval = fs$closeSync.apply(fs, arguments)
+  retry()
+  return rval
+}})(fs.closeSync)
+
+// Only patch fs once, otherwise we'll run into a memory leak if
+// graceful-fs is loaded multiple times, such as in test environments that
+// reset the loaded modules between tests.
+// We look for the string `graceful-fs` from the comment above. This
+// way we are not adding any extra properties and it will detect if older
+// versions of graceful-fs are installed.
+if (!/\bgraceful-fs\b/.test(fs.closeSync.toString())) {
+  fs.closeSync = module.exports.closeSync;
+  fs.close = module.exports.close;
+}
+
 function patch (fs) {
   // Everything that references the open() function needs to be in here
   polyfills(fs)
   fs.gracefulify = patch
-
+  fs.FileReadStream = ReadStream;  // Legacy name.
+  fs.FileWriteStream = WriteStream;  // Legacy name.
   fs.createReadStream = createReadStream
   fs.createWriteStream = createWriteStream
   var fs$readFile = fs.readFile
@@ -457,48 +432,8 @@ function patch (fs) {
     WriteStream.prototype.open = WriteStream$open
   }
 
-  Object.defineProperty(fs, 'ReadStream', {
-    get: function () {
-      return ReadStream
-    },
-    set: function (val) {
-      ReadStream = val
-    },
-    enumerable: true,
-    configurable: true
-  })
-  Object.defineProperty(fs, 'WriteStream', {
-    get: function () {
-      return WriteStream
-    },
-    set: function (val) {
-      WriteStream = val
-    },
-    enumerable: true,
-    configurable: true
-  })
-
-  // legacy names
-  Object.defineProperty(fs, 'FileReadStream', {
-    get: function () {
-      return ReadStream
-    },
-    set: function (val) {
-      ReadStream = val
-    },
-    enumerable: true,
-    configurable: true
-  })
-  Object.defineProperty(fs, 'FileWriteStream', {
-    get: function () {
-      return WriteStream
-    },
-    set: function (val) {
-      WriteStream = val
-    },
-    enumerable: true,
-    configurable: true
-  })
+  fs.ReadStream = ReadStream
+  fs.WriteStream = WriteStream
 
   function ReadStream (path, options) {
     if (this instanceof ReadStream)
@@ -544,11 +479,11 @@ function patch (fs) {
   }
 
   function createReadStream (path, options) {
-    return new fs.ReadStream(path, options)
+    return new ReadStream(path, options)
   }
 
   function createWriteStream (path, options) {
-    return new fs.WriteStream(path, options)
+    return new WriteStream(path, options)
   }
 
   var fs$open = fs.open
@@ -577,11 +512,11 @@ function patch (fs) {
 
 function enqueue (elem) {
   debug('ENQUEUE', elem[0].name, elem[1])
-  global[gracefulQueue].push(elem)
+  queue.push(elem)
 }
 
 function retry () {
-  var elem = global[gracefulQueue].shift()
+  var elem = queue.shift()
   if (elem) {
     debug('RETRY', elem[0].name, elem[1])
     elem[0].apply(null, elem[1])
@@ -745,7 +680,7 @@ exports.f = __webpack_require__(7) ? gOPD : function getOwnPropertyDescriptor(O,
 
 // 19.1.2.9 / 15.2.3.2 Object.getPrototypeOf(O)
 var has = __webpack_require__(17);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var IE_PROTO = __webpack_require__(91)('IE_PROTO');
 var ObjectProto = Object.prototype;
 
@@ -806,7 +741,7 @@ module.exports = function (it) {
 /* 23 */
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.6.9' };
+var core = module.exports = { version: '2.6.5' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -877,7 +812,7 @@ module.exports = function (it) {
 // 6 -> Array#findIndex
 var ctx = __webpack_require__(24);
 var IObject = __webpack_require__(53);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var toLength = __webpack_require__(6);
 var asc = __webpack_require__(75);
 module.exports = function (TYPE, $create) {
@@ -1042,7 +977,7 @@ if (__webpack_require__(7)) {
   var has = __webpack_require__(17);
   var classof = __webpack_require__(48);
   var isObject = __webpack_require__(4);
-  var toObject = __webpack_require__(9);
+  var toObject = __webpack_require__(10);
   var isArrayIter = __webpack_require__(82);
   var create = __webpack_require__(39);
   var getPrototypeOf = __webpack_require__(19);
@@ -2446,7 +2381,7 @@ module.exports = function (S, index, unicode) {
 "use strict";
 // 22.1.3.6 Array.prototype.fill(value, start = 0, end = this.length)
 
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var toAbsoluteIndex = __webpack_require__(45);
 var toLength = __webpack_require__(6);
 module.exports = function fill(value /* , start = 0, end = @length */) {
@@ -3417,7 +3352,7 @@ module.exports = function (it, msg) {
 "use strict";
 // 22.1.3.3 Array.prototype.copyWithin(target, start, end = this.length)
 
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var toAbsoluteIndex = __webpack_require__(45);
 var toLength = __webpack_require__(6);
 
@@ -3461,7 +3396,7 @@ module.exports = function (iter, ITERATOR) {
 /***/ (function(module, exports, __webpack_require__) {
 
 var aFunction = __webpack_require__(12);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var IObject = __webpack_require__(53);
 var toLength = __webpack_require__(6);
 
@@ -3966,11 +3901,10 @@ module.exports = Math.scale || function scale(x, inLow, inHigh, outLow, outHigh)
 "use strict";
 
 // 19.1.2.1 Object.assign(target, source, ...)
-var DESCRIPTORS = __webpack_require__(7);
 var getKeys = __webpack_require__(41);
 var gOPS = __webpack_require__(64);
 var pIE = __webpack_require__(54);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var IObject = __webpack_require__(53);
 var $assign = Object.assign;
 
@@ -3996,10 +3930,7 @@ module.exports = !$assign || __webpack_require__(3)(function () {
     var length = keys.length;
     var j = 0;
     var key;
-    while (length > j) {
-      key = keys[j++];
-      if (!DESCRIPTORS || isEnum.call(S, key)) T[key] = S[key];
-    }
+    while (length > j) if (isEnum.call(S, key = keys[j++])) T[key] = S[key];
   } return T;
 } : $assign;
 
@@ -4075,7 +4006,6 @@ module.exports = function (object, names) {
 /* 122 */
 /***/ (function(module, exports, __webpack_require__) {
 
-var DESCRIPTORS = __webpack_require__(7);
 var getKeys = __webpack_require__(41);
 var toIObject = __webpack_require__(20);
 var isEnum = __webpack_require__(54).f;
@@ -4087,13 +4017,9 @@ module.exports = function (isEntries) {
     var i = 0;
     var result = [];
     var key;
-    while (length > i) {
-      key = keys[i++];
-      if (!DESCRIPTORS || isEnum.call(O, key)) {
-        result.push(isEntries ? [key, O[key]] : O[key]);
-      }
-    }
-    return result;
+    while (length > i) if (isEnum.call(O, key = keys[i++])) {
+      result.push(isEntries ? [key, O[key]] : O[key]);
+    } return result;
   };
 };
 
@@ -4387,7 +4313,7 @@ module.exports = {
 // imported from ncp (this is temporary, will rewrite)
 
 var fs = __webpack_require__(11)
-var path = __webpack_require__(10)
+var path = __webpack_require__(9)
 var utimes = __webpack_require__(370)
 
 function ncp (source, dest, options, callback) {
@@ -4694,7 +4620,7 @@ exports.exists = function (filename, callback) {
 "use strict";
 
 
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 
 // get drive on windows
 function getRootPath (p) {
@@ -4756,7 +4682,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 var util = __webpack_require__(145);
-var path = __webpack_require__(10);
+var path = __webpack_require__(9);
 var _isString = util._isString;
 
 /** Function: defaultPathBuilder
@@ -4784,6 +4710,7 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
     var isPassed = results.status === 'passed';
     var isPending = ['pending', 'disabled', 'excluded'].includes(results.status);
     var osInfo = capabilities.get("platform") || capabilities.get("platformName");
+    var version = capabilities.get("browserVersion") || capabilities.get("version");
     var metaData = {
         description: descriptions.join(' '),
         passed: isPassed,
@@ -4793,7 +4720,7 @@ function jasmine2MetaDataBuilder(spec, descriptions, results, capabilities) {
         instanceId: process.pid,
         browser: {
             name: capabilities.get('browserName'),
-            version: capabilities.get('version')
+            version: version
         }
     };
 
@@ -5352,7 +5279,7 @@ define(String.prototype, "padRight", "".padEnd);
 /***/ (function(module, exports, __webpack_require__) {
 
 const fs = __webpack_require__(72);
-const path = __webpack_require__(10);
+const path = __webpack_require__(9);
 const crypto = __webpack_require__(376);
 const CircularJSON = __webpack_require__(147);
 const fse = __webpack_require__(359);
@@ -6800,7 +6727,7 @@ $export($export.P + $export.F * !STRICT, 'Array', {
 
 var ctx = __webpack_require__(24);
 var $export = __webpack_require__(0);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var call = __webpack_require__(113);
 var isArrayIter = __webpack_require__(82);
 var toLength = __webpack_require__(6);
@@ -7053,7 +6980,7 @@ $export($export.P + $export.F * !__webpack_require__(25)([].some, true), 'Array'
 
 var $export = __webpack_require__(0);
 var aFunction = __webpack_require__(12);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var fails = __webpack_require__(3);
 var $sort = [].sort;
 var test = [1, 2, 3];
@@ -7113,7 +7040,7 @@ $export($export.P + $export.F * (Date.prototype.toISOString !== toISOString), 'D
 "use strict";
 
 var $export = __webpack_require__(0);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var toPrimitive = __webpack_require__(30);
 
 $export($export.P + $export.F * __webpack_require__(3)(function () {
@@ -7895,7 +7822,7 @@ __webpack_require__(29)('getOwnPropertyNames', function () {
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.9 Object.getPrototypeOf(O)
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var $getPrototypeOf = __webpack_require__(19);
 
 __webpack_require__(29)('getPrototypeOf', function () {
@@ -7961,7 +7888,7 @@ $export($export.S, 'Object', { is: __webpack_require__(128) });
 /***/ (function(module, exports, __webpack_require__) {
 
 // 19.1.2.14 Object.keys(O)
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var $keys = __webpack_require__(41);
 
 __webpack_require__(29)('keys', function () {
@@ -8780,7 +8707,7 @@ __webpack_require__(59)('match', 1, function (defined, MATCH, $match, maybeCallN
 
 
 var anObject = __webpack_require__(1);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var toLength = __webpack_require__(6);
 var toInteger = __webpack_require__(26);
 var advanceStringIndex = __webpack_require__(73);
@@ -9504,14 +9431,12 @@ var enumKeys = __webpack_require__(152);
 var isArray = __webpack_require__(60);
 var anObject = __webpack_require__(1);
 var isObject = __webpack_require__(4);
-var toObject = __webpack_require__(9);
 var toIObject = __webpack_require__(20);
 var toPrimitive = __webpack_require__(30);
 var createDesc = __webpack_require__(42);
 var _create = __webpack_require__(39);
 var gOPNExt = __webpack_require__(120);
 var $GOPD = __webpack_require__(18);
-var $GOPS = __webpack_require__(64);
 var $DP = __webpack_require__(8);
 var $keys = __webpack_require__(41);
 var gOPD = $GOPD.f;
@@ -9528,7 +9453,7 @@ var SymbolRegistry = shared('symbol-registry');
 var AllSymbols = shared('symbols');
 var OPSymbols = shared('op-symbols');
 var ObjectProto = Object[PROTOTYPE];
-var USE_NATIVE = typeof $Symbol == 'function' && !!$GOPS.f;
+var USE_NATIVE = typeof $Symbol == 'function';
 var QObject = global.QObject;
 // Don't use setters in Qt Script, https://github.com/zloirock/core-js/issues/173
 var setter = !QObject || !QObject[PROTOTYPE] || !QObject[PROTOTYPE].findChild;
@@ -9638,7 +9563,7 @@ if (!USE_NATIVE) {
   $DP.f = $defineProperty;
   __webpack_require__(40).f = gOPNExt.f = $getOwnPropertyNames;
   __webpack_require__(54).f = $propertyIsEnumerable;
-  $GOPS.f = $getOwnPropertySymbols;
+  __webpack_require__(64).f = $getOwnPropertySymbols;
 
   if (DESCRIPTORS && !__webpack_require__(34)) {
     redefine(ObjectProto, 'propertyIsEnumerable', $propertyIsEnumerable, true);
@@ -9687,16 +9612,6 @@ $export($export.S + $export.F * !USE_NATIVE, 'Object', {
   getOwnPropertyNames: $getOwnPropertyNames,
   // 19.1.2.8 Object.getOwnPropertySymbols(O)
   getOwnPropertySymbols: $getOwnPropertySymbols
-});
-
-// Chrome 38 and 39 `Object.getOwnPropertySymbols` fails on primitives
-// https://bugs.chromium.org/p/v8/issues/detail?id=3443
-var FAILS_ON_PRIMITIVES = $fails(function () { $GOPS.f(1); });
-
-$export($export.S + $export.F * FAILS_ON_PRIMITIVES, 'Object', {
-  getOwnPropertySymbols: function getOwnPropertySymbols(it) {
-    return $GOPS.f(toObject(it));
-  }
 });
 
 // 24.3.2 JSON.stringify(value [, replacer [, space]])
@@ -9925,7 +9840,7 @@ __webpack_require__(58)(WEAK_SET, function (get) {
 // https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatMap
 var $export = __webpack_require__(0);
 var flattenIntoArray = __webpack_require__(109);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var toLength = __webpack_require__(6);
 var aFunction = __webpack_require__(12);
 var arraySpeciesCreate = __webpack_require__(75);
@@ -9954,7 +9869,7 @@ __webpack_require__(33)('flatMap');
 // https://tc39.github.io/proposal-flatMap/#sec-Array.prototype.flatten
 var $export = __webpack_require__(0);
 var flattenIntoArray = __webpack_require__(109);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var toLength = __webpack_require__(6);
 var toInteger = __webpack_require__(26);
 var arraySpeciesCreate = __webpack_require__(75);
@@ -10249,7 +10164,7 @@ $export($export.S, 'Math', {
 "use strict";
 
 var $export = __webpack_require__(0);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var aFunction = __webpack_require__(12);
 var $defineProperty = __webpack_require__(8);
 
@@ -10268,7 +10183,7 @@ __webpack_require__(7) && $export($export.P + __webpack_require__(63), 'Object',
 "use strict";
 
 var $export = __webpack_require__(0);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var aFunction = __webpack_require__(12);
 var $defineProperty = __webpack_require__(8);
 
@@ -10330,7 +10245,7 @@ $export($export.S, 'Object', {
 "use strict";
 
 var $export = __webpack_require__(0);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var toPrimitive = __webpack_require__(30);
 var getPrototypeOf = __webpack_require__(19);
 var getOwnPropertyDescriptor = __webpack_require__(18).f;
@@ -10355,7 +10270,7 @@ __webpack_require__(7) && $export($export.P + __webpack_require__(63), 'Object',
 "use strict";
 
 var $export = __webpack_require__(0);
-var toObject = __webpack_require__(9);
+var toObject = __webpack_require__(10);
 var toPrimitive = __webpack_require__(30);
 var getPrototypeOf = __webpack_require__(19);
 var getOwnPropertyDescriptor = __webpack_require__(18).f;
@@ -11378,7 +11293,7 @@ module.exports = copyFileSync
 
 
 const fs = __webpack_require__(11)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const copyFileSync = __webpack_require__(348)
 const mkdir = __webpack_require__(21)
 
@@ -11447,7 +11362,7 @@ module.exports = copySync
 
 
 const fs = __webpack_require__(11)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const ncp = __webpack_require__(138)
 const mkdir = __webpack_require__(21)
 const pathExists = __webpack_require__(36).pathExists
@@ -11519,7 +11434,7 @@ module.exports = {
 
 const u = __webpack_require__(16).fromCallback
 const fs = __webpack_require__(72)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const mkdir = __webpack_require__(21)
 const remove = __webpack_require__(71)
 
@@ -11573,7 +11488,7 @@ module.exports = {
 
 
 const u = __webpack_require__(16).fromCallback
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const fs = __webpack_require__(11)
 const mkdir = __webpack_require__(21)
 const pathExists = __webpack_require__(36).pathExists
@@ -11656,7 +11571,7 @@ module.exports = {
 
 
 const u = __webpack_require__(16).fromCallback
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const fs = __webpack_require__(11)
 const mkdir = __webpack_require__(21)
 const pathExists = __webpack_require__(36).pathExists
@@ -11723,7 +11638,7 @@ module.exports = {
 "use strict";
 
 
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const fs = __webpack_require__(11)
 const pathExists = __webpack_require__(36).pathExists
 
@@ -11868,7 +11783,7 @@ module.exports = {
 
 
 const u = __webpack_require__(16).fromCallback
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const fs = __webpack_require__(11)
 const _mkdirs = __webpack_require__(21)
 const mkdirs = _mkdirs.mkdirs
@@ -11993,7 +11908,7 @@ module.exports = jsonFile
 
 
 const fs = __webpack_require__(11)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const mkdir = __webpack_require__(21)
 const jsonFile = __webpack_require__(100)
 
@@ -12017,7 +11932,7 @@ module.exports = outputJsonSync
 "use strict";
 
 
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const mkdir = __webpack_require__(21)
 const pathExists = __webpack_require__(36).pathExists
 const jsonFile = __webpack_require__(100)
@@ -12052,7 +11967,7 @@ module.exports = outputJson
 
 
 const fs = __webpack_require__(11)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const invalidWin32Path = __webpack_require__(140).invalidWin32Path
 
 const o777 = parseInt('0777', 8)
@@ -12118,7 +12033,7 @@ module.exports = mkdirsSync
 
 
 const fs = __webpack_require__(11)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const invalidWin32Path = __webpack_require__(140).invalidWin32Path
 
 const o777 = parseInt('0777', 8)
@@ -12188,7 +12103,7 @@ module.exports = mkdirs
 
 
 const fs = __webpack_require__(11)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const copySync = __webpack_require__(137).copySync
 const removeSync = __webpack_require__(71).removeSync
 const mkdirpSync = __webpack_require__(21).mkdirsSync
@@ -12321,7 +12236,7 @@ module.exports = {
 const u = __webpack_require__(16).fromCallback
 const fs = __webpack_require__(11)
 const ncp = __webpack_require__(138)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const remove = __webpack_require__(71).remove
 const mkdirp = __webpack_require__(21).mkdirs
 
@@ -12483,7 +12398,7 @@ module.exports = {
 
 const u = __webpack_require__(16).fromCallback
 const fs = __webpack_require__(11)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const mkdir = __webpack_require__(21)
 const pathExists = __webpack_require__(36).pathExists
 
@@ -12529,7 +12444,7 @@ module.exports = {
 
 
 const fs = __webpack_require__(11)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 const assert = __webpack_require__(142)
 
 const isWindows = (process.platform === 'win32')
@@ -12856,7 +12771,7 @@ module.exports = assign
 
 const fs = __webpack_require__(11)
 const os = __webpack_require__(377)
-const path = __webpack_require__(10)
+const path = __webpack_require__(9)
 
 // HFS, ext{2,3}, FAT do not, Node.js v0.10 does not
 function hasMillisResSync () {
@@ -13197,26 +13112,20 @@ function patch (fs) {
   }
 
   // if read() returns EAGAIN, then just try it again.
-  fs.read = (function (fs$read) {
-    function read (fd, buffer, offset, length, position, callback_) {
-      var callback
-      if (callback_ && typeof callback_ === 'function') {
-        var eagCounter = 0
-        callback = function (er, _, __) {
-          if (er && er.code === 'EAGAIN' && eagCounter < 10) {
-            eagCounter ++
-            return fs$read.call(fs, fd, buffer, offset, length, position, callback)
-          }
-          callback_.apply(this, arguments)
+  fs.read = (function (fs$read) { return function (fd, buffer, offset, length, position, callback_) {
+    var callback
+    if (callback_ && typeof callback_ === 'function') {
+      var eagCounter = 0
+      callback = function (er, _, __) {
+        if (er && er.code === 'EAGAIN' && eagCounter < 10) {
+          eagCounter ++
+          return fs$read.call(fs, fd, buffer, offset, length, position, callback)
         }
+        callback_.apply(this, arguments)
       }
-      return fs$read.call(fs, fd, buffer, offset, length, position, callback)
     }
-
-    // This ensures `util.promisify` works as it does for native `fs.read`.
-    read.__proto__ = fs$read
-    return read
-  })(fs.read)
+    return fs$read.call(fs, fd, buffer, offset, length, position, callback)
+  }})(fs.read)
 
   fs.readSync = (function (fs$readSync) { return function (fd, buffer, offset, length, position) {
     var eagCounter = 0
@@ -13360,24 +13269,18 @@ function patch (fs) {
     }
   }
 
+
   function statFix (orig) {
     if (!orig) return orig
     // Older versions of Node erroneously returned signed integers for
     // uid + gid.
-    return function (target, options, cb) {
-      if (typeof options === 'function') {
-        cb = options
-        options = null
-      }
-      function callback (er, stats) {
-        if (stats) {
-          if (stats.uid < 0) stats.uid += 0x100000000
-          if (stats.gid < 0) stats.gid += 0x100000000
-        }
+    return function (target, cb) {
+      return orig.call(fs, target, function (er, stats) {
+        if (!stats) return cb.apply(this, arguments)
+        if (stats.uid < 0) stats.uid += 0x100000000
+        if (stats.gid < 0) stats.gid += 0x100000000
         if (cb) cb.apply(this, arguments)
-      }
-      return options ? orig.call(fs, target, options, callback)
-        : orig.call(fs, target, callback)
+      })
     }
   }
 
@@ -13385,9 +13288,8 @@ function patch (fs) {
     if (!orig) return orig
     // Older versions of Node erroneously returned signed integers for
     // uid + gid.
-    return function (target, options) {
-      var stats = options ? orig.call(fs, target, options)
-        : orig.call(fs, target)
+    return function (target) {
+      var stats = orig.call(fs, target)
       if (stats.uid < 0) stats.uid += 0x100000000
       if (stats.gid < 0) stats.gid += 0x100000000
       return stats;
