@@ -1,7 +1,9 @@
 [![npm](https://img.shields.io/npm/v/protractor-beautiful-reporter.svg)](https://www.npmjs.com/package/protractor-beautiful-reporter)
 [![Total Downloads](https://img.shields.io/npm/dt/protractor-beautiful-reporter.svg)](https://www.npmjs.com/package/protractor-beautiful-reporter)
 [![CI](https://travis-ci.com/Evilweed/protractor-beautiful-reporter.svg?branch=master)](https://travis-ci.com/Evilweed/protractor-beautiful-reporter.svg?branch=master)
-[![Sauce Test Status](https://saucelabs.com/buildstatus/saucemax45)](https://app.saucelabs.com/u/saucemax45)
+
+Cross-browser Testing <3 Provided by [Sauce Labs][homepage]
+[![Supported by Sauce](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/sauce_labs.svg)](https://miller45.github.io/protractor-beautiful-reporter/ref_1_3_3/report.html)
 # Angularized HTML Reporter with Screenshots for Protractor
 
 ![HTML / Angular Test Report](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/html-report.png "test report")
