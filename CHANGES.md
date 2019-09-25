@@ -1,4 +1,10 @@
 # Changelog
+## Version 1.3.6-alpha.1
+* Fixed: Time showning NaN with protractor six
+## Version 1.3.5
+* Revert to 1.3.3 state
+## Version 1.3.4
+* Fixed: Time showning NaN with protractor six
 ## Version 1.3.3
 * Fixed: browser version was missing in report
 * Added: Options for showing total duration in report  
