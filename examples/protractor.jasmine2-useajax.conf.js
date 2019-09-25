@@ -25,7 +25,7 @@ exports.config = {
     seleniumPort: null,
 
     /* direct connect on my local system*/
-    directConnect:!!process.env.CHROMIUM_BIN,
+//directConnect:!!process.env.CHROMIUM_BIN,
 
     // Chromedriver location is used to help the selenium standalone server
     // find chromedriver. This will be passed to the selenium jar as
@@ -47,7 +47,7 @@ exports.config = {
     //
     // Spec patterns are relative to the location of this config.
     specs: [
-        './specs/*.js'
+        './specs/j2_*.js'
     ],
 
     // ----- Capabilities to be passed to the webdriver instance ----
@@ -56,29 +56,13 @@ exports.config = {
     // https://code.google.com/p/selenium/wiki/DesiredCapabilities
     // and
     // https://code.google.com/p/selenium/source/browse/javascript/webdriver/capabilities.js
-    capabilities:!!process.env.CHROMIUM_BIN?{
+    capabilities:{
         'browserName': 'chrome',
         'applicationName': 'chromium',
         'chromeOptions': {
             'binary': process.env.CHROMIUM_BIN,
             'args': ['--lang=en',
                 '--window-size=1680,1050']
-        }
-    }:{
-        browserName: 'chrome',
-        logName: 'Chrome - English',
-        version: '',
-        platform: 'ANY',
-        shardTestFiles: false,
-        maxInstances: 2,
-
-        chromeOptions: {
-            args: ["--window-size=1680,1000"]
-            // commented out but needed to keep it for local testing
-            //,  binary: process.env.CHROMIUM_BIN
-            //
-            //     args:["--headless","--disable-gpu","--window-size=1680,1680"]
-            //     args:["--headless","--disable-gpu","--force-device-scale-factor=1.75","--high-dpi-support=1.75","--window-size=1400,1680"]
         }
     },
 

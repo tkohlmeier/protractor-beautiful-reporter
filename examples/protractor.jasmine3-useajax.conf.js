@@ -18,11 +18,14 @@ exports.config = {
     //seleniumServerJar: 'node_modules/protractor/selenium/selenium-server-standalone-2.37.0.jar',
 
     // Address of selenium server (before running protractor, run "webdriver-manager start" to start the Selenium server)
-    seleniumAddress: 'http://localhost:4444/wd/hub',
+    seleniumAddress: process.env.SELENIUMSERVER ? process.env.SELENIUMSERVER : 'http://localhost:4444/wd/hub',
 
     // The port to start the selenium server on, or null if the server should
     // find its own unused port.
     seleniumPort: null,
+
+    /* direct connect on my local system*/
+//directConnect:!!process.env.CHROMIUM_BIN,
 
     // Chromedriver location is used to help the selenium standalone server
     // find chromedriver. This will be passed to the selenium jar as
@@ -53,13 +56,14 @@ exports.config = {
     // https://code.google.com/p/selenium/wiki/DesiredCapabilities
     // and
     // https://code.google.com/p/selenium/source/browse/javascript/webdriver/capabilities.js
-    capabilities: {
-        browserName: 'chrome',
-        logName: 'Chrome - English',
-        version: '',
-        platform: 'ANY',
-        shardTestFiles: true,
-        maxInstances: 2,
+    capabilities:{
+        'browserName': 'chrome',
+        'applicationName': 'chromium',
+        'chromeOptions': {
+            'binary': process.env.CHROMIUM_BIN,
+            'args': ['--lang=en',
+                '--window-size=1680,1050']
+        }
     },
 
     // A base URL for your application under test. Calls to protractor.get()
@@ -76,27 +80,15 @@ exports.config = {
     onPrepare: function () {
         // Add a screenshot reporter:
         jasmine.getEnv().addReporter(new HtmlReporter({
-            preserveDirectory: true,
+            preserveDirectory: false,
             takeScreenShotsOnlyForFailedSpecs: true,
             screenshotsSubfolder: 'images',
             jsonsSubfolder: 'jsons',
             baseDirectory: 'reports-tmp',
-            pathBuilder: function pathBuilder(spec, descriptions, results, capabilities) {
-                // Return '<30-12-2016>/<browser>/<specname>' as path for screenshots:
-                // Example: '30-12-2016/firefox/list-should work'.
-                var currentDate = new Date(),
-                    day = currentDate.getDate(),
-                    month = currentDate.getMonth() + 1,
-                    year = currentDate.getFullYear();
-
-                var validDescriptions = descriptions.map(function (description) {
-                    return description.replace('/', '@');
-                });
-
-                return path.join(
-                    day + "-" + month + "-" + year,
-                    // capabilities.get('browserName'),
-                    validDescriptions.join('-'));
+            clientDefaults:{
+              useAjax:true,
+              totalDurationFormat:'hms',
+              showTotalDurationIn: 'header'
             }
         }).getJasmine2Reporter());
     },
