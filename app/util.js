@@ -313,6 +313,10 @@ function removeDirectory(dirPath) {
     fs.rmdirSync(dirPath);
 }
 
+function nowString() {
+    return (new Date()).toISOString();
+}
+
 module.exports = {
     storeScreenShot: storeScreenShot
     , storeMetaData: storeMetaData
@@ -321,4 +325,5 @@ module.exports = {
     , addMetaData: addMetaData
     , removeDirectory: removeDirectory
     , _isString: _isString
+    , nowString: nowString
 };

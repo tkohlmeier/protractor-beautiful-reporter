@@ -106,7 +106,7 @@ exports.config = {
               totalDurationFormat:'hms',
               showTotalDurationIn: 'header'
             }
-        }).getJasmine2Reporter());
+        }).getJasmine3Reporter());
     },
 
     jasmineNodeOpts: {

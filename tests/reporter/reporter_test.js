@@ -28,7 +28,8 @@ describe('unit tests', () => {
                     preserveDirectory: true
                 };
                 const reporter = new HtmlReporter(options);
-                var j2 = reporter.getJasmine2Reporter()
+                const j2 = reporter.getJasmine2Reporter();
+                expect(j2).toBeDefined();
             });
 
 

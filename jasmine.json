@@ -1,8 +1,7 @@
 {
   "spec_dir": "./",
   "spec_files": [
-    "app/util.js",
-    "app/reporter.js",
+    "app/*.js",
     "tests/reporter/*_test.js"
   ],
   "helpers": [
