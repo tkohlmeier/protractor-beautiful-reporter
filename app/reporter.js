@@ -180,6 +180,7 @@ class Jasmine2Reporter {
 
         this._screenshotReporter = screenshotReporter;
         this._suiteNames = [];
+        this._times = [];
 
     }
 
@@ -200,11 +201,11 @@ class Jasmine2Reporter {
     }
 
     specStarted(result) {
-        this._addTaskToFlow(async () => result.started = nowString());
+        this._addTaskToFlow(async () => this._times.push(nowString()));
     }
 
     specDone(result) {
-        this._addTaskToFlow(async () => this._asyncSpecDone(result));
+        this._addTaskToFlow(async () => this._asyncSpecDone(result, this._times.pop()));
     }
 
     _addTaskToFlow(callback) {
@@ -226,12 +227,12 @@ class Jasmine2Reporter {
         this._asyncFlow = null;
     }
 
-    async _asyncSpecDone(result) {
+    async _asyncSpecDone(result, start) {
         // Don't report if it's skipped and we don't need it
         if (['pending', 'disabled', 'excluded'].includes(result.status) && this._screenshotReporter.excludeSkippedSpecs) {
             return;
         }
-
+        result.started = start;
         result.stopped = nowString();
 
         await this._gatherBrowserLogs(result);
