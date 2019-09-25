@@ -1,8 +1,6 @@
 .DS_Store
 node_modules/
-examples/node_modules/
-examples/reports/
-examples/reports-tmp/
+examples/
 npm-debug.log
 .idea/
 tmp/
@@ -15,3 +13,12 @@ jasmine.json
 karma.conf.js
 karma.pre.js
 webpack.config.js
+coverage/
+.nyc_output/
+.babelrc
+.nycrc.json
+images/
+
+
+
+
