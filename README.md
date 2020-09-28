@@ -2,7 +2,12 @@
 [![Total Downloads](https://img.shields.io/npm/dt/protractor-beautiful-reporter.svg)](https://www.npmjs.com/package/protractor-beautiful-reporter)
 [![CI](https://travis-ci.com/Evilweed/protractor-beautiful-reporter.svg?branch=master)](https://travis-ci.com/Evilweed/protractor-beautiful-reporter.svg?branch=master)
 
-Cross-browser Testing <3 Provided by [![Supported by Sauce](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/Sauce-Labs_Horiz_Red-Grey_RGB_200x28.png)](https://saucelabs.com)
+# 🕵️‍♂️ Looking for new project maintainers!
+Hello, I no longer have time to maintain this repository, but i see that there are people here that would like to use this tool.
+Feel free to reach out to me if you want to become new maintainer :)
+
+------
+
 # Angularized HTML Reporter with Screenshots for Protractor
 
 ![HTML / Angular Test Report](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/html-report.png "test report")
@@ -459,3 +464,5 @@ Copyright (c) 2017 Marcin Cierpicki <zycienawalizkach@gmail.com>
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
 The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
+
+Cross-browser Testing <3 Provided by [![Supported by Sauce](https://raw.githubusercontent.com/Evilweed/protractor-beautiful-reporter/master/images/Sauce-Labs_Horiz_Red-Grey_RGB_200x28.png)](https://saucelabs.com)
