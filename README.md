@@ -4,7 +4,7 @@
 
 # 🕵️‍♂️ Looking for new project maintainers!
 Hello, I no longer have time to maintain this repository, but i see that there are people here that would like to use this tool.
-Feel free to reach out to me if you want to become new maintainer :)
+Feel free to reach out to me if you want to become new maintainer - email on the bottom of this page :)
 
 ------
 
