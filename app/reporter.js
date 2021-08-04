@@ -323,7 +323,7 @@ class Jasmine2Reporter {
         }
 
         util.storeMetaData(metaData, jsonPartsPath, descriptions);
-        util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
+        await util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
         this._screenshotReporter.finalOptions.prepareAssets = false; // signal to utils not to write all files again
 
     }

@@ -266,6 +266,14 @@ if (typeof Symbol === 'function' && typeof Symbol.for === 'function') {
 
 function noop () {}
 
+function publishQueue(context, queue) {
+  Object.defineProperty(context, gracefulQueue, {
+    get: function() {
+      return queue
+    }
+  })
+}
+
 var debug = noop
 if (util.debuglog)
   debug = util.debuglog('gfs4')
@@ -277,14 +285,10 @@ else if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || ''))
   }
 
 // Once time initialization
-if (!global[gracefulQueue]) {
+if (!fs[gracefulQueue]) {
   // This queue can be shared by multiple loaded instances
-  var queue = []
-  Object.defineProperty(global, gracefulQueue, {
-    get: function() {
-      return queue
-    }
-  })
+  var queue = global[gracefulQueue] || []
+  publishQueue(fs, queue)
 
   // Patch fs.close/closeSync to shared queue version, because we need
   // to retry() whenever a close happens *anywhere* in the program.
@@ -324,10 +328,14 @@ if (!global[gracefulQueue]) {
 
   if (/\bgfs4\b/i.test(process.env.NODE_DEBUG || '')) {
     process.on('exit', function() {
-      debug(global[gracefulQueue])
-      __webpack_require__(142).equal(global[gracefulQueue].length, 0)
+      debug(fs[gracefulQueue])
+      __webpack_require__(142).equal(fs[gracefulQueue].length, 0)
     })
   }
+}
+
+if (!global[gracefulQueue]) {
+  publishQueue(global, fs[gracefulQueue]);
 }
 
 module.exports = patch(clone(fs))
@@ -407,6 +415,25 @@ function patch (fs) {
     }
   }
 
+  var fs$copyFile = fs.copyFile
+  if (fs$copyFile)
+    fs.copyFile = copyFile
+  function copyFile (src, dest, flags, cb) {
+    if (typeof flags === 'function') {
+      cb = flags
+      flags = 0
+    }
+    return fs$copyFile(src, dest, flags, function (err) {
+      if (err && (err.code === 'EMFILE' || err.code === 'ENFILE'))
+        enqueue([fs$copyFile, [src, dest, flags, cb]])
+      else {
+        if (typeof cb === 'function')
+          cb.apply(this, arguments)
+        retry()
+      }
+    })
+  }
+
   var fs$readdir = fs.readdir
   fs.readdir = readdir
   function readdir (path, options, cb) {
@@ -479,22 +506,24 @@ function patch (fs) {
   })
 
   // legacy names
+  var FileReadStream = ReadStream
   Object.defineProperty(fs, 'FileReadStream', {
     get: function () {
-      return ReadStream
+      return FileReadStream
     },
     set: function (val) {
-      ReadStream = val
+      FileReadStream = val
     },
     enumerable: true,
     configurable: true
   })
+  var FileWriteStream = WriteStream
   Object.defineProperty(fs, 'FileWriteStream', {
     get: function () {
-      return WriteStream
+      return FileWriteStream
     },
     set: function (val) {
-      WriteStream = val
+      FileWriteStream = val
     },
     enumerable: true,
     configurable: true
@@ -577,11 +606,11 @@ function patch (fs) {
 
 function enqueue (elem) {
   debug('ENQUEUE', elem[0].name, elem[1])
-  global[gracefulQueue].push(elem)
+  fs[gracefulQueue].push(elem)
 }
 
 function retry () {
-  var elem = global[gracefulQueue].shift()
+  var elem = fs[gracefulQueue].shift()
   if (elem) {
     debug('RETRY', elem[0].name, elem[1])
     elem[0].apply(null, elem[1])
@@ -806,7 +835,7 @@ module.exports = function (it) {
 /* 23 */
 /***/ (function(module, exports) {
 
-var core = module.exports = { version: '2.6.9' };
+var core = module.exports = { version: '2.6.12' };
 if (typeof __e == 'number') __e = core; // eslint-disable-line no-undef
 
 
@@ -1934,7 +1963,7 @@ var store = global[SHARED] || (global[SHARED] = {});
 })('versions', []).push({
   version: core.version,
   mode: __webpack_require__(34) ? 'pure' : 'global',
-  copyright: '© 2019 Denis Pushkarev (zloirock.ru)'
+  copyright: '© 2020 Denis Pushkarev (zloirock.ru)'
 });
 
 
@@ -5245,10 +5274,13 @@ var Jasmine2Reporter = function () {
                             case 32:
 
                                 util.storeMetaData(metaData, jsonPartsPath, descriptions);
-                                util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
-                                this._screenshotReporter.finalOptions.prepareAssets = false; // signal to utils not to write all files again
+                                _context8.next = 35;
+                                return util.addMetaData(metaData, metaDataPath, this._screenshotReporter.finalOptions);
 
                             case 35:
+                                this._screenshotReporter.finalOptions.prepareAssets = false; // signal to utils not to write all files again
+
+                            case 36:
                             case 'end':
                                 return _context8.stop();
                         }
@@ -5438,24 +5470,61 @@ function buildTemplateJs(file) {
  * @param options
  */
 function addHTMLReport(jsonData, baseName, options) {
-    const basePath = path.dirname(baseName);
-    // Output files
-    const htmlFile = path.join(basePath, options.docName);
-    const jsFile = path.join(basePath, 'app.js');
-    // Input files
-    const htmlInFile = path.join(__dirname, 'lib', 'index.html');
-    const jsTemplate = path.join(__dirname, 'lib', 'app.js');
-    let streamJs;
-    let streamHtml;
-    let cssLink = path.join('assets', 'bootstrap.css').replace(/\\/g, '/');
+    return new Promise(async (resolve, reject) => {
+        const basePath = path.dirname(baseName);
+        // Output files
+        const htmlFile = path.join(basePath, options.docName);
+        const jsFile = path.join(basePath, 'app.js');
+        // Input files
+        const htmlInFile = path.join(__dirname, 'lib', 'index.html');
+        const jsTemplate = path.join(__dirname, 'lib', 'app.js');
+        let cssLink = path.join('assets', 'bootstrap.css').replace(/\\/g, '/');
 
-    try {
+        try {
+            if (options.cssOverrideFile) {
+                cssLink = options.cssOverrideFile;
+            }
 
-        if (options.cssOverrideFile) {
-            cssLink = options.cssOverrideFile;
+            if (options.prepareAssets) {
+                await prepareAssets(cssLink, options, basePath, htmlFile, htmlInFile);
+            }
+
+            // Construct app.js
+
+            //prepare clientDefaults for serializations
+            var jsonDataString;
+            //templates replacement
+            var templater;
+            if (options.clientDefaults && options.clientDefaults.useAjax) {
+                jsonDataString = "[]";
+                templater = "";
+            } else {
+                jsonDataString = JSON.stringify(jsonData, null, 4);
+                templater = "";
+                templater += buildTemplateJs(path.join(__dirname, 'lib', 'pbr-screenshot-modal.html'));
+                templater += buildTemplateJs(path.join(__dirname, 'lib', 'pbr-stack-modal.html'));
+            }
+
+            const content = fs.readFileSync(jsTemplate)
+                .toString()
+                .replace('\[\];//\'<Results Replacement>\'', jsonDataString)
+                .replace('defaultSortFunction/*<Sort Function Replacement>*/', options.sortFunction.toString())
+                .replace('{};//\'<Client Defaults Replacement>\'', JSON.stringify(options.clientDefaults, null, 4))
+                .replace("//'<templates replacement>';", templater);
+
+            const streamJs = fs.createWriteStream(jsFile);
+            streamJs.end(content, () => resolve());
+        } catch(e) {
+            console.error(e);
+            console.error('Could not save combined.js for data: ' + jsonData);
+            reject(e);
         }
+    });
+}
 
-        if (options.prepareAssets) {
+function prepareAssets(cssLink, options, basePath, htmlFile, htmlInFile) {
+    return new Promise(resolve => {
+        try {
             var cssInsert = `<link rel="stylesheet" href="${cssLink}">`;
             if (options.customCssInline) {
                 cssInsert += ` <style type="text/css">${options.customCssInline}</style>`;
@@ -5474,50 +5543,19 @@ function addHTMLReport(jsonData, baseName, options) {
             }
 
             // Construct index.html
-            streamHtml = fs.createWriteStream(htmlFile);
-
-            streamHtml.write(
-                fs.readFileSync(htmlInFile)
-                    .toString()
-                    .replace('<!-- Here will be CSS placed -->', cssInsert)
-                    .replace('<!-- Here goes title -->', options.docTitle)
-            );
-
-            streamHtml.end();
-
-        }
-        // Construct app.js
-        streamJs = fs.createWriteStream(jsFile);
-
-        //prepare clientDefaults for serializations
-        var jsonDataString;
-        //templates replacement
-        var templater;
-        if (options.clientDefaults && options.clientDefaults.useAjax) {
-            jsonDataString = "[]";
-            templater = "";
-        } else {
-            jsonDataString = JSON.stringify(jsonData, null, 4);
-            templater = "";
-            templater += buildTemplateJs(path.join(__dirname, 'lib', 'pbr-screenshot-modal.html'));
-            templater += buildTemplateJs(path.join(__dirname, 'lib', 'pbr-stack-modal.html'));
-        }
-
-
-        streamJs.write(
-            fs.readFileSync(jsTemplate)
+            const content = fs.readFileSync(htmlInFile)
                 .toString()
-                .replace('\[\];//\'<Results Replacement>\'', jsonDataString)
-                .replace('defaultSortFunction/*<Sort Function Replacement>*/', options.sortFunction.toString())
-                .replace('{};//\'<Client Defaults Replacement>\'', JSON.stringify(options.clientDefaults, null, 4))
-                .replace("//'<templates replacement>';", templater)
-        );
+                .replace('<!-- Here will be CSS placed -->', cssInsert)
+                .replace('<!-- Here goes title -->', options.docTitle);
 
-        streamJs.end();
-    } catch(e) {
-        console.error(e);
-        console.error('Could not save combined.js for data: ' + jsonData);
-    }
+            const streamHtml = fs.createWriteStream(htmlFile);
+            streamHtml.end(content, () => resolve());
+        } catch(e) {
+            console.error(e);
+            console.error(`Could not save ${htmlFile}`);
+            reject(e);
+        }
+    });
 }
 
 /**
@@ -5527,26 +5565,11 @@ function addHTMLReport(jsonData, baseName, options) {
  * @param baseName base directory name
  * @param options reporter options passed through
  */
-function addMetaData(test, baseName, options) {
+async function addMetaData(test, baseName, options) {
     const basePath = path.dirname(baseName);
     const file = path.join(basePath, 'combined.json');
-    const lock = path.join(basePath, '.lock');
     let data = [];
     try {
-        try {
-            fs.mkdirSync(lock);
-        } catch(e) {
-            // delay if one write operation is pending
-            if (e.code === 'EEXIST') {
-                setTimeout(function () {
-                    addMetaData(test, baseName, options);
-                }, 200);
-                return;
-            }
-            // something else happened (e.g. file access permissions)
-            throw e;
-        }
-
         //concat all tests
         if (fse.pathExistsSync(file)) {
             data = JSON.parse(fse.readJsonSync(file), {encoding: 'utf8'});
@@ -5560,10 +5583,7 @@ function addMetaData(test, baseName, options) {
 
         fse.outputJsonSync(file, CircularJSON.stringify(data));
 
-        addHTMLReport(data, baseName, options);
-
-        fs.rmdirSync(lock);
-
+        await addHTMLReport(data, baseName, options);
     } catch(e) {
         console.error(e);
         console.error('Could not save JSON for data: ' + test);
@@ -10847,8 +10867,13 @@ $export($export.P + $export.R, 'Set', { toJSON: __webpack_require__(107)('Set') 
 // https://github.com/mathiasbynens/String.prototype.at
 var $export = __webpack_require__(0);
 var $at = __webpack_require__(68)(true);
+var $fails = __webpack_require__(3);
 
-$export($export.P, 'String', {
+var FORCED = $fails(function () {
+  return '𠮷'.at(0) !== '𠮷';
+});
+
+$export($export.P + $export.F * FORCED, 'String', {
   at: function at(pos) {
     return $at(this, pos);
   }
@@ -12937,12 +12962,16 @@ module.exports = {
 
 module.exports = clone
 
+var getPrototypeOf = Object.getPrototypeOf || function (obj) {
+  return obj.__proto__
+}
+
 function clone (obj) {
   if (obj === null || typeof obj !== 'object')
     return obj
 
   if (obj instanceof Object)
-    var copy = { __proto__: obj.__proto__ }
+    var copy = { __proto__: getPrototypeOf(obj) }
   else
     var copy = Object.create(null)
 
@@ -13098,10 +13127,14 @@ try {
   process.cwd()
 } catch (er) {}
 
-var chdir = process.chdir
-process.chdir = function(d) {
-  cwd = null
-  chdir.call(process, d)
+// This check is needed until node.js 12 is required
+if (typeof process.chdir === 'function') {
+  var chdir = process.chdir
+  process.chdir = function (d) {
+    cwd = null
+    chdir.call(process, d)
+  }
+  if (Object.setPrototypeOf) Object.setPrototypeOf(process.chdir, chdir)
 }
 
 module.exports = patch
@@ -13216,7 +13249,7 @@ function patch (fs) {
     }
 
     // This ensures `util.promisify` works as it does for native `fs.read`.
-    read.__proto__ = fs$read
+    if (Object.setPrototypeOf) Object.setPrototypeOf(read, fs$read)
     return read
   })(fs.read)
 

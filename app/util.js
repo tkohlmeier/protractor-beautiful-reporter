@@ -83,24 +83,61 @@ function buildTemplateJs(file) {
  * @param options
  */
 function addHTMLReport(jsonData, baseName, options) {
-    const basePath = path.dirname(baseName);
-    // Output files
-    const htmlFile = path.join(basePath, options.docName);
-    const jsFile = path.join(basePath, 'app.js');
-    // Input files
-    const htmlInFile = path.join(__dirname, 'lib', 'index.html');
-    const jsTemplate = path.join(__dirname, 'lib', 'app.js');
-    let streamJs;
-    let streamHtml;
-    let cssLink = path.join('assets', 'bootstrap.css').replace(/\\/g, '/');
+    return new Promise(async (resolve, reject) => {
+        const basePath = path.dirname(baseName);
+        // Output files
+        const htmlFile = path.join(basePath, options.docName);
+        const jsFile = path.join(basePath, 'app.js');
+        // Input files
+        const htmlInFile = path.join(__dirname, 'lib', 'index.html');
+        const jsTemplate = path.join(__dirname, 'lib', 'app.js');
+        let cssLink = path.join('assets', 'bootstrap.css').replace(/\\/g, '/');
 
-    try {
+        try {
+            if (options.cssOverrideFile) {
+                cssLink = options.cssOverrideFile;
+            }
 
-        if (options.cssOverrideFile) {
-            cssLink = options.cssOverrideFile;
+            if (options.prepareAssets) {
+                await prepareAssets(cssLink, options, basePath, htmlFile, htmlInFile);
+            }
+
+            // Construct app.js
+
+            //prepare clientDefaults for serializations
+            var jsonDataString;
+            //templates replacement
+            var templater;
+            if (options.clientDefaults && options.clientDefaults.useAjax) {
+                jsonDataString = "[]";
+                templater = "";
+            } else {
+                jsonDataString = JSON.stringify(jsonData, null, 4);
+                templater = "";
+                templater += buildTemplateJs(path.join(__dirname, 'lib', 'pbr-screenshot-modal.html'));
+                templater += buildTemplateJs(path.join(__dirname, 'lib', 'pbr-stack-modal.html'));
+            }
+
+            const content = fs.readFileSync(jsTemplate)
+                .toString()
+                .replace('\[\];//\'<Results Replacement>\'', jsonDataString)
+                .replace('defaultSortFunction/*<Sort Function Replacement>*/', options.sortFunction.toString())
+                .replace('{};//\'<Client Defaults Replacement>\'', JSON.stringify(options.clientDefaults, null, 4))
+                .replace("//'<templates replacement>';", templater);
+
+            const streamJs = fs.createWriteStream(jsFile);
+            streamJs.end(content, () => resolve());
+        } catch(e) {
+            console.error(e);
+            console.error('Could not save combined.js for data: ' + jsonData);
+            reject(e);
         }
+    });
+}
 
-        if (options.prepareAssets) {
+function prepareAssets(cssLink, options, basePath, htmlFile, htmlInFile) {
+    return new Promise(resolve => {
+        try {
             var cssInsert = `<link rel="stylesheet" href="${cssLink}">`;
             if (options.customCssInline) {
                 cssInsert += ` <style type="text/css">${options.customCssInline}</style>`;
@@ -119,50 +156,19 @@ function addHTMLReport(jsonData, baseName, options) {
             }
 
             // Construct index.html
-            streamHtml = fs.createWriteStream(htmlFile);
-
-            streamHtml.write(
-                fs.readFileSync(htmlInFile)
-                    .toString()
-                    .replace('<!-- Here will be CSS placed -->', cssInsert)
-                    .replace('<!-- Here goes title -->', options.docTitle)
-            );
-
-            streamHtml.end();
-
-        }
-        // Construct app.js
-        streamJs = fs.createWriteStream(jsFile);
-
-        //prepare clientDefaults for serializations
-        var jsonDataString;
-        //templates replacement
-        var templater;
-        if (options.clientDefaults && options.clientDefaults.useAjax) {
-            jsonDataString = "[]";
-            templater = "";
-        } else {
-            jsonDataString = JSON.stringify(jsonData, null, 4);
-            templater = "";
-            templater += buildTemplateJs(path.join(__dirname, 'lib', 'pbr-screenshot-modal.html'));
-            templater += buildTemplateJs(path.join(__dirname, 'lib', 'pbr-stack-modal.html'));
-        }
-
-
-        streamJs.write(
-            fs.readFileSync(jsTemplate)
+            const content = fs.readFileSync(htmlInFile)
                 .toString()
-                .replace('\[\];//\'<Results Replacement>\'', jsonDataString)
-                .replace('defaultSortFunction/*<Sort Function Replacement>*/', options.sortFunction.toString())
-                .replace('{};//\'<Client Defaults Replacement>\'', JSON.stringify(options.clientDefaults, null, 4))
-                .replace("//'<templates replacement>';", templater)
-        );
+                .replace('<!-- Here will be CSS placed -->', cssInsert)
+                .replace('<!-- Here goes title -->', options.docTitle);
 
-        streamJs.end();
-    } catch(e) {
-        console.error(e);
-        console.error('Could not save combined.js for data: ' + jsonData);
-    }
+            const streamHtml = fs.createWriteStream(htmlFile);
+            streamHtml.end(content, () => resolve());
+        } catch(e) {
+            console.error(e);
+            console.error(`Could not save ${htmlFile}`);
+            reject(e);
+        }
+    });
 }
 
 /**
@@ -172,26 +178,11 @@ function addHTMLReport(jsonData, baseName, options) {
  * @param baseName base directory name
  * @param options reporter options passed through
  */
-function addMetaData(test, baseName, options) {
+async function addMetaData(test, baseName, options) {
     const basePath = path.dirname(baseName);
     const file = path.join(basePath, 'combined.json');
-    const lock = path.join(basePath, '.lock');
     let data = [];
     try {
-        try {
-            fs.mkdirSync(lock);
-        } catch(e) {
-            // delay if one write operation is pending
-            if (e.code === 'EEXIST') {
-                setTimeout(function () {
-                    addMetaData(test, baseName, options);
-                }, 200);
-                return;
-            }
-            // something else happened (e.g. file access permissions)
-            throw e;
-        }
-
         //concat all tests
         if (fse.pathExistsSync(file)) {
             data = JSON.parse(fse.readJsonSync(file), {encoding: 'utf8'});
@@ -205,10 +196,7 @@ function addMetaData(test, baseName, options) {
 
         fse.outputJsonSync(file, CircularJSON.stringify(data));
 
-        addHTMLReport(data, baseName, options);
-
-        fs.rmdirSync(lock);
-
+        await addHTMLReport(data, baseName, options);
     } catch(e) {
         console.error(e);
         console.error('Could not save JSON for data: ' + test);
